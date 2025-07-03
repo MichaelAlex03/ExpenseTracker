@@ -120,7 +120,7 @@ const Login = () => {
                   fill="#EA4335"
                 />
               </svg>
-              <p className='text-sm'>Google</p>
+              <p className='text-sm'>Apple</p>
             </button>
           </div>
 
