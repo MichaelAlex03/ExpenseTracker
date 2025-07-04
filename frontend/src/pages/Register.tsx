@@ -1,26 +1,50 @@
 import { LayoutDashboard, Mail, Lock, Eye, EyeOff, ArrowRight, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { formRegex } from '../../hooks/useFormRegex'
 import '../index.css'
+import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
+
+    const navigate = useNavigate()
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const [firstName, setFirstName] = useState<string>('');
+    const [validFirstName, setValidFirstName] = useState<boolean>(false);
+
     const [lastName, setLastName] = useState<string>('');
+    const [validLastName, setValidLastName] = useState<boolean>(false);
 
     const [email, setEmail] = useState<string>('');
     const [emailFocus, setEmailFocus] = useState<boolean>(false);
+    const [validEmail, setValidEmail] = useState<boolean>(false);
 
     const [password, setPassword] = useState<string>('');
     const [passwordFocus, setPasswordFocus] = useState<boolean>(false);
+    const [validPassword, setValidPassword] = useState<boolean>(false);
 
     const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [validMatch, setValidMatch] = useState<boolean>(false);
     const [passwordMatch, setPasswordMatch] = useState<boolean>(false);
 
     const [errMsg, setErrMsg] = useState<string>('');
 
+    //Input Validation
     useEffect(() => {
+        setValidFirstName(formRegex.firstName.test(firstName))
+    }, [firstName])
+
+    useEffect(() => {
+        setValidLastName(formRegex.lastName.test(lastName));
+    }, [lastName])
+
+    useEffect(() => {
+        setValidEmail(formRegex.email.test(email));
+    }, [email])
+
+    useEffect(() => {
+        setValidPassword(formRegex.password.test(password));
         setPasswordMatch(password === confirmPassword);
     }, [confirmPassword, password])
 
@@ -78,6 +102,8 @@ const Register = () => {
                                 type='text'
                                 id='email'
                                 className='border border-color py-1 pl-10 rounded-lg'
+                                onFocus={() => setEmailFocus(true)}
+                                onBlur={() => setEmailFocus(false)}
                             />
                         </div>
 
@@ -88,6 +114,8 @@ const Register = () => {
                                 type={showPassword ? 'text' : 'password'}
                                 id='password'
                                 className='border border-color py-1 pl-10 rounded-lg'
+                                onFocus={() => setPasswordFocus(true)}
+                                onBlur={() => setPasswordFocus(false)}
                             />
                             {!showPassword ?
                                 <button className='cursor-pointer' onClick={() => setShowPassword(true)}>
@@ -99,6 +127,8 @@ const Register = () => {
                                 </button>
                             }
                         </div>
+
+
 
                         <div className='flex flex-col mt-4 w-4/5 gap-2 relative'>
                             <label className='text-sm' htmlFor='confirmPass'>Confirm Password</label>
@@ -159,22 +189,10 @@ const Register = () => {
                         </button>
 
                         <button className='flex flex-row items-center gap-2 border-1 border-color px-6 py-2 rounded-lg cursor-pointer'>
-                            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
                                 <path
-                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                                    fill="#4285F4"
-                                />
-                                <path
-                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                    fill="#34A853"
-                                />
-                                <path
-                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                                    fill="#FBBC05"
-                                />
-                                <path
-                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                    fill="#EA4335"
+                                    d="M16.68 1.94c0 1.14-.93 2.06-2.07 2.06-.02-1.18.95-2.06 2.07-2.06zm2.18 4.36c-1.14-.13-2.1.65-2.65.65-.56 0-1.41-.63-2.33-.61-1.2.02-2.3.7-2.91 1.77-1.24 2.15-.32 5.33.89 7.08.59.86 1.29 1.82 2.21 1.79.88-.04 1.21-.57 2.27-.57 1.06 0 1.36.57 2.28.55.94-.02 1.53-.88 2.11-1.74.67-.98.95-1.93.96-1.98-.02-.01-1.85-.71-1.87-2.81-.02-1.76 1.44-2.6 1.51-2.64-.83-1.22-2.12-1.36-2.57-1.39zm-2.06-3.7c.38-.46.64-1.1.57-1.74-.55.02-1.22.37-1.62.83-.36.41-.68 1.07-.56 1.7.6.05 1.22-.31 1.61-.79z"
+                                    fill="black"
                                 />
                             </svg>
                             <p className='text-sm'>Apple</p>
@@ -183,7 +201,7 @@ const Register = () => {
 
                     <div className='flex flex-row items-center justify-center w-4/5 mt-4'>
                         <p className='text-sm'>Already have an account?
-                            <span className='font-medium hover:cursor-pointer hover:underline'> Sign In </span>
+                            <span onClick={() => navigate('/')} className='font-medium hover:cursor-pointer hover:underline'> Sign In </span>
                         </p>
                     </div>
 
