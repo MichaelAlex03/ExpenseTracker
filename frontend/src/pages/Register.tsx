@@ -1,9 +1,10 @@
-import { LayoutDashboard, Mail, Lock, Eye, EyeOff, ArrowRight, User } from 'lucide-react'
+import { LayoutDashboard, Mail, Lock, Eye, EyeOff, ArrowRight, User, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { formRegex } from '../../hooks/useFormRegex'
 import '../index.css'
 import { useNavigate } from 'react-router-dom'
 import PasswordRequirments from '@/components/PasswordRequirments'
+import { cn } from '../../lib/utils'
 
 const Register = () => {
 
@@ -12,9 +13,11 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const [firstName, setFirstName] = useState<string>('');
+    const [firstNameFocus, setFirstNameFocus] = useState<boolean>(false);
     const [validFirstName, setValidFirstName] = useState<boolean>(false);
 
     const [lastName, setLastName] = useState<string>('');
+    const [lastNameFocus, setLastNameFocus] = useState<boolean>(false);
     const [validLastName, setValidLastName] = useState<boolean>(false);
 
     const [email, setEmail] = useState<string>('');
@@ -83,16 +86,50 @@ const Register = () => {
                                 <input
                                     type='text'
                                     id='firstName'
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
                                     className='border border-color py-1 pl-10 rounded-lg'
+                                    onFocus={() => setFirstNameFocus(true)}
+                                    onBlur={() => setFirstNameFocus(false)}
                                 />
+                                {
+                                    firstNameFocus && !validFirstName && firstName && (
+                                        <div className='w-full flex justify-end'>
+                                            <div className={cn(
+                                                "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-16 flex flex-row items-center gap-2",
+                                                "animate-fade-in",
+                                            )}>
+                                                <X className='h-4 w-4' color='red' />
+                                                <p className='text-xs text-red-500'>Invalid first name</p>
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             </div>
                             <div className='flex flex-col mt-7 gap-2 w-1/2 relative'>
                                 <label className='text-sm' htmlFor='lastName'>Last Name</label>
                                 <input
                                     type='text'
                                     id='lastName'
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
                                     className='border border-color py-1 pl-2 rounded-lg'
+                                    onFocus={() => setLastNameFocus(true)}
+                                    onBlur={() => setLastNameFocus(false)}
                                 />
+                                {
+                                    lastNameFocus && !validLastName && lastName && (
+                                        <div className='w-full flex justify-end'>
+                                            <div className={cn(
+                                                "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-16 flex flex-row items-center gap-2",
+                                                "animate-fade-in",
+                                            )}>
+                                                <X className='h-4 w-4' color='red' />
+                                                <p className='text-xs text-red-500'>Invalid last name</p>
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             </div>
                         </div>
 
@@ -102,10 +139,25 @@ const Register = () => {
                             <input
                                 type='text'
                                 id='email'
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className='border border-color py-1 pl-10 rounded-lg'
                                 onFocus={() => setEmailFocus(true)}
                                 onBlur={() => setEmailFocus(false)}
                             />
+                            {
+                                emailFocus && !validEmail && email && (
+                                    <div className='w-full flex justify-end'>
+                                        <div className={cn(
+                                            "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-16 flex flex-row items-center gap-2",
+                                            "animate-fade-in",
+                                        )}>
+                                            <X className='h-4 w-4' color='red' />
+                                            <p className='text-xs text-red-500'>Invalid email format</p>
+                                        </div>
+                                    </div>
+                                )
+                            }
                         </div>
 
                         <div className='flex flex-col mt-4 w-4/5 gap-2 relative'>

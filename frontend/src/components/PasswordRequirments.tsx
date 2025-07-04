@@ -9,7 +9,7 @@ const PasswordRequirments = ({ password }: PasswordRequirementsProps) => {
     return (
         <div
             className={cn(
-                "absolute z-50 w-full p-2 mt-1 bg-white border border-border rounded-lg shadow-lg top-17",
+                "absolute z-50 w-full p-2 mt-1 bg-white border-0 rounded-lg shadow-xl top-17",
                 "animate-fade-in",
             )}
         >
