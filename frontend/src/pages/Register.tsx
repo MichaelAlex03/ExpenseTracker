@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { formRegex } from '../../hooks/useFormRegex'
 import '../index.css'
 import { useNavigate } from 'react-router-dom'
+import PasswordRequirments from '@/components/PasswordRequirments'
 
 const Register = () => {
 
@@ -125,6 +126,11 @@ const Register = () => {
                                 <button className='cursor-pointer' onClick={() => setShowPassword(false)}>
                                     <EyeOff className='absolute top-[37px] right-3 h-4 w-4' />
                                 </button>
+                            }
+                            {
+                                passwordFocus && (
+                                    <PasswordRequirments password={password} />
+                                )
                             }
                         </div>
 
