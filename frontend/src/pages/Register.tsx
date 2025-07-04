@@ -11,6 +11,7 @@ const Register = () => {
     const navigate = useNavigate()
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
 
     const [firstName, setFirstName] = useState<string>('');
     const [firstNameFocus, setFirstNameFocus] = useState<boolean>(false);
@@ -26,13 +27,11 @@ const Register = () => {
 
     const [password, setPassword] = useState<string>('');
     const [passwordFocus, setPasswordFocus] = useState<boolean>(false);
-    const [validPassword, setValidPassword] = useState<boolean>(false);
 
     const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [confirmPassFocus, setConfirmPassFocus] = useState<boolean>(false);
     const [validMatch, setValidMatch] = useState<boolean>(false);
-    const [passwordMatch, setPasswordMatch] = useState<boolean>(false);
 
-    const [errMsg, setErrMsg] = useState<string>('');
 
     //Input Validation
     useEffect(() => {
@@ -48,8 +47,7 @@ const Register = () => {
     }, [email])
 
     useEffect(() => {
-        setValidPassword(formRegex.password.test(password));
-        setPasswordMatch(password === confirmPassword);
+        setValidMatch(password === confirmPassword);
     }, [confirmPassword, password])
 
     const handleSubmit = async () => {
@@ -88,7 +86,7 @@ const Register = () => {
                                     id='firstName'
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
-                                    className='border border-color py-1 pl-10 rounded-lg'
+                                    className='border border-color py-1 pl-10 rounded-lg text-sm'
                                     onFocus={() => setFirstNameFocus(true)}
                                     onBlur={() => setFirstNameFocus(false)}
                                 />
@@ -113,7 +111,7 @@ const Register = () => {
                                     id='lastName'
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
-                                    className='border border-color py-1 pl-2 rounded-lg'
+                                    className='border border-color py-1 pl-2 rounded-lg text-sm'
                                     onFocus={() => setLastNameFocus(true)}
                                     onBlur={() => setLastNameFocus(false)}
                                 />
@@ -141,7 +139,7 @@ const Register = () => {
                                 id='email'
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className='border border-color py-1 pl-10 rounded-lg'
+                                className='border border-color py-1 pl-10 rounded-lg text-sm'
                                 onFocus={() => setEmailFocus(true)}
                                 onBlur={() => setEmailFocus(false)}
                             />
@@ -166,16 +164,18 @@ const Register = () => {
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 id='password'
-                                className='border border-color py-1 pl-10 rounded-lg'
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className='border border-color py-1 pl-10 rounded-lg text-sm'
                                 onFocus={() => setPasswordFocus(true)}
                                 onBlur={() => setPasswordFocus(false)}
                             />
                             {!showPassword ?
-                                <button className='cursor-pointer' onClick={() => setShowPassword(true)}>
+                                <button type='button' className='cursor-pointer' onClick={() => setShowPassword(true)}>
                                     <Eye className='absolute top-[37px] right-3 h-4 w-4' />
                                 </button>
                                 :
-                                <button className='cursor-pointer' onClick={() => setShowPassword(false)}>
+                                <button type='button' className='cursor-pointer' onClick={() => setShowPassword(false)}>
                                     <EyeOff className='absolute top-[37px] right-3 h-4 w-4' />
                                 </button>
                             }
@@ -192,18 +192,35 @@ const Register = () => {
                             <label className='text-sm' htmlFor='confirmPass'>Confirm Password</label>
                             <Lock className='absolute top-[37px] left-3 h-4 w-4' />
                             <input
-                                type={showPassword ? 'text' : 'password'}
+                                type={showConfirmPass ? 'text' : 'password'}
                                 id='confirmPass'
-                                className='border border-color py-1 pl-10 rounded-lg'
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className='border border-color py-1 pl-10 rounded-lg text-sm'
+                                onFocus={() => setConfirmPassFocus(true)}
+                                onBlur={() => setConfirmPassFocus(false)}
                             />
-                            {!showPassword ?
-                                <button className='cursor-pointer' onClick={() => setShowPassword(true)}>
+                            {!showConfirmPass ?
+                                <button type='button' className='cursor-pointer' onClick={() => setShowConfirmPass(true)}>
                                     <Eye className='absolute top-[37px] right-3 h-4 w-4' />
                                 </button>
                                 :
-                                <button className='cursor-pointer' onClick={() => setShowPassword(false)}>
+                                <button type='button' className='cursor-pointer' onClick={() => setShowConfirmPass(false)}>
                                     <EyeOff className='absolute top-[37px] right-3 h-4 w-4' />
                                 </button>
+                            }
+                            {
+                                confirmPassFocus && !validMatch && password && confirmPassword && (
+                                    <div className='w-full flex justify-end'>
+                                        <div className={cn(
+                                            "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-16 flex flex-row items-center gap-2",
+                                            "animate-fade-in",
+                                        )}>
+                                            <X className='h-4 w-4' color='red' />
+                                            <p className='text-xs text-red-500'>Passwords dont match</p>
+                                        </div>
+                                    </div>
+                                )
                             }
                         </div>
 
@@ -262,12 +279,7 @@ const Register = () => {
                             <span onClick={() => navigate('/')} className='font-medium hover:cursor-pointer hover:underline'> Sign In </span>
                         </p>
                     </div>
-
-
                 </div>
-
-
-
             </div>
 
             <div className="w-[45%] custom-gradient-bg flex flex-col items-center justify-center">
