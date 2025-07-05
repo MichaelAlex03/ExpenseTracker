@@ -7,7 +7,7 @@ interface PasswordRequirementsProps {
 }
 
 const passwordRules = {
-    length: /^.{8,}$/,
+    length: /^.{8,24}$/,
     specialCharacter: /[!@#$%]/,
     lowercase: /[a-z]/,
     uppercase: /[A-Z]/,
@@ -54,7 +54,7 @@ const PasswordRequirments = ({ password }: PasswordRequirementsProps) => {
                             ? <X className='h-4 w-4' color='red' />
                             : <Check className='h-4 w-4' color='green' />
                     }
-                    < p className='text-xs'>At least 8 characters</p>
+                    < p className='text-xs'>8-24 characters</p>
                 </div>
                 <div className='flex flex-row gap-4 items-center'>
                     {!password ?
@@ -69,21 +69,36 @@ const PasswordRequirments = ({ password }: PasswordRequirementsProps) => {
                     <p className='text-xs'>One special character</p>
                 </div>
                 <div className='flex flex-row gap-4 items-center'>
-                    <div className="h-4 w-4 rounded-full bg-gray-100 flex items-center justify-center">
-                        <div className='h-2 w-2 bg-gray-400 rounded-full' />
-                    </div>
+                    {!password ?
+                        <div className="h-4 w-4 rounded-full bg-gray-100 flex items-center justify-center">
+                            <div className='h-2 w-2 bg-gray-400 rounded-full' />
+                        </div>
+                        : !hasLowercase
+                            ? <X className='h-4 w-4' color='red' />
+                            : <Check className='h-4 w-4' color='green' />
+                    }
                     <p className='text-xs'>One lowercase character</p>
                 </div>
                 <div className='flex flex-row gap-4 items-center'>
-                    <div className="h-4 w-4 rounded-full bg-gray-100 flex items-center justify-center">
-                        <div className='h-2 w-2 bg-gray-400 rounded-full' />
-                    </div>
+                    {!password ?
+                        <div className="h-4 w-4 rounded-full bg-gray-100 flex items-center justify-center">
+                            <div className='h-2 w-2 bg-gray-400 rounded-full' />
+                        </div>
+                        : !hasUpperCase
+                            ? <X className='h-4 w-4' color='red' />
+                            : <Check className='h-4 w-4' color='green' />
+                    }
                     <p className='text-xs'>One uppercase character</p>
                 </div>
                 <div className='flex flex-row gap-4 items-center'>
-                    <div className="h-4 w-4 rounded-full bg-gray-100 flex items-center justify-center">
-                        <div className='h-2 w-2 bg-gray-400 rounded-full' />
-                    </div>
+                    {!password ?
+                        <div className="h-4 w-4 rounded-full bg-gray-100 flex items-center justify-center">
+                            <div className='h-2 w-2 bg-gray-400 rounded-full' />
+                        </div>
+                        : !hasDigit
+                            ? <X className='h-4 w-4' color='red' />
+                            : <Check className='h-4 w-4' color='green' />
+                    }
                     <p className='text-xs'>One number</p>
                 </div>
 

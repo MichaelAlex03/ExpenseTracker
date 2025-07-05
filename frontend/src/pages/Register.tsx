@@ -94,7 +94,7 @@ const Register = () => {
                                     firstNameFocus && !validFirstName && firstName && (
                                         <div className='w-full flex justify-end'>
                                             <div className={cn(
-                                                "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-16 flex flex-row items-center gap-2",
+                                                "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-15 flex flex-row items-center gap-2",
                                                 "animate-fade-in",
                                             )}>
                                                 <X className='h-4 w-4' color='red' />
@@ -119,7 +119,7 @@ const Register = () => {
                                     lastNameFocus && !validLastName && lastName && (
                                         <div className='w-full flex justify-end'>
                                             <div className={cn(
-                                                "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-16 flex flex-row items-center gap-2",
+                                                "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-15 flex flex-row items-center gap-2",
                                                 "animate-fade-in",
                                             )}>
                                                 <X className='h-4 w-4' color='red' />
@@ -147,7 +147,7 @@ const Register = () => {
                                 emailFocus && !validEmail && email && (
                                     <div className='w-full flex justify-end'>
                                         <div className={cn(
-                                            "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-16 flex flex-row items-center gap-2",
+                                            "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-15 flex flex-row items-center gap-2",
                                             "animate-fade-in",
                                         )}>
                                             <X className='h-4 w-4' color='red' />
@@ -210,10 +210,10 @@ const Register = () => {
                                 </button>
                             }
                             {
-                                confirmPassFocus && !validMatch && password && confirmPassword && (
+                                confirmPassFocus && !validMatch && confirmPassword && (
                                     <div className='w-full flex justify-end'>
                                         <div className={cn(
-                                            "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-16 flex flex-row items-center gap-2",
+                                            "absolute z-50 p-2 bg-red bg-white border-1 border-gray-300 rounded-lg shadow-xl top-15 flex flex-row items-center gap-2",
                                             "animate-fade-in",
                                         )}>
                                             <X className='h-4 w-4' color='red' />
