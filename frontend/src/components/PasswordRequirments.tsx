@@ -32,12 +32,7 @@ const PasswordRequirments = ({ password }: PasswordRequirementsProps) => {
     }, [password])
 
     return (
-        <div
-            className={cn(
-                "absolute z-50 w-full p-2 mt-1 bg-white border-0 rounded-lg shadow-xl top-17",
-                "animate-fade-in",
-            )}
-        >
+        <div className="absolute z-50 w-full p-2 mt-1 bg-white border-0 rounded-lg shadow-xl top-17">
             <div className="flex flex-row items-center gap-2">
                 <AlertCircle className='w-4 h-4' />
                 <p className='text-sm'>Password Requirements</p>

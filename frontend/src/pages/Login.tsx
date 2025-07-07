@@ -47,7 +47,7 @@ const Login = () => {
                 id='email'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className='border border-color py-1 pl-10 rounded-lg'
+                className='border border-color py-1 pl-10 rounded-lg text-sm'
               />
             </div>
 
@@ -59,14 +59,14 @@ const Login = () => {
                 id='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className='border border-color py-1 pl-10 rounded-lg'
+                className='border border-color py-1 pl-10 rounded-lg text-sm'
               />
               {!showPassword ?
-                <button className='cursor-pointer' onClick={() => setShowPassword(true)}>
+                <button type='button' className='cursor-pointer' onClick={() => setShowPassword(true)}>
                   <Eye className='absolute top-[37px] right-3 h-4 w-4' />
                 </button>
                 :
-                <button className='cursor-pointer' onClick={() => setShowPassword(false)}>
+                <button type='button' className='cursor-pointer' onClick={() => setShowPassword(false)}>
                   <EyeOff className='absolute top-[37px] right-3 h-4 w-4' />
                 </button>
               }
