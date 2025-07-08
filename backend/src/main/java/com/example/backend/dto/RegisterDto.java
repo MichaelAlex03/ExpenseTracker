@@ -1,8 +1,11 @@
 package com.example.backend.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class RegisterDto {
     private String firstName;
     private String lastName;

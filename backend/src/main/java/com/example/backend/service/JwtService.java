@@ -65,7 +65,15 @@ public class JwtService {
         return buildToken(extraClaims, userDetails, accessExpiration);
     }
 
-    public String buildToken(
+    public String generateRefreshToken(UserDetails userDetails){
+        return generateRefreshToken(new HashMap<>(), userDetails);
+    }
+
+    public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails){
+        return buildRefreshToken(extraClaims, userDetails, refreshExpiration);
+    }
+
+    private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
             long expiration
@@ -75,7 +83,22 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInkey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    private String buildRefreshToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails,
+            long expiration
+    ){
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInkey(), SignatureAlgorithm.HS256)
                 .compact();
     }

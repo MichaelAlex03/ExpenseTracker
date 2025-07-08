@@ -31,17 +31,15 @@ public class User implements UserDetails {
     @Column(name = "user_password")
     private String password;
 
-    @Column(name = "refresh_token")
-    private String refreshToken;
 
     public User(){
     }
 
-    public User(String firstName, String lastName, String password, String refreshToken){
+    public User(String firstName, String lastName, String password, String email){
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.refreshToken = refreshToken;
+        this.userEmail = email;
     }
 
     @Override
