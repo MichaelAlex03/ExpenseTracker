@@ -36,7 +36,7 @@ public class AuthService {
     }
 
 
-    public void signUp(RegisterDto registerDto){
+    public User signUp(RegisterDto registerDto){
         if(!doesUserExist(registerDto.getEmail())){
             User newUser = new User(
                     registerDto.getFirstName(),
@@ -45,7 +45,7 @@ public class AuthService {
                     registerDto.getEmail()
             );
 
-            userRepository.save(newUser);
+            return userRepository.save(newUser);
         }
 
         throw new RuntimeException("User already exists");
