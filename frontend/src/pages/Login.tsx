@@ -19,7 +19,7 @@ const Login = () => {
   return (
     <div className='w-full h-screen flex flex-row'>
       <div className='w-[55%] bg-white flex flex-col items-center justify-center px-40'>
-        <div className='flex flex-row items-center gap-2 w-full'>
+        <div className='flex flex-row items-center gap-2 w-full 2xl:w-3/4'>
           <div className='bg-black h-10 w-10 flex justify-center items-center rounded-xl'>
             <LayoutDashboard color='white' className='h-6 w-6' />
           </div>
@@ -29,7 +29,7 @@ const Login = () => {
           </div>
         </div>
 
-        <div className='border-0 shadow-lg w-full mt-5 flex flex-col items-center justify-center p-12 rounded-xl'>
+        <div className='border-0 shadow-lg w-full 2xl:w-3/4 mt-5 flex flex-col items-center justify-center p-12 rounded-xl'>
           <form
             className='flex flex-col items-center justify-center w-full'
             onSubmit={handleSubmit}
@@ -73,7 +73,7 @@ const Login = () => {
             </div>
 
             <div className='w-3/4 mt-2 mb-4 cursor-pointer'>
-              <p className='text-sm text-left'>Forgot Password?</p>
+              <p className='text-sm text-left font-semibold'>Forgot Password?</p>
             </div>
 
             <button className='flex flex-row items-center justify-center gap-4 bg-black py-2 rounded-xl w-3/4 cursor-pointer'>
@@ -88,7 +88,7 @@ const Login = () => {
             </p>
           </div>
 
-          <div className='w-3/4 flex flex-row mt-6 items-center justify-between'>
+          <div className='w-3/4 flex flex-row mt-6 items-center justify-center gap-8'>
             <button className='flex flex-row items-center gap-2 border-1 border-color px-6 py-2 rounded-lg cursor-pointer'>
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path

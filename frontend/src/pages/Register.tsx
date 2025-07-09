@@ -57,7 +57,7 @@ const Register = () => {
     return (
         <div className='w-full h-screen flex flex-row'>
             <div className='w-[55%] bg-white flex flex-col items-center justify-center px-40'>
-                <div className='flex flex-row items-center gap-2 w-full'>
+                <div className='flex flex-row items-center gap-2 w-full xl:w-3/4'>
                     <div className='bg-black h-10 w-10 flex justify-center items-center rounded-xl'>
                         <LayoutDashboard color='white' className='h-6 w-6' />
                     </div>
@@ -67,7 +67,7 @@ const Register = () => {
                     </div>
                 </div>
 
-                <div className='border-0 shadow-lg w-full mt-5 flex flex-col items-center justify-center p-10 rounded-xl'>
+                <div className='border-0 shadow-lg w-full 2xl:w-3/4 mt-5 flex flex-col items-center justify-center p-10 rounded-xl'>
                     <form
                         className='flex flex-col items-center justify-center w-full'
                         onSubmit={handleSubmit}
@@ -224,11 +224,7 @@ const Register = () => {
                             }
                         </div>
 
-                        <div className='w-4/5 mt-2 mb-2 cursor-pointer'>
-                            <p className='text-sm text-left'>Forgot Password?</p>
-                        </div>
-
-                        <button className='flex flex-row items-center justify-center gap-4 bg-black py-2 rounded-xl w-4/5 cursor-pointer'>
+                        <button className='flex flex-row items-center justify-center gap-4 bg-black py-2 rounded-xl w-4/5 cursor-pointer mt-5'>
                             <p className='text-white text-sm'>Create Account</p>
                             <ArrowRight color='white' className='h-4 w-4' />
                         </button>
