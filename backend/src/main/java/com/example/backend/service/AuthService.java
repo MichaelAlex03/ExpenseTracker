@@ -19,43 +19,40 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final JwtService jwtService;
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager,
-            JwtService jwtService
+            AuthenticationManager authenticationManager
     ){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
     }
 
     public Boolean doesUserExist(String email){
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByUserEmail(email);
         return user.isPresent();
     }
 
 
-    public User signUp(RegisterDto registerDto){
+    public void signUp(RegisterDto registerDto){
         if(!doesUserExist(registerDto.getEmail())){
             User newUser = new User(
                     registerDto.getFirstName(),
                     registerDto.getLastName(),
-                    registerDto.getPassword(),
-                    registerDto.getPassword()
+                    passwordEncoder.encode(registerDto.getPassword()),
+                    registerDto.getEmail()
             );
 
-            return userRepository.save(newUser);
+            userRepository.save(newUser);
         }
 
         throw new RuntimeException("User already exists");
     }
 
     public User login(LoginDto loginDto){
-        User user = userRepository.findByEmail(loginDto.getEmail())
+        User user = userRepository.findByUserEmail(loginDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         authenticationManager.authenticate(
