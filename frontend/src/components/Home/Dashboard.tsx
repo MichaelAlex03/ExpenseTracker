@@ -1,6 +1,17 @@
-import { PanelLeft, PlusIcon, Wallet, TrendingDown, TrendingUp, DollarSign } from "lucide-react";
+import {
+  PanelLeft,
+  PlusIcon,
+  Wallet,
+  TrendingDown,
+  TrendingUp,
+  DollarSign,
+} from "lucide-react";
 import { useState } from "react";
-import MetricCard from "./MetricCard";
+import MetricCard from "./DashboardComponents/MetricCard";
+import MonthlyOverview from "./DashboardComponents/MonthlyOverview";
+import RecentTransactions from "./DashboardComponents/RecentTransactions";
+import TopCategories from "./DashboardComponents/TopCategories";
+import BudgetProgress from "./DashboardComponents/BudgetProgress";
 
 interface DashboardProps {
   toggleSideBar: boolean;
@@ -9,9 +20,12 @@ interface DashboardProps {
 
 const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   return (
-    <div className="flex flex-col items-center justify-center w-full bg-white h-full rounded-xl">
+    <div className="flex flex-col items-center justify-center w-full bg-white h-auto rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">
-        <button onClick={() => setToggleSideBar(!toggleSideBar)} className="cursor-pointer">
+        <button
+          onClick={() => setToggleSideBar(!toggleSideBar)}
+          className="cursor-pointer"
+        >
           <PanelLeft />
         </button>
         <h1 className="text-xl font-semibold">Dashboard</h1>
@@ -27,7 +41,10 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
           </p>
         </div>
 
-        <button className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer">
+        <button
+          className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
+        "
+        >
           <PlusIcon className="w-5 h-5" color="white" />
           <p className="text-white text-base font-bold">Add Transaction</p>
         </button>
@@ -36,8 +53,26 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
       <div className="grid gap-4 grid-cols-4 w-full p-6">
         <MetricCard title="Total Balance" icon={Wallet} amount="$5,583.00" />
         <MetricCard title="Total Income" icon={TrendingUp} amount="$5,583.00" />
-        <MetricCard title="Total Expenses" icon={TrendingDown} amount="$5,583.00" />
+        <MetricCard
+          title="Total Expenses"
+          icon={TrendingDown}
+          amount="$5,583.00"
+        />
         <MetricCard title="Savings Rate" icon={DollarSign} amount="$5,583.00" />
+      </div>
+
+      <div className="grid gap-4 grid-cols-5 w-full p-6">
+        <div className="col-span-3">
+          <MonthlyOverview />
+        </div>
+        <div className="col-span-2">
+          <RecentTransactions />
+        </div>
+      </div>
+
+      <div className="grid gap-4 grid-cols-2 w-full p-6">
+        <TopCategories />
+        <BudgetProgress />
       </div>
     </div>
   );
