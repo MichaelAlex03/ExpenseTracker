@@ -9,10 +9,14 @@ const Home = () => {
   const [showExpenses, setShowExpenses] = useState<boolean>(false);
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
+  const [toggleSideBar, setToggleSideBar] = useState<boolean>(true)
+
   return (
     <main className='w-full h-screen bg-[#09090B] flex flex-row'>
 
-      <div className='min-w-80 max-w-80'>
+      <div
+        className={`sidebar-transition ${toggleSideBar ? 'w-80' : 'w-0'}`}
+      >
         <Sidebar
           showDashboard={showDashboard}
           setShowDashboard={setShowDashboard}
@@ -26,7 +30,7 @@ const Home = () => {
       </div>
 
       <div className='w-full p-3'>
-        <Dashboard />
+        <Dashboard toggleSideBar={toggleSideBar} setToggleSideBar={setToggleSideBar}/>
       </div>
 
     </main>
