@@ -1,9 +1,61 @@
-import React from 'react'
+import {
+  PanelLeft,
+  PlusIcon,
+  Calendar,
+  TrendingUp,
+  DollarSign,
+} from "lucide-react";
+import MetricCard from "./MetricCard";
 
-const Income = () => {
-  return (
-    <div>Income</div>
-  )
+interface IncomeProps {
+  toggleSideBar: boolean;
+  setToggleSideBar: (val: boolean) => void;
 }
 
-export default Income
+const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
+  return (
+    <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
+      <div className="w-full flex flex-row items-center gap-4 p-6">
+        <button
+          onClick={() => setToggleSideBar(!toggleSideBar)}
+          className="cursor-pointer"
+        >
+          <PanelLeft />
+        </button>
+        <h1 className="text-xl font-semibold">Income</h1>
+      </div>
+
+      <div className="relative w-full h-px opacity-75 bg-gray-400 mt-1" />
+
+      <div className="flex flex-row justify-between w-full p-6">
+        <div className="flex flex-col items-start">
+          <h1 className="text-3xl font-bold">Income</h1>
+          <p className="text-base text-[#71717A]">
+            Manage and track all your income sources
+          </p>
+        </div>
+
+        <button
+          className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
+        "
+        >
+          <PlusIcon className="w-5 h-5" color="white" />
+          <p className="text-white text-base font-bold">Add Income</p>
+        </button>
+      </div>
+
+      <div className="grid gap-4 grid-cols-3 w-full p-6">
+        <MetricCard title="Total Income This Month" icon={TrendingUp} amount="$5,583.00" />
+        <MetricCard title="Monthly Recurring" icon={DollarSign} amount="$5,583.00" />
+        <MetricCard
+          title="Average per source"
+          icon={Calendar}
+          amount="$5,583.00"
+        />
+       
+      </div>
+    </div>
+  );
+};
+
+export default Income;

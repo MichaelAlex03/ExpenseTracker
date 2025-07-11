@@ -7,7 +7,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { useState } from "react";
-import MetricCard from "./DashboardComponents/MetricCard";
+import MetricCard from "./MetricCard";
 import MonthlyOverview from "./DashboardComponents/MonthlyOverview";
 import RecentTransactions from "./DashboardComponents/RecentTransactions";
 import TopCategories from "./DashboardComponents/TopCategories";
@@ -20,7 +20,7 @@ interface DashboardProps {
 
 const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   return (
-    <div className="flex flex-col items-center justify-center w-full bg-white h-auto rounded-xl">
+    <div className="flex flex-col items-center justify-start w-full bg-white h-auto rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">
         <button
           onClick={() => setToggleSideBar(!toggleSideBar)}

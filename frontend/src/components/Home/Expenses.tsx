@@ -2,7 +2,7 @@ import React from 'react'
 
 const Expenses = () => {
   return (
-    <div>Expenses</div>
+    <div className="flex flex-col items-center justify-center w-full bg-white h-screen rounded-xl">Expenses</div>
   )
 }
 
