@@ -6,6 +6,9 @@ import {
   DollarSign,
 } from "lucide-react";
 import MetricCard from "./MetricCard";
+import IncomeHistory from "./IncomeComponents/IncomeHistory";
+import IncomeCategories from "./IncomeComponents/IncomeCategories";
+import MonthlyProjections from "./IncomeComponents/MonthlyProjections";
 
 interface IncomeProps {
   toggleSideBar: boolean;
@@ -45,14 +48,31 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
       </div>
 
       <div className="grid gap-4 grid-cols-3 w-full p-6">
-        <MetricCard title="Total Income This Month" icon={TrendingUp} amount="$5,583.00" />
-        <MetricCard title="Monthly Recurring" icon={DollarSign} amount="$5,583.00" />
+        <MetricCard
+          title="Total Income This Month"
+          icon={TrendingUp}
+          amount="$5,583.00"
+        />
+        <MetricCard
+          title="Monthly Recurring"
+          icon={DollarSign}
+          amount="$5,583.00"
+        />
         <MetricCard
           title="Average per source"
           icon={Calendar}
           amount="$5,583.00"
         />
-       
+      </div>
+
+      <div className="grid grid-cols-4 w-full p-6 gap-8">
+        <div className="col-span-2 h-full">
+          <IncomeHistory />
+        </div>
+        <div className="col-span-2 flex flex-col gap-4">
+          <IncomeCategories />
+          <MonthlyProjections />
+        </div>
       </div>
     </div>
   );

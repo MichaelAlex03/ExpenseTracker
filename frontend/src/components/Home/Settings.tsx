@@ -1,9 +1,42 @@
-import React from 'react'
-
-const Settings = () => {
-  return (
-    <div className="flex flex-col items-center justify-center w-full bg-white h-screen rounded-xl">Settings</div>
-  )
+import { PanelLeft, SettingsIcon, User, Palette } from "lucide-react";
+import AccountSettings from "./SettingsComponents/AccountSettings";
+import Appearance from "./SettingsComponents/Appearance";
+interface ExpenseProps {
+  toggleSideBar: boolean;
+  setToggleSideBar: (val: boolean) => void;
 }
 
-export default Settings
+const Settings = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
+  return (
+    <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
+      <div className="w-full flex flex-row items-center gap-4 p-6">
+        <button
+          onClick={() => setToggleSideBar(!toggleSideBar)}
+          className="cursor-pointer"
+        >
+          <PanelLeft />
+        </button>
+        <h1 className="text-xl font-semibold">Settings</h1>
+      </div>
+
+      <div className="relative w-full h-px opacity-75 bg-gray-400 mt-1" />
+
+      <div className="flex flex-row justify-between w-full p-6">
+        <div className="flex flex-col items-start">
+          <h1 className="text-3xl font-bold">Settings</h1>
+          <p className="text-base text-[#71717A]">
+            Manage your account preferences and app settings
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 grid-rows-2 w-full gap-8 p-6">
+        <AccountSettings />
+        <Appearance />
+        <Appearance />
+      </div>
+    </div>
+  );
+};
+
+export default Settings;

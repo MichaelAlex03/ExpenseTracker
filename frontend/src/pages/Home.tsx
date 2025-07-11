@@ -15,7 +15,7 @@ const Home = () => {
 
   return (
     <main className="w-full h-screen bg-[#09090B] flex flex-row">
-      <div className={`sidebar-transition ${toggleSideBar ? "w-80" : "w-0"}`}>
+      <div className={`sidebar-transition ${toggleSideBar ? "w-100" : "w-0"}`}>
         <Sidebar
           showDashboard={showDashboard}
           setShowDashboard={setShowDashboard}
@@ -36,13 +36,22 @@ const Home = () => {
           />
         )}
         {showIncome && (
-          <Income />
+          <Income
+            toggleSideBar={toggleSideBar}
+            setToggleSideBar={setToggleSideBar}
+          />
         )}
         {showExpenses && (
-          <Expenses />
+          <Expenses
+            toggleSideBar={toggleSideBar}
+            setToggleSideBar={setToggleSideBar}
+          />
         )}
         {showSettings && (
-          <Settings />
+          <Settings
+            toggleSideBar={toggleSideBar}
+            setToggleSideBar={setToggleSideBar}
+          />
         )}
       </div>
     </main>
