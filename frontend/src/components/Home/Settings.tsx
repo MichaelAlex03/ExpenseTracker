@@ -1,6 +1,7 @@
-import { PanelLeft, SettingsIcon, User, Palette } from "lucide-react";
+import { PanelLeft } from "lucide-react";
 import AccountSettings from "./SettingsComponents/AccountSettings";
 import Appearance from "./SettingsComponents/Appearance";
+import AppPreferences from "./SettingsComponents/AppPreferences";
 interface ExpenseProps {
   toggleSideBar: boolean;
   setToggleSideBar: (val: boolean) => void;
@@ -8,7 +9,7 @@ interface ExpenseProps {
 
 const Settings = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   return (
-    <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
+    <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">
         <button
           onClick={() => setToggleSideBar(!toggleSideBar)}
@@ -30,10 +31,14 @@ const Settings = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 grid-rows-2 w-full gap-8 p-6">
-        <AccountSettings />
-        <Appearance />
-        <Appearance />
+      <div className="grid grid-cols-2 grid-rows-3 w-full p-6">
+        <div className="flex flex-row items-center gap-8 row-span-2 col-span-2">
+          <AccountSettings />
+          <Appearance />
+        </div>
+        <div className="row-span-1">
+          <AppPreferences />
+        </div>
       </div>
     </div>
   );

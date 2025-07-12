@@ -66,7 +66,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
       </div>
 
       <div className="grid grid-cols-5 w-full p-6 gap-8">
-        <div className="flex flex-col col-span-3">
+        <div className="flex flex-col col-span-3 gap-8">
           <RecentExpenses />
           <QuickStats />
         </div>
