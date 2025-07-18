@@ -17,4 +17,25 @@ public class UserService {
     public Optional<User> getUserInfo(String email){
         return userRepository.findByUserEmail(email);
     }
+
+    public Boolean doesUserExist(String email){
+        Optional<User> user = userRepository.findByUserEmail(email);
+        return user.isPresent();
+    }
+
+    public void registerOAuthUser(String email){
+        if(!doesUserExist(email)){
+            System.out.println("New");
+            User newOAuthUser = new User(
+                    null,
+                    null,
+                    null,
+                    email
+            );
+            userRepository.save(newOAuthUser);
+        } else {
+            throw new RuntimeException("User already exists");
+        }
+
+    }
 }

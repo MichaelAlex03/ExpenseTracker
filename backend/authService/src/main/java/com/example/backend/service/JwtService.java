@@ -116,7 +116,40 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
+    // ------------------------------- Jwt methods specifically for OAuth2 -----------------------------------------------------
+    public String generateTokenOAuth(String email){
+        return buildTokenOAuth(email, accessExpiration);
+    }
 
+    private String buildTokenOAuth(
+            String email,
+            long expiration
+    ){
+        return Jwts
+                .builder()
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInkey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshTokenOAuth(String email){
+        return buildRefreshTokenOAuth(email, refreshExpiration);
+    }
+
+    private String buildRefreshTokenOAuth(
+            String email,
+            long expiration
+    ){
+        return Jwts
+                .builder()
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInkey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
 
 

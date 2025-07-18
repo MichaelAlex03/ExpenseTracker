@@ -20,8 +20,11 @@ import java.util.List;
 public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
 
-    public SecurityConfiguration(AuthenticationProvider authenticationProvider){
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    public SecurityConfiguration(AuthenticationProvider authenticationProvider, OAuth2SuccessHandler oAuth2SuccessHandler){
         this.authenticationProvider = authenticationProvider;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
 
     @Bean
@@ -30,6 +33,7 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .oauth2Login(oauth -> oauth.successHandler(oAuth2SuccessHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider);
         return http.build();
