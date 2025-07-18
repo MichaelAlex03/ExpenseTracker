@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthProvider } from "../context/AuthContext";
 import Home from "./pages/Home";
+import RequireAuth from "./components/RequireAuth";
+import OAuthSuccess from "./components/OAuthSuccess";
 
 function App() {
   return (
@@ -15,9 +17,12 @@ function App() {
             {/*Public Routes*/}
             <Route path="/" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="oauth2/success" element={<OAuthSuccess />} />
 
             {/*Private Routes*/}
-            <Route path="home" element={<Home />} />
+            <Route element={<RequireAuth />}>
+              <Route path="home" element={<Home />} />
+            </Route>
           </Route>
         </Routes>
       </AuthProvider>
