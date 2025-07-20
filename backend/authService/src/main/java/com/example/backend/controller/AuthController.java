@@ -37,9 +37,8 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginDto loginDto, HttpServletResponse response){
         User user = authService.login(loginDto);
         String accessToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
 
-        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", user.getRefreshToken())
                 .httpOnly(true)
                 .secure(false)
                 .path("/auth/refresh")
@@ -77,17 +76,6 @@ public class AuthController {
             boolean valid = jwtService.isTokenValid(refreshToken, existingUser);
             if(valid){
                 String accessToken = jwtService.generateToken(existingUser);
-                String newRefreshToken = jwtService.generateRefreshToken(existingUser);
-
-                ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", newRefreshToken)
-                        .httpOnly(true)
-                        .secure(false)
-                        .path("/auth/refresh")
-                        .maxAge(Duration.ofDays(1))
-                        .sameSite("None")
-                        .build();
-
-                response.setHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
                 return ResponseEntity
                         .status(HttpStatus.OK)

@@ -19,15 +19,19 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final JwtService jwtService;
+
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager
+            AuthenticationManager authenticationManager,
+            JwtService jwtService
     ){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     public Boolean doesUserExist(String email){
@@ -54,6 +58,10 @@ public class AuthService {
     public User login(LoginDto loginDto){
         User user = userRepository.findByUserEmail(loginDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        user.setRefreshToken(refreshToken);
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

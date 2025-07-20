@@ -1,5 +1,6 @@
 package com.example.backend.config;
 
+import com.example.backend.service.GithubEmailService;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,11 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -23,9 +27,19 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler{
 
     private final UserService userService;
 
-    public OAuth2SuccessHandler(JwtService jwtService, UserService userService){
+    private final GithubEmailService githubEmailService;
+
+    private final OAuth2AuthorizedClientService authorizedClientService;
+
+    public OAuth2SuccessHandler(JwtService jwtService,
+                                UserService userService,
+                                GithubEmailService githubEmailService,
+                                OAuth2AuthorizedClientService authorizedClientService){
         this.jwtService = jwtService;
         this.userService = userService;
+        this.githubEmailService = githubEmailService;
+        this.authorizedClientService = authorizedClientService;
+
     }
 
     @Override
@@ -35,12 +49,28 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler{
 
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         OAuth2User oauthUser = oauthToken.getPrincipal();
+
+        String registrationId = oauthToken.getAuthorizedClientRegistrationId();
         String email = oauthUser.getAttribute("email");
 
-        userService.registerOAuthUser(email);
+        if ("github".equals(registrationId) && (email == null || email.isEmpty())) {
+            OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
+                    registrationId,
+                    oauthToken.getName()
+            );
+            if (authorizedClient != null) {
+                String accessToken = authorizedClient.getAccessToken().getTokenValue();
+                email = githubEmailService.fetchEmail(accessToken);
+            }
+        }
 
         String accessToken = jwtService.generateTokenOAuth(email);
         String refreshToken = jwtService.generateRefreshTokenOAuth(email);
+
+        if (!userService.doesUserExist(email)){
+            userService.registerOAuthUser(email, refreshToken);
+        }
+
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)

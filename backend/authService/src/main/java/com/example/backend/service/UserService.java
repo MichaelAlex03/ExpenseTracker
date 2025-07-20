@@ -23,19 +23,14 @@ public class UserService {
         return user.isPresent();
     }
 
-    public void registerOAuthUser(String email){
-        if(!doesUserExist(email)){
-            System.out.println("New");
-            User newOAuthUser = new User(
-                    null,
-                    null,
-                    null,
-                    email
-            );
-            userRepository.save(newOAuthUser);
-        } else {
-            throw new RuntimeException("User already exists");
-        }
-
+    public void registerOAuthUser(String email, String refreshToken){
+        User newOAuthUser = new User(
+                null,
+                null,
+                null,
+                email
+        );
+        newOAuthUser.setRefreshToken(refreshToken);
+        userRepository.save(newOAuthUser);
     }
 }

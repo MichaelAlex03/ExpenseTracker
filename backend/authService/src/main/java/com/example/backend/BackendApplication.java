@@ -27,6 +27,12 @@ public class BackendApplication {
 
               System.setProperty("security.jwt.accessSecret", dotenv.get("ACCESS_TOKEN_SECRET"));
               System.setProperty("security.jwt.refreshSecret", dotenv.get("REFRESH_TOKEN_SECRET"));
+
+              System.setProperty("spring.security.oauth2.client.registration.google.client-id", dotenv.get("MY_GOOGLE_CLIENT_ID"));
+              System.setProperty("spring.security.oauth2.client.registration.google.client-secret", dotenv.get("MY_GOOGLE_CLIENT_SECRET"));
+
+              System.setProperty("spring.security.oauth2.client.registration.github.client-id", dotenv.get("MY_GITHUB_CLIENT_ID"));
+              System.setProperty("spring.security.oauth2.client.registration.github.client-secret", dotenv.get("MY_GITHUB_CLIENT_SECRET"));
           }
 
         SpringApplication.run(BackendApplication.class, args);
