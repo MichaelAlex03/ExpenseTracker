@@ -10,6 +10,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../index.css";
 
+const GITHUB_CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
+const GITHUB_EMAIL = import.meta.env.VITE_GITHUB_USER_EMAIL;
+
 const Login = () => {
   const navigate = useNavigate();
 
@@ -21,7 +24,11 @@ const Login = () => {
   const handleSubmit = async () => {};
 
   const handleGoogleLogin = () => {
-    window.location.href ="http://localhost:8080/oauth2/authorization/google";
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+  };
+
+  const handleGithubLogin = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/github';
   };
 
   return (
@@ -139,14 +146,30 @@ const Login = () => {
               <p className="text-sm">Google</p>
             </button>
 
-            <button className="flex flex-row items-center gap-2 border-1 border-color px-6 py-2 rounded-lg cursor-pointer">
-              <svg viewBox="0 0 24 24" width="24" height="24">
+            <button
+              className="flex flex-row items-center gap-2 border-1 border-color px-6 py-2 rounded-lg cursor-pointer"
+              onClick={handleGithubLogin}
+            >
+              <svg
+                role="img"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                className="mr-2 h-4 w-4"
+              >
+                <title>GitHub icon</title>
                 <path
-                  d="M16.68 1.94c0 1.14-.93 2.06-2.07 2.06-.02-1.18.95-2.06 2.07-2.06zm2.18 4.36c-1.14-.13-2.1.65-2.65.65-.56 0-1.41-.63-2.33-.61-1.2.02-2.3.7-2.91 1.77-1.24 2.15-.32 5.33.89 7.08.59.86 1.29 1.82 2.21 1.79.88-.04 1.21-.57 2.27-.57 1.06 0 1.36.57 2.28.55.94-.02 1.53-.88 2.11-1.74.67-.98.95-1.93.96-1.98-.02-.01-1.85-.71-1.87-2.81-.02-1.76 1.44-2.6 1.51-2.64-.83-1.22-2.12-1.36-2.57-1.39zm-2.06-3.7c.38-.46.64-1.1.57-1.74-.55.02-1.22.37-1.62.83-.36.41-.68 1.07-.56 1.7.6.05 1.22-.31 1.61-.79z"
-                  fill="black"
+                  d="M12 0.297c-6.627 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577
+    0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.757-1.333-1.757-1.087-.744.083-.729.083-.729
+    1.205.085 1.84 1.236 1.84 1.236 1.07 1.835 2.807 1.305 3.492.997.108-.776.418-1.305.762-1.605-2.665-.3-5.466-1.333-5.466-5.931
+    0-1.31.468-2.38 1.236-3.22-.124-.303-.536-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.49 11.49 0 013.003-.404c1.018.005
+    2.045.138 3.003.404 2.291-1.552 3.297-1.23 3.297-1.23.655 1.653.243 2.873.12 3.176.77.84 1.235 1.91 1.235 3.22
+    0 4.61-2.807 5.625-5.48 5.921.43.37.823 1.102.823 2.222
+    0 1.606-.015 2.896-.015 3.286 0 .322.217.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
                 />
               </svg>
-              <p className="text-sm">Apple</p>
+
+              <p className="text-sm">Github</p>
             </button>
           </div>
 
