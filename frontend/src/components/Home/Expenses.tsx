@@ -6,10 +6,10 @@ import {
   TrendingDown,
 } from "lucide-react";
 import MetricCard from "./MetricCard";
-import RecentExpenses from "./ExpenseComponents/RecentExpenses";
-import ExpenseCategories from "./ExpenseComponents/ExpenseCategories";
-import BudgetStatus from "./ExpenseComponents/BudgetStatus";
-import QuickStats from "./ExpenseComponents/QuickStats";
+import RecentExpenses from "./Expense/RecentExpenses";
+import ExpenseCategories from "./Expense/ExpenseCategories";
+import BudgetStatus from "./Expense/BudgetStatus";
+import QuickStats from "./Expense/QuickStats";
 
 interface ExpenseProps {
   toggleSideBar: boolean;

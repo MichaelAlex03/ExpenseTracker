@@ -7,10 +7,10 @@ import {
   DollarSign,
 } from "lucide-react";
 import MetricCard from "./MetricCard";
-import MonthlyOverview from "./DashboardComponents/MonthlyOverview";
-import RecentTransactions from "./DashboardComponents/RecentTransactions";
-import TopCategories from "./DashboardComponents/TopCategories";
-import BudgetProgress from "./DashboardComponents/BudgetProgress";
+import MonthlyOverview from "./Dashboard/MonthlyOverview";
+import RecentTransactions from "./Dashboard/RecentTransactions";
+import TopCategories from "./Dashboard/TopCategories";
+import BudgetProgress from "./Dashboard/BudgetProgress";
 
 interface DashboardProps {
   toggleSideBar: boolean;

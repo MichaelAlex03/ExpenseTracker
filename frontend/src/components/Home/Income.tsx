@@ -6,9 +6,9 @@ import {
   DollarSign,
 } from "lucide-react";
 import MetricCard from "./MetricCard";
-import IncomeHistory from "./IncomeComponents/IncomeHistory";
-import IncomeCategories from "./IncomeComponents/IncomeCategories";
-import MonthlyProjections from "./IncomeComponents/MonthlyProjections";
+import IncomeHistory from "./Income/IncomeHistory";
+import IncomeCategories from "./Income/IncomeCategories";
+import MonthlyProjections from "./Income/MonthlyProjections";
 
 interface IncomeProps {
   toggleSideBar: boolean;
