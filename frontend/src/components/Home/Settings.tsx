@@ -25,7 +25,7 @@ const Settings = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
+    <div className={`${toggleProfileScreen ? 'h-fit' : 'h-screen'} flex flex-col items-center justify-start w-full bg-white rounded-xl`}>
       <div className="w-full flex flex-row items-center gap-4 p-6">
         <button
           onClick={() => setToggleSideBar(!toggleSideBar)}
