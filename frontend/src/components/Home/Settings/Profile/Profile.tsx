@@ -8,7 +8,7 @@ interface ProfileProps {
   handleReturnToSettings: () => void;
 }
 
-const USER_API_URL = "";
+const USER_API_URL = "/api/user";
 
 const Profile = ({ handleReturnToSettings }: ProfileProps) => {
 
@@ -19,6 +19,7 @@ const Profile = ({ handleReturnToSettings }: ProfileProps) => {
   const [DOB, setDOB] = useState<Date>(new Date());
   const [occupation, setOccupation] = useState<string>("");
   const [location, setLocation] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const fetchProfile = async () => {
     try {
