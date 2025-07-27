@@ -1,3 +1,13 @@
+interface PersonalInfoProps{
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string
+  dateOfBirth: Date
+  occupation: string
+  location: string
+}
+
 const PersonalInfo = () => {
   return (
     <div className="flex flex-col w-full border-1 border-gray-300 shadow-lg min-h-112 rounded-2xl p-6">
@@ -76,7 +86,7 @@ const PersonalInfo = () => {
             Location
           </label>
           <input
-            type={"date"}
+            type={"text"}
             id="location"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
           />

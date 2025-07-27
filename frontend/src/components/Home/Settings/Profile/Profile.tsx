@@ -3,6 +3,7 @@ import ProfileOverview from "./ProfileOverview";
 import { useQuery } from "@tanstack/react-query";
 import PersonalInfo from "./PersonalInfo";
 import { useState } from "react";
+import Security from "./Security";
 
 interface ProfileProps {
   handleReturnToSettings: () => void;
@@ -12,6 +13,7 @@ const USER_API_URL = "/api/user";
 
 const Profile = ({ handleReturnToSettings }: ProfileProps) => {
 
+  const [toggleEditProfile, setToggleEditProfile] = useState<boolean>(false);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -20,6 +22,9 @@ const Profile = ({ handleReturnToSettings }: ProfileProps) => {
   const [occupation, setOccupation] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [newPassMatch, setNewPassMatch] = useState<string>("");
+  const [image, setImage] = useState<string>("");
 
   const fetchProfile = async () => {
     try {
@@ -58,6 +63,7 @@ const Profile = ({ handleReturnToSettings }: ProfileProps) => {
         </div>
         <div className="col-span-2 row-span-2">
           <PersonalInfo />
+          <Security />
         </div>
       </div>
     </div>

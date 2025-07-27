@@ -1,4 +1,11 @@
-import { User, Camera, PlusIcon } from "lucide-react";
+import { User, PlusIcon, Phone, Mail, MapPin, Calendar } from "lucide-react";
+
+interface ProfileOverviewProps{
+  email: string
+  phoneNumber: string
+  location: string
+  image: string
+}
 
 const ProfileOverview = () => {
   const handleImagePicker = () => {
@@ -32,7 +39,19 @@ const ProfileOverview = () => {
         </div>
       </div>
 
-      <div className="h-1 w-full bg-[#e4e4e7] mt-4" />
+      <div className="h-0.5 w-full bg-[#e4e4e7] mt-4" />
+
+      <div className="w-full flex flex-col items-start gap-6 mt-4">
+        <div className="flex flex-row gap-4 items-center">
+          <Mail className="h-5 w-5"/>
+        </div>
+        <div className="flex flex-row gap-4 items-center">
+          <Phone className="h-5 w-5"/>
+        </div>
+        <div className="flex flex-row gap-4 items-center">
+          <MapPin className="h-5 w-5"/>
+        </div>
+      </div>
     </div>
   );
 };
