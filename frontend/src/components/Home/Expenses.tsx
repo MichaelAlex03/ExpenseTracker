@@ -10,12 +10,18 @@ import RecentExpenses from "./Expense/RecentExpenses";
 import ExpenseCategories from "./Expense/ExpenseCategories";
 import BudgetStatus from "./Expense/BudgetStatus";
 import QuickStats from "./Expense/QuickStats";
+import { useState } from "react";
 
 interface ExpenseProps {
   toggleSideBar: boolean;
   setToggleSideBar: (val: boolean) => void;
 }
 const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
+
+  const [monthlyExpenses, setMonthlyExpenses] = useState<string>("0.00");
+  const [averageExpensePerTransaction, setAverageExpensePerTransaction] = useState<string>("0.00");
+  const [weeklyExpenses, setWeeklyExpenses] = useState<string>("0.00");
+
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">
@@ -51,17 +57,17 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
         <MetricCard
           title="Total Expenses This Month"
           icon={TrendingDown}
-          amount="$5,583.00"
+          amount={"$" + monthlyExpenses}
         />
         <MetricCard
           title="Average per Transaction"
           icon={DollarSign}
-          amount="$5,583.00"
+          amount={"$" + averageExpensePerTransaction}
         />
         <MetricCard
           title="Expenses This Week"
           icon={Calendar}
-          amount="$5,583.00"
+          amount={"$" + weeklyExpenses}
         />
       </div>
 

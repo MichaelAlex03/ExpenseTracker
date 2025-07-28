@@ -4,6 +4,20 @@ import Appearance from "./Settings/Appearance";
 import AppPreferences from "./Settings/AppPreferences";
 import { useState } from "react";
 import Profile from "./Settings/Profile/Profile";
+
+interface FormDataTypes{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNum: string;
+    DOB: Date;
+    occupation: string;
+    location: string;
+    password: string;
+    newPassword: string;
+    newPassMatch: string;
+    profileImage: string;
+}
 interface ExpenseProps {
   toggleSideBar: boolean;
   setToggleSideBar: (val: boolean) => void;
@@ -17,15 +31,26 @@ const Settings = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   const [toggleAppearanceScreen, setToggleAppearanceScreen] =
     useState<boolean>(false);
 
+  const [formData, setFormData] = useState<FormDataTypes>();
+
+  const fetchProfile = async () => {
+    
+  }
+
   
+
   const handleReturnToSettings = () => {
     setToggleProfileScreen(false);
     setToggleAppearanceScreen(false);
     setToggleSettingsScreen(true);
-  }
+  };
 
   return (
-    <div className={`${toggleProfileScreen ? 'h-fit' : 'h-screen'} flex flex-col items-center justify-start w-full bg-white rounded-xl`}>
+    <div
+      className={`${
+        toggleProfileScreen ? "h-fit" : "h-screen"
+      } flex flex-col items-center justify-start w-full bg-white rounded-xl`}
+    >
       <div className="w-full flex flex-row items-center gap-4 p-6">
         <button
           onClick={() => setToggleSideBar(!toggleSideBar)}
@@ -61,7 +86,9 @@ const Settings = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
         </div>
       )}
 
-      {toggleProfileScreen && <Profile handleReturnToSettings={handleReturnToSettings}/>}
+      {toggleProfileScreen && (
+        <Profile handleReturnToSettings={handleReturnToSettings} />
+      )}
     </div>
   );
 };

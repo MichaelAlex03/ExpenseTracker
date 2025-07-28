@@ -9,6 +9,7 @@ import MetricCard from "./MetricCard";
 import IncomeHistory from "./Income/IncomeHistory";
 import IncomeCategories from "./Income/IncomeCategories";
 import MonthlyProjections from "./Income/MonthlyProjections";
+import { useState } from "react";
 
 interface IncomeProps {
   toggleSideBar: boolean;
@@ -16,6 +17,11 @@ interface IncomeProps {
 }
 
 const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
+
+  const [totalMonthlyIncome, setTotalMonthlyIncome] = useState<string>("0.00");
+  const [monthlyRecurring, setMonthlyRecurring] = useState<string>("0.00");
+  const [averagePerSource, setAveragePerSource] = useState<string>("0.00");
+
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">
@@ -51,17 +57,17 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
         <MetricCard
           title="Total Income This Month"
           icon={TrendingUp}
-          amount="$5,583.00"
+          amount={"$" + totalMonthlyIncome}
         />
         <MetricCard
           title="Monthly Recurring"
           icon={DollarSign}
-          amount="$5,583.00"
+          amount={"$" + monthlyRecurring}
         />
         <MetricCard
           title="Average per source"
           icon={Calendar}
-          amount="$5,583.00"
+          amount={"$" + averagePerSource}
         />
       </div>
 

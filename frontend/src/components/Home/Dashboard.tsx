@@ -11,6 +11,7 @@ import MonthlyOverview from "./Dashboard/MonthlyOverview";
 import RecentTransactions from "./Dashboard/RecentTransactions";
 import TopCategories from "./Dashboard/TopCategories";
 import BudgetProgress from "./Dashboard/BudgetProgress";
+import { useState } from "react";
 
 interface DashboardProps {
   toggleSideBar: boolean;
@@ -18,6 +19,12 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
+
+  const [totalBalance, setTotalBalance] = useState<string>("0.00");
+  const [totalIncome, setTotalIncome] = useState<string>("0.00");
+  const [totalExpenses, setTotalExpenses] = useState<string>("0.00");
+  const [savingsRate, setSavingsRate] = useState<string>("0.00")
+
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">

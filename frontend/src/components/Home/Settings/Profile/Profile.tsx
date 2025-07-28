@@ -6,6 +6,20 @@ import { useEffect, useState } from "react";
 import Security from "./Security";
 import axios from "axios";
 
+interface FormDataTypes{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNum: string;
+    DOB: Date;
+    occupation: string;
+    location: string;
+    password: string;
+    newPassword: string;
+    newPassMatch: string;
+    profileImage: string;
+}
+
 interface ProfileProps {
   handleReturnToSettings: () => void;
 }
@@ -37,10 +51,6 @@ const Profile = ({ handleReturnToSettings }: ProfileProps) => {
     }));
   };
 
-  const fetchProfile = async () => {
-    try {
-    } catch (error) {}
-  };
 
   const handleChangeProfilePicture = async () => {};
 
