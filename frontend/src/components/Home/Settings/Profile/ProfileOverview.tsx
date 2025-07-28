@@ -1,13 +1,27 @@
-import { User, PlusIcon, Phone, Mail, MapPin, Calendar } from "lucide-react";
+import { User, PlusIcon, Phone, Mail, MapPin } from "lucide-react";
 
-interface ProfileOverviewProps{
-  email: string
-  phoneNumber: string
-  location: string
-  image: string
+interface FormDataTypes {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNum: string;
+  DOB: Date;
+  occupation: string;
+  location: string;
+  password: string;
+  newPassword: string;
+  newPassMatch: string;
+  profileImage: string;
+}
+interface ProfileOverviewProps {
+  handleFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  formData: FormDataTypes;
 }
 
-const ProfileOverview = () => {
+const ProfileOverview = ({
+  handleFormChange,
+  formData,
+}: ProfileOverviewProps) => {
   const handleImagePicker = () => {
     document.getElementById("imageSelector")?.click();
   };
@@ -34,8 +48,10 @@ const ProfileOverview = () => {
         <input type="file" className="hidden" id="imageSelector" />
 
         <div className="flex flex-col items-center mt-2">
-          <p className="text-lg font-semibold">Name</p>
-          <p className="text-base text-[#71717A]">Occupation</p>
+          <p className="text-lg font-semibold">
+            {formData.firstName} {formData.lastName}
+          </p>
+          <p className="text-base text-[#71717A]">{formData.occupation}</p>
         </div>
       </div>
 
@@ -43,13 +59,16 @@ const ProfileOverview = () => {
 
       <div className="w-full flex flex-col items-start gap-6 mt-4">
         <div className="flex flex-row gap-4 items-center">
-          <Mail className="h-5 w-5"/>
+          <Mail className="h-5 w-5" />
+          {formData.email}
         </div>
         <div className="flex flex-row gap-4 items-center">
-          <Phone className="h-5 w-5"/>
+          <Phone className="h-5 w-5" />
+          {formData.phoneNum}
         </div>
         <div className="flex flex-row gap-4 items-center">
-          <MapPin className="h-5 w-5"/>
+          <MapPin className="h-5 w-5" />
+          {formData.location}
         </div>
       </div>
     </div>

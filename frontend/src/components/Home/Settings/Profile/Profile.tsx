@@ -1,9 +1,10 @@
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft, User, XIcon, SaveIcon } from "lucide-react";
 import ProfileOverview from "./ProfileOverview";
 import { useQuery } from "@tanstack/react-query";
 import PersonalInfo from "./PersonalInfo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Security from "./Security";
+import axios from "axios";
 
 interface ProfileProps {
   handleReturnToSettings: () => void;
@@ -12,24 +13,40 @@ interface ProfileProps {
 const USER_API_URL = "/api/user";
 
 const Profile = ({ handleReturnToSettings }: ProfileProps) => {
-
   const [toggleEditProfile, setToggleEditProfile] = useState<boolean>(false);
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [phoneNum, setPhoneNum] = useState<string>("");
-  const [DOB, setDOB] = useState<Date>(new Date());
-  const [occupation, setOccupation] = useState<string>("");
-  const [location, setLocation] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [newPassword, setNewPassword] = useState<string>("");
-  const [newPassMatch, setNewPassMatch] = useState<string>("");
-  const [image, setImage] = useState<string>("");
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNum: "",
+    DOB: new Date(),
+    occupation: "",
+    location: "",
+    password: "",
+    newPassword: "",
+    newPassMatch: "",
+    profileImage: "",
+  });
+
+  const handleFormDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const fetchProfile = async () => {
     try {
     } catch (error) {}
   };
+
+  const handleChangeProfilePicture = async () => {};
+
+  useEffect(() => {}, []);
+
+  console.log(formData)
 
   return (
     <div className="w-full flex flex-col p-6 h-auto">
@@ -50,20 +67,51 @@ const Profile = ({ handleReturnToSettings }: ProfileProps) => {
         </div>
 
         <div>
-          <button className="bg-black flex flex-row items-center gap-2 shadow-lg rounded-lg p-3 cursor-pointer">
-            <User color="white" className="h-4 w-4" />
-            <p className="text-white font-semibold">Edit Profile</p>
-          </button>
+          {toggleEditProfile ? (
+            <div className="flex flex-row gap-4">
+              <button
+                className="bg-white border-1 border-gray-300 flex flex-row items-center gap-3 shadow-lg rounded-lg p-3 cursor-pointer"
+                onClick={() => setToggleEditProfile(!toggleEditProfile)}
+              >
+                <XIcon color="black" className="h-4 w-4" />
+                <p className="text-black font-semibold">Cancel</p>
+              </button>
+              <button
+                className="bg-black flex flex-row items-center gap-3 shadow-lg rounded-lg p-3 cursor-pointer"
+                onClick={() => setToggleEditProfile(!toggleEditProfile)}
+              >
+                <SaveIcon color="white" className="h-4 w-4" />
+                <p className="text-white font-semibold">Save Profile</p>
+              </button>
+            </div>
+          ) : (
+            <button
+              className="bg-black flex flex-row items-center gap-2 shadow-lg rounded-lg p-3 cursor-pointer"
+              onClick={() => setToggleEditProfile(!toggleEditProfile)}
+            >
+              <User color="white" className="h-4 w-4" />
+              <p className="text-white font-semibold">Edit Profile</p>
+            </button>
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-3 grid-rows-2 mt-10 gap-10">
         <div className="col-span-1">
-          <ProfileOverview />
+          <ProfileOverview
+            handleFormChange={handleFormDataChange}
+            formData={formData}
+          />
         </div>
         <div className="col-span-2 row-span-2">
-          <PersonalInfo />
-          <Security />
+          <PersonalInfo
+            handleFormChange={handleFormDataChange}
+            formData={formData}
+          />
+          <Security
+            handleFormChange={handleFormDataChange}
+            formData={formData}
+          />
         </div>
       </div>
     </div>

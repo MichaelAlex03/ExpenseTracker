@@ -1,16 +1,31 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-interface SecurityProps{
-  currentPassword: string
-  newPassword: string
-  newPasswordMatch: string
+interface FormDataTypes{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNum: string;
+    DOB: Date;
+    occupation: string;
+    location: string;
+    password: string;
+    newPassword: string;
+    newPassMatch: string;
+    profileImage: string;
 }
 
-const Security = () => {
-  const [showCurrentPassword, setShowCurrentPassword] = useState<boolean>(false);
+interface SecurityProps {
+  handleFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  formData: FormDataTypes 
+}
+
+const Security = ({ handleFormChange, formData }: SecurityProps) => {
+  const [showCurrentPassword, setShowCurrentPassword] =
+    useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   return (
     <div className="flex flex-col w-full border-1 border-gray-300 shadow-lg h-fit rounded-2xl p-6 mt-4">
@@ -23,12 +38,15 @@ const Security = () => {
 
       <div className="flex flex-col w-full mt-12">
         <div className="flex flex-col items-start gap-2 relative">
-          <label className="text-base font-semibold" htmlFor="firstName">
+          <label className="text-base font-semibold" htmlFor="currentPassword">
             Current Password
           </label>
           <input
             type={"text"}
-            id="firstName"
+            id="currentPassword"
+            name="password"
+            value={formData.password}
+            onChange={handleFormChange}
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
           />
           {!showCurrentPassword ? (
@@ -51,12 +69,15 @@ const Security = () => {
         </div>
         <div className="flex flex-row items-center w-full gap-8">
           <div className="flex flex-col items-start gap-2 relative w-full">
-            <label className="text-base font-semibold" htmlFor="firstName">
+            <label className="text-base font-semibold" htmlFor="newPassword">
               New Password
             </label>
             <input
               type={"text"}
-              id="firstName"
+              id="newPassword"
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleFormChange}
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             />
             {!showNewPassword ? (
@@ -78,12 +99,15 @@ const Security = () => {
             )}
           </div>
           <div className="flex flex-col items-start gap-2 relative w-full">
-            <label className="text-base font-semibold" htmlFor="firstName">
+            <label className="text-base font-semibold" htmlFor="newPassMatch">
               Confirm New Password
             </label>
             <input
               type={"text"}
-              id="firstName"
+              id="newPassMatch"
+              name="newPassMatch"
+              value={formData.newPassMatch}
+              onChange={handleFormChange}
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             />
             {!showConfirmPassword ? (

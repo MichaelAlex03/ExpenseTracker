@@ -1,14 +1,23 @@
-interface PersonalInfoProps{
-  firstName: string
-  lastName: string
-  email: string
-  phoneNumber: string
-  dateOfBirth: Date
-  occupation: string
-  location: string
+interface FormDataTypes{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNum: string;
+    DOB: Date;
+    occupation: string;
+    location: string;
+    password: string;
+    newPassword: string;
+    newPassMatch: string;
+    profileImage: string;
 }
 
-const PersonalInfo = () => {
+interface PersonalInfoProps {
+  handleFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  formData: FormDataTypes 
+}
+
+const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
   return (
     <div className="flex flex-col w-full border-1 border-gray-300 shadow-lg min-h-112 rounded-2xl p-6">
       <div className="flex flex-col">
@@ -24,9 +33,12 @@ const PersonalInfo = () => {
             First Name
           </label>
           <input
-            type={"text"}
+            type="text"
             id="firstName"
+            name="firstName"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            value={formData.firstName}
+            onChange={handleFormChange}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
@@ -34,9 +46,12 @@ const PersonalInfo = () => {
             Last Name
           </label>
           <input
-            type={"text"}
+            type="text"
             id="lastName"
+            name="lastName"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            value={formData.lastName}
+            onChange={handleFormChange}
           />
         </div>
         <div className="col-span-2">
@@ -45,9 +60,12 @@ const PersonalInfo = () => {
               Email
             </label>
             <input
-              type={"text"}
+              type="text"
               id="email"
+              name="email"
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+              value={formData.email}
+              onChange={handleFormChange}
             />
           </div>
         </div>
@@ -56,19 +74,25 @@ const PersonalInfo = () => {
             Phone Number
           </label>
           <input
-            type={"text"}
+            type="text"
             id="phoneNum"
+            name="phoneNum"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            value={formData.phoneNum}
+            onChange={handleFormChange}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
-          <label className="text-base font-semibold" htmlFor="dateOfBirth">
+          <label className="text-base font-semibold" htmlFor="DOB">
             Date of Birth
           </label>
           <input
-            type={"date"}
-            id="dateOfBirth"
+            type="date"
+            id="DOB"
+            name="DOB"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            value={formData.DOB instanceof Date ? formData.DOB.toISOString().split("T")[0] : formData.DOB}
+            onChange={handleFormChange}
           />
         </div>
         <div className="flex flex-col items-start gap-2 ">
@@ -76,9 +100,12 @@ const PersonalInfo = () => {
             Occupation
           </label>
           <input
-            type={"text"}
+            type="text"
             id="occupation"
+            name="occupation"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            value={formData.occupation}
+            onChange={handleFormChange}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
@@ -86,9 +113,12 @@ const PersonalInfo = () => {
             Location
           </label>
           <input
-            type={"text"}
+            type="text"
             id="location"
+            name="location"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            value={formData.location}
+            onChange={handleFormChange}
           />
         </div>
       </div>
