@@ -57,14 +57,14 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
       </div>
 
       <div className="grid gap-4 grid-cols-4 w-full p-6">
-        <MetricCard title="Total Balance" icon={Wallet} amount="$5,583.00" />
-        <MetricCard title="Total Income" icon={TrendingUp} amount="$5,583.00" />
+        <MetricCard title="Total Balance" icon={Wallet} amount={"$" + totalBalance} />
+        <MetricCard title="Total Income" icon={TrendingUp} amount={"$" + totalIncome} />
         <MetricCard
           title="Total Expenses"
           icon={TrendingDown}
-          amount="$5,583.00"
+          amount={"$" + totalExpenses}
         />
-        <MetricCard title="Savings Rate" icon={DollarSign} amount="$5,583.00" />
+        <MetricCard title="Savings Rate" icon={DollarSign} amount={"%" + savingsRate} />
       </div>
 
       <div className="grid gap-4 grid-cols-5 w-full p-6">
