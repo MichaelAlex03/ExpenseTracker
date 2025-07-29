@@ -2,7 +2,7 @@ import {
   LayoutDashboard,
   TrendingDown,
   TrendingUp,
-  Settings,
+  User
 } from "lucide-react";
 
 interface SidebarProps {
@@ -12,8 +12,8 @@ interface SidebarProps {
   setShowIncome: (val: boolean) => void;
   showExpenses: boolean;
   setShowExpenses: (val: boolean) => void;
-  showSettings: boolean;
-  setShowSettings: (val: boolean) => void;
+  showProfile: boolean;
+  setShowProfile: (val: boolean) => void;
 }
 
 const Sidebar = ({
@@ -23,8 +23,8 @@ const Sidebar = ({
   setShowIncome,
   showExpenses,
   setShowExpenses,
-  showSettings,
-  setShowSettings,
+  showProfile,
+  setShowProfile,
 }: SidebarProps) => {
   return (
     <div className="w-full flex flex-col p-4 items-ceneter">
@@ -49,7 +49,7 @@ const Sidebar = ({
             onClick={() => {
               setShowDashboard(true);
               setShowExpenses(false);
-              setShowSettings(false);
+              setShowProfile(false);
               setShowIncome(false);
             }}
           >
@@ -62,7 +62,7 @@ const Sidebar = ({
             onClick={() => {
               setShowDashboard(true);
               setShowExpenses(false);
-              setShowSettings(false);
+              setShowProfile(false);
               setShowIncome(false);
             }}
           >
@@ -77,7 +77,7 @@ const Sidebar = ({
             onClick={() => {
               setShowDashboard(false);
               setShowExpenses(false);
-              setShowSettings(false);
+              setShowProfile(false);
               setShowIncome(true);
             }}
           >
@@ -90,7 +90,7 @@ const Sidebar = ({
             onClick={() => {
               setShowDashboard(false);
               setShowExpenses(false);
-              setShowSettings(false);
+              setShowProfile(false);
               setShowIncome(true);
             }}
           >
@@ -105,7 +105,7 @@ const Sidebar = ({
             onClick={() => {
               setShowDashboard(false);
               setShowExpenses(true);
-              setShowSettings(false);
+              setShowProfile(false);
               setShowIncome(false);
             }}
           >
@@ -118,7 +118,7 @@ const Sidebar = ({
             onClick={() => {
               setShowDashboard(false);
               setShowExpenses(true);
-              setShowSettings(false);
+              setShowProfile(false);
               setShowIncome(false);
             }}
           >
@@ -127,18 +127,18 @@ const Sidebar = ({
           </button>
         )}
 
-        {showSettings ? (
+        {showProfile ? (
           <button
             className="flex flex-row items-center gap-2 px-2 py-1 bg-[#27272A] rounded-xl"
             onClick={() => {
               setShowDashboard(false);
               setShowExpenses(false);
-              setShowSettings(true);
+              setShowProfile(true);
               setShowIncome(false);
             }}
           >
-            <Settings className="h-4 w-4" color="white" />
-            <p className="text-white">Settings</p>
+            <User className="h-4 w-4" color="white" />
+            <p className="text-white">Profile</p>
           </button>
         ) : (
           <button
@@ -146,12 +146,12 @@ const Sidebar = ({
             onClick={() => {
               setShowDashboard(false);
               setShowExpenses(false);
-              setShowSettings(true);
+              setShowProfile(true);
               setShowIncome(false);
             }}
           >
-            <Settings className="h-4 w-4" color="white" />
-            <p className="text-white">Settings</p>
+            <User className="h-4 w-4" color="white" />
+            <p className="text-white">Profile</p>
           </button>
         )}
       </div>

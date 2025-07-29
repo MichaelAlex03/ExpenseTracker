@@ -1,7 +1,7 @@
 import Dashboard from "@/components/Home/Dashboard";
 import Expenses from "@/components/Home/Expenses";
 import Income from "@/components/Home/Income";
-import Settings from "@/components/Home/Settings";
+import Profile from "@/components/Home/Profile";
 import Sidebar from "@/components/Home/Sidebar";
 import { useState } from "react";
 
@@ -9,7 +9,7 @@ const Home = () => {
   const [showDashboard, setShowDashboard] = useState<boolean>(true);
   const [showIncome, setShowIncome] = useState<boolean>(false);
   const [showExpenses, setShowExpenses] = useState<boolean>(false);
-  const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [showProfile, setShowProfile] = useState<boolean>(false);
 
   const [toggleSideBar, setToggleSideBar] = useState<boolean>(true);
 
@@ -23,8 +23,8 @@ const Home = () => {
           setShowIncome={setShowIncome}
           showExpenses={showExpenses}
           setShowExpenses={setShowExpenses}
-          showSettings={showSettings}
-          setShowSettings={setShowSettings}
+          showProfile={showProfile}
+          setShowProfile={setShowProfile}
         />
       </div>
 
@@ -47,8 +47,8 @@ const Home = () => {
             setToggleSideBar={setToggleSideBar}
           />
         )}
-        {showSettings && (
-          <Settings
+        {showProfile && (
+          <Profile
             toggleSideBar={toggleSideBar}
             setToggleSideBar={setToggleSideBar}
           />

@@ -45,6 +45,7 @@ const Security = ({ handleFormChange, formData }: SecurityProps) => {
             type={"text"}
             id="currentPassword"
             name="password"
+            placeholder="Current Password"
             value={formData.password}
             onChange={handleFormChange}
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
@@ -78,6 +79,7 @@ const Security = ({ handleFormChange, formData }: SecurityProps) => {
               name="newPassword"
               value={formData.newPassword}
               onChange={handleFormChange}
+              placeholder="New Password"
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             />
             {!showNewPassword ? (
@@ -108,6 +110,7 @@ const Security = ({ handleFormChange, formData }: SecurityProps) => {
               name="newPassMatch"
               value={formData.newPassMatch}
               onChange={handleFormChange}
+              placeholder="Confirm Password"
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             />
             {!showConfirmPassword ? (

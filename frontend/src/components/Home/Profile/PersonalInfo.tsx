@@ -36,7 +36,8 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             type="text"
             id="firstName"
             name="firstName"
-            className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            className= "border border-gray-300 p-2 rounded-lg text-sm w-full"
+            placeholder="First Name"
             value={formData.firstName}
             onChange={handleFormChange}
           />
@@ -49,6 +50,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             type="text"
             id="lastName"
             name="lastName"
+            placeholder="Last Name"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.lastName}
             onChange={handleFormChange}
@@ -63,6 +65,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
               type="text"
               id="email"
               name="email"
+              placeholder="Email"
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
               value={formData.email}
               onChange={handleFormChange}
@@ -77,6 +80,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             type="text"
             id="phoneNum"
             name="phoneNum"
+            placeholder="Phone Number"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.phoneNum}
             onChange={handleFormChange}
@@ -103,6 +107,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             type="text"
             id="occupation"
             name="occupation"
+            placeholder="Occupation"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.occupation}
             onChange={handleFormChange}
@@ -116,6 +121,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             type="text"
             id="location"
             name="location"
+            placeholder="Location"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.location}
             onChange={handleFormChange}
