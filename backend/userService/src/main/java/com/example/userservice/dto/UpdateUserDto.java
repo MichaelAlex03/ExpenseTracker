@@ -3,6 +3,8 @@ package com.example.userservice.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 public class UpdateUserDto {
@@ -10,4 +12,10 @@ public class UpdateUserDto {
     private String lastName;
     private String userEmail;
     private String password;
+    private String newPassword;
+    private String newPasswordMatch;
+    private String phoneNumber;
+    private Date dateOfBirth;
+    private String occupation;
+    private String location;
 }

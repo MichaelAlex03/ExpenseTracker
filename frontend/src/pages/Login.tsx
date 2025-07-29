@@ -10,8 +10,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../index.css";
 
-const GITHUB_CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
-const GITHUB_EMAIL = import.meta.env.VITE_GITHUB_USER_EMAIL;
 
 const Login = () => {
   const navigate = useNavigate();
