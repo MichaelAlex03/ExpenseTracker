@@ -31,14 +31,36 @@ public class User implements UserDetails {
     @Column(name = "user_password")
     private String password;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+    @Column(name = "profile_image_key")
+    private String profileImageKey;
+
+    @Column(name = "profile_image")
+    private String profileImage;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "date_of_birth")
+    private String dateOfBirth;
+
+    @Column(name = "occupation")
+    private String occupation;
+
+    @Column(name = "location")
+    private String location;
+
+
     public User(){
     }
 
-    public User(String userEmail, String firstName, String lastName, String password){
-        this.userEmail = userEmail;
+    public User(String firstName, String lastName, String password, String email){
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
+        this.userEmail = email;
     }
 
     @Override
@@ -55,6 +77,4 @@ public class User implements UserDetails {
     public String getUsername() {
         return userEmail;
     }
-
-
 }

@@ -34,6 +34,24 @@ public class User implements UserDetails {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @Column(name = "profile_image_key")
+    private String profileImageKey;
+
+    @Column(name = "profile_image")
+    private String profileImage;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "date_of_birth")
+    private String dateOfBirth;
+
+    @Column(name = "occupation")
+    private String occupation;
+
+    @Column(name = "location")
+    private String location;
+
 
     public User(){
     }
