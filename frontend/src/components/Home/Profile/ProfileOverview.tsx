@@ -14,12 +14,10 @@ interface FormDataTypes {
   profileImage: string;
 }
 interface ProfileOverviewProps {
-  handleFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formData: FormDataTypes;
 }
 
 const ProfileOverview = ({
-  handleFormChange,
   formData,
 }: ProfileOverviewProps) => {
   const handleImagePicker = () => {

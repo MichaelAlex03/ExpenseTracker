@@ -3,7 +3,7 @@ import ProfileOverview from "./Profile/ProfileOverview";
 import PersonalInfo from "./Profile/PersonalInfo";
 import { useEffect, useState } from "react";
 import Security from "./Profile/Security";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import useAuth from "../../../hooks/useAuth";
 
@@ -30,8 +30,10 @@ interface ProfileProps {
 const USER_API_URL = "/api/user";
 
 const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
-  const [toggleEditProfile, setToggleEditProfile] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
+  const [toggleEditProfile, setToggleEditProfile] = useState<boolean>(false);
+  const [serverAndLocalDiff, setServerAndLocalDiff] = useState<boolean>(false);
   const [serverFormData, setServerFormData] = useState<FormDataTypes>({
     firstName: "",
     lastName: "",
@@ -44,6 +46,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     newPassword: "",
     newPassMatch: "",
     profileImage: "",
+    profileImageKey: "",
   });
 
   const [localFormData, setLocalFormData] = useState<FormDataTypes>({
@@ -58,6 +61,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     newPassword: "",
     newPassMatch: "",
     profileImage: "",
+    profileImageKey: "",
   });
 
   const { auth, setAuth } = useAuth();
@@ -71,29 +75,62 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
   };
 
   // User entity in Spring had additional fields not needed for client
-  const updateSharedFields = (target: FormDataTypes, source: Record<string, any>) => {
+  const updateSharedFields = (
+    target: FormDataTypes,
+    source: Record<string, any>
+  ) => {
     const keys = Object.keys(target);
-    for (const key of keys){
-      if (key in source){
+    console.log(keys);
+    for (const key of keys) {
+      if (key in source && source[key] !== null && source[key] !== undefined) {
         target[key] = source[key];
       }
     }
-  }
+  };
+
+  const areDatesEqual = (date1: Date, date2: Date) => {
+    const year1 = date1.getFullYear();
+    const month1 = date1.getMonth() + 1;
+    const day1 = date1.getDate();
+
+    const year2 = date2.getFullYear();
+    const month2 = date2.getMonth() + 1;
+    const day2 = date2.getDate();
+
+    return year1 === year2 && month1 === month2 && day1 === day2;
+  };
+
+  const checkIfObjectsAreEqual = (
+    localData: FormDataTypes,
+    serverData: FormDataTypes
+  ) => {
+    const keys = Object.keys(localData);
+    for (const key of keys) {
+      if (key === "DOB") {
+        if (!areDatesEqual(localData[key], serverData[key])) {
+          return true;
+        }
+      } else if (localData[key] !== serverData[key]) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   const fetchProfile = async () => {
     try {
       const response = await axios.get(
         "http://localhost:3000/api/user?email=michaelalex03@outlook.com"
       );
-      console.log("RES", response);
       updateSharedFields(localFormData, response.data);
-      return response
+      setServerFormData(localFormData);
+      return response;
     } catch (error) {
       console.error(error);
-      console.log("ERRRRRR");
     }
-
   };
+
+  const handleUpdateProfile = async () => {};
 
   const { data, isLoading } = useQuery({
     queryKey: [auth?.email],
@@ -101,10 +138,22 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     staleTime: Infinity,
   });
 
-  const handleChangeProfilePicture = async () => {};
+  const updateProfileMutation = useMutation({
+    mutationFn: handleUpdateProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [auth?.email] });
+    },
+  });
 
-  console.log(data)
-  console.log(localFormData);
+  console.log("User data: " + JSON.stringify(serverFormData, null, 2));
+  console.log("User data: " + JSON.stringify(localFormData, null, 2));
+
+  useEffect(() => {
+    setServerAndLocalDiff(
+      checkIfObjectsAreEqual(localFormData, serverFormData)
+    );
+    console.log("hereeee", serverAndLocalDiff);
+  }, [serverFormData, localFormData]);
 
   return (
     <div className="w-full flex flex-col items-center justify-start h-auto bg-white rounded-xl">
@@ -119,7 +168,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
       </div>
 
       <div className="relative w-full h-px opacity-75 bg-gray-400 mt-1" />
-      
+
       <div className="flex flex-row items-center justify-between w-full p-6">
         <div>
           <h1 className="text-3xl font-bold">Profile</h1>
@@ -139,7 +188,9 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
                 <p className="text-black font-semibold">Cancel</p>
               </button>
               <button
-                className="bg-black flex flex-row items-center gap-3 shadow-lg rounded-lg p-3 cursor-pointer"
+                className={`bg-black flex flex-row items-center gap-3 shadow-lg rounded-lg p-3 cursor-pointer ${
+                  serverAndLocalDiff ? "opacity-100" : "opacity-20"
+                }`}
                 onClick={() => setToggleEditProfile(!toggleEditProfile)}
               >
                 <SaveIcon color="white" className="h-4 w-4" />
@@ -160,10 +211,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
 
       <div className="grid grid-cols-3 grid-rows-2 gap-10 w-full p-6">
         <div className="col-span-1">
-          <ProfileOverview
-            handleFormChange={handleFormDataChange}
-            formData={localFormData}
-          />
+          <ProfileOverview formData={serverFormData} />
         </div>
         <div className="col-span-2 row-span-2">
           <PersonalInfo
