@@ -17,10 +17,11 @@ interface FormDataTypes{
 
 interface SecurityProps {
   handleFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  formData: FormDataTypes 
+  formData: FormDataTypes;
+  isEditable: boolean;
 }
 
-const Security = ({ handleFormChange, formData }: SecurityProps) => {
+const Security = ({ handleFormChange, formData, isEditable }: SecurityProps) => {
   const [showCurrentPassword, setShowCurrentPassword] =
     useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
@@ -42,13 +43,14 @@ const Security = ({ handleFormChange, formData }: SecurityProps) => {
             Current Password
           </label>
           <input
-            type={"text"}
+            type={showCurrentPassword ? "text" : "password"}
             id="currentPassword"
             name="password"
             placeholder="Current Password"
             value={formData.password}
             onChange={handleFormChange}
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            disabled={!isEditable}
           />
           {!showCurrentPassword ? (
             <button
@@ -74,13 +76,14 @@ const Security = ({ handleFormChange, formData }: SecurityProps) => {
               New Password
             </label>
             <input
-              type={"text"}
+              type={showNewPassword ? "text" : "password"}
               id="newPassword"
               name="newPassword"
               value={formData.newPassword}
               onChange={handleFormChange}
               placeholder="New Password"
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+              disabled={!isEditable}
             />
             {!showNewPassword ? (
               <button
@@ -105,13 +108,14 @@ const Security = ({ handleFormChange, formData }: SecurityProps) => {
               Confirm New Password
             </label>
             <input
-              type={"text"}
+              type={showConfirmPassword ? "text" : "password"}
               id="newPassMatch"
               name="newPassMatch"
               value={formData.newPassMatch}
               onChange={handleFormChange}
               placeholder="Confirm Password"
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+              disabled={!isEditable}
             />
             {!showConfirmPassword ? (
               <button

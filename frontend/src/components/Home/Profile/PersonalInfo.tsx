@@ -14,10 +14,11 @@ interface FormDataTypes{
 
 interface PersonalInfoProps {
   handleFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  formData: FormDataTypes 
+  formData: FormDataTypes;
+  isEditable: boolean;
 }
 
-const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
+const PersonalInfo = ({ handleFormChange, formData, isEditable }: PersonalInfoProps) => {
   return (
     <div className="flex flex-col w-full border-1 border-gray-300 shadow-lg min-h-112 rounded-2xl p-6">
       <div className="flex flex-col">
@@ -36,10 +37,11 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             type="text"
             id="firstName"
             name="firstName"
-            className= "border border-gray-300 p-2 rounded-lg text-sm w-full"
+            className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             placeholder="First Name"
             value={formData.firstName}
             onChange={handleFormChange}
+            disabled={!isEditable}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
@@ -54,6 +56,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.lastName}
             onChange={handleFormChange}
+            disabled={!isEditable}
           />
         </div>
         <div className="col-span-2">
@@ -69,6 +72,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
               value={formData.email}
               onChange={handleFormChange}
+              disabled={!isEditable}
             />
           </div>
         </div>
@@ -84,6 +88,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.phoneNum}
             onChange={handleFormChange}
+            disabled={!isEditable}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
@@ -97,6 +102,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.DOB instanceof Date ? formData.DOB.toISOString().split("T")[0] : formData.DOB}
             onChange={handleFormChange}
+            disabled={!isEditable}
           />
         </div>
         <div className="flex flex-col items-start gap-2 ">
@@ -111,6 +117,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.occupation}
             onChange={handleFormChange}
+            disabled={!isEditable}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
@@ -125,6 +132,7 @@ const PersonalInfo = ({ handleFormChange, formData }: PersonalInfoProps) => {
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.location}
             onChange={handleFormChange}
+            disabled={!isEditable}
           />
         </div>
       </div>

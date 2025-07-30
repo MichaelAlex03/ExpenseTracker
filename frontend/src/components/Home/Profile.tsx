@@ -145,14 +145,11 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     },
   });
 
-  console.log("User data: " + JSON.stringify(serverFormData, null, 2));
-  console.log("User data: " + JSON.stringify(localFormData, null, 2));
 
   useEffect(() => {
     setServerAndLocalDiff(
       checkIfObjectsAreEqual(localFormData, serverFormData)
     );
-    console.log("hereeee", serverAndLocalDiff);
   }, [serverFormData, localFormData]);
 
   return (
@@ -217,10 +214,12 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
           <PersonalInfo
             handleFormChange={handleFormDataChange}
             formData={localFormData}
+            isEditable={toggleEditProfile}
           />
           <Security
             handleFormChange={handleFormDataChange}
             formData={localFormData}
+            isEditable={toggleEditProfile}
           />
         </div>
       </div>
