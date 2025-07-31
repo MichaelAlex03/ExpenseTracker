@@ -20,7 +20,7 @@ public class UserService {
         return userRepository.findByUserEmail(email);
     }
 
-    public void updateUser(UpdateUserDto input){
+    public User updateUser(UpdateUserDto input){
         Optional<User> user = userRepository.findByUserEmail(input.getUserEmail());
         if (user.isPresent()){
             User newUser = user.get();
@@ -33,10 +33,22 @@ public class UserService {
             if (input.getLastName() != null){
                 newUser.setLastName(input.getLastName());
             }
-            if(input.getPassword() != null){
-                newUser.setPassword(input.getPassword());
+            if(input.getNewPassword() != null){
+                newUser.setPassword(input.getNewPassword());
             }
-            userRepository.save(newUser);
+            if(input.getPhoneNumber() != null){
+                newUser.setPhoneNumber(input.getPhoneNumber());
+            }
+            if(input.getDateOfBirth() != null){
+                newUser.setDateOfBirth(input.getDateOfBirth());
+            }
+            if(input.getOccupation() != null){
+                newUser.setOccupation(input.getOccupation());
+            }
+            if(input.getLocation() != null){
+                newUser.setLocation(input.getLocation());
+            }
+            return userRepository.save(newUser);
         } else {
             throw new RuntimeException("User not found");
         }

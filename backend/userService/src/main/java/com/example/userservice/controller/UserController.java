@@ -3,6 +3,7 @@ package com.example.userservice.controller;
 import com.example.userservice.dto.UpdateUserDto;
 import com.example.userservice.model.User;
 import com.example.userservice.responses.UserFetchResponse;
+import com.example.userservice.responses.UserUpdateResponse;
 import com.example.userservice.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,11 +45,20 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<String> updateUser(@RequestBody UpdateUserDto input){
-        userService.updateUser(input);
+    public ResponseEntity<UserUpdateResponse> updateUser(@RequestBody UpdateUserDto input){
+        System.out.println("UPDATE");
+        User updatedUser = userService.updateUser(input);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("User updated");
+                .body(new UserUpdateResponse(
+                        updatedUser.getFirstName(),
+                        updatedUser.getLastName(),
+                        updatedUser.getUserEmail(),
+                        updatedUser.getPhoneNumber(),
+                        updatedUser.getDateOfBirth(),
+                        updatedUser.getOccupation(),
+                        updatedUser.getLocation()
+                ));
     }
 
     @DeleteMapping

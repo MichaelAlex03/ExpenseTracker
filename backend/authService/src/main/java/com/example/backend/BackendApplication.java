@@ -14,7 +14,6 @@ public class BackendApplication {
 
           String inDocker = System.getenv("IN_DOCKER");
 
-          System.out.println("TESTT");
           System.out.println(System.getenv("SPRING_DATASOURCE_PASSWORD"));
           System.out.println( System.getProperty("spring.datasource.url"));
 

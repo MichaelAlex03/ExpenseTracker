@@ -11,9 +11,7 @@ public class UpdateUserDto {
     private String firstName;
     private String lastName;
     private String userEmail;
-    private String password;
     private String newPassword;
-    private String newPasswordMatch;
     private String phoneNumber;
     private Date dateOfBirth;
     private String occupation;
