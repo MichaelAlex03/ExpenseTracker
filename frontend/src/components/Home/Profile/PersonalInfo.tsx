@@ -1,3 +1,55 @@
+const US_STATES = [
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
+];
 interface FormDataTypes{
     firstName: string;
     lastName: string;
@@ -12,8 +64,10 @@ interface FormDataTypes{
     profileImage: string;
 }
 
+import React from "react";
+
 interface PersonalInfoProps {
-  handleFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFormChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   formData: FormDataTypes;
   isEditable: boolean;
 }
@@ -72,7 +126,7 @@ const PersonalInfo = ({ handleFormChange, formData, isEditable }: PersonalInfoPr
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
               value={formData.email}
               onChange={handleFormChange}
-              disabled={!isEditable}
+              disabled={true}
             />
           </div>
         </div>
@@ -124,16 +178,21 @@ const PersonalInfo = ({ handleFormChange, formData, isEditable }: PersonalInfoPr
           <label className="text-base font-semibold" htmlFor="location">
             Location
           </label>
-          <input
-            type="text"
+          <select
             id="location"
             name="location"
-            placeholder="Location"
             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             value={formData.location}
             onChange={handleFormChange}
             disabled={!isEditable}
-          />
+          >
+            <option value="">Select State</option>
+            {US_STATES.map((state) => (
+              <option key={state} value={state}>
+                {state}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </div>
