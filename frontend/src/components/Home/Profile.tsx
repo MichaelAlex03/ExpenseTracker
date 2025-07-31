@@ -87,6 +87,8 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
         target[key] = source[key];
       }
     }
+
+    return target;
   };
 
   const areDatesEqual = (date1: Date, date2: Date) => {
@@ -123,8 +125,12 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
       const response = await axios.get(
         "http://localhost:3000/api/user?email=michaelalex03@outlook.com"
       );
-      updateSharedFields(localFormData, response.data);
-      setServerFormData(localFormData);
+      
+      const data = {...serverFormData}
+      const fetchedProfile = updateSharedFields(data, response.data);
+
+      setServerFormData(fetchedProfile);
+      setLocalFormData(fetchedProfile);
       return response.data;
     } catch (error) {
       console.error(error);
@@ -211,6 +217,8 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     );
   }, [serverFormData, localFormData]);
 
+  console.log("Local", localFormData);
+  console.log("Server", serverFormData);
 
   return (
     <div className="w-full flex flex-col items-center justify-start h-auto bg-white rounded-xl">
