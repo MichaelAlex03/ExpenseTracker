@@ -11,14 +11,16 @@ interface FormDataTypes {
   password: string;
   newPassword: string;
   newPassMatch: string;
-  profileImage: string;
+  profileImage: File | null;
 }
 interface ProfileOverviewProps {
-  formData: FormDataTypes;
+  formData: FormDataTypes
+  toggleEditProfile: boolean
 }
 
 const ProfileOverview = ({
   formData,
+  toggleEditProfile
 }: ProfileOverviewProps) => {
   const handleImagePicker = () => {
     document.getElementById("imageSelector")?.click();
@@ -35,8 +37,9 @@ const ProfileOverview = ({
 
       <div className="mt-10">
         <button
-          className="relative cursor-pointer w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-600 transition-colors duration-200"
+          className={`relative w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center ${toggleEditProfile ? 'hover:bg-gray-600 cursor-pointer' : ''}  transition-colors duration-200`}
           onClick={handleImagePicker}
+          disabled={!toggleEditProfile}
         >
           <User size={40} />
           <div className="absolute top-0 right-0 bg-secondary p-1 rounded-full border-4 border-white bg-gray-400">

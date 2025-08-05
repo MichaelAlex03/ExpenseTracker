@@ -12,7 +12,7 @@ interface FormDataTypes{
     password: string;
     newPassword: string;
     newPassMatch: string;
-    profileImage: string;
+    profileImage: File | null;
 }
 
 interface SecurityProps {

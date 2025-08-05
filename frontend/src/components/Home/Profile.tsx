@@ -18,9 +18,9 @@ interface FormDataTypes {
   password: string;
   newPassword: string;
   newPassMatch: string;
-  profileImage: string;
-  [key: string]: string | Date; //Index signature allowing iteration safely. Saying all keys are strings and values are string or Date
-}
+  profileImage: File | null;
+  profileImageKey: string
+ }
 
 interface ProfileProps {
   toggleSideBar: boolean;
@@ -45,7 +45,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     password: "",
     newPassword: "",
     newPassMatch: "",
-    profileImage: "",
+    profileImage: null,
     profileImageKey: "",
   });
 
@@ -60,7 +60,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     password: "",
     newPassword: "",
     newPassMatch: "",
-    profileImage: "",
+    profileImage: null,
     profileImageKey: "",
   });
 
@@ -70,9 +70,23 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    let newValue: string | Date | File | null = value;
+
+    if (name === "DOB") {
+      newValue = new Date(value);
+    } else if (
+      name === "profileImage" &&
+      e.target instanceof HTMLInputElement &&
+      e.target.files &&
+      e.target.files.length > 0
+    ) {
+      newValue = e.target.files[0];
+      console.log(e.target.files)
+    }
+
     setLocalFormData((prev) => ({
       ...prev,
-      [name]: name === "DOB" ? new Date(value) : value,
+      [name]: newValue,
     }));
   };
 
@@ -84,7 +98,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     const keys = Object.keys(target);
     for (const key of keys) {
       if (key in source && source[key] !== null && source[key] !== undefined) {
-        target[key] = source[key];
+        target[key as keyof FormDataTypes] = source[key as keyof FormDataTypes];
       }
     }
 
@@ -113,7 +127,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
         if (!areDatesEqual(localData[key], serverData[key])) {
           return true;
         }
-      } else if (localData[key] !== serverData[key]) {
+      } else if (localData[key as keyof FormDataTypes] !== serverData[key as keyof FormDataTypes]) {
         return true;
       }
     }
@@ -181,7 +195,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
         password: "",
         newPassword: "",
         newPassMatch: "",
-        profileImage: updatedData?.profileImage || "",
+        profileImage: updatedData?.profileImage || null,
         profileImageKey: updatedData?.profileImageKey || "",
       };
       setServerFormData(mappedData);
@@ -203,7 +217,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
         password: "",
         newPassword: "",
         newPassMatch: "",
-        profileImage: data.data.profileImage || "",
+        profileImage: data.data.profileImage || null,
         profileImageKey: data.data.profileImageKey || "",
       };
       setServerFormData(mappedData);
@@ -279,7 +293,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
 
       <div className="grid grid-cols-3 grid-rows-2 gap-10 w-full p-6">
         <div className="col-span-1">
-          <ProfileOverview formData={serverFormData} />
+          <ProfileOverview formData={serverFormData} toggleEditProfile={toggleEditProfile}/>
         </div>
         <div className="col-span-2 row-span-2">
           <PersonalInfo
