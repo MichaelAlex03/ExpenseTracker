@@ -16,4 +16,6 @@ public class UpdateUserDto {
     private Date dateOfBirth;
     private String occupation;
     private String location;
+    private String profileImage;
+    private String profileImageKey;
 }
