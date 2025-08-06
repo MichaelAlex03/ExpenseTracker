@@ -19,8 +19,8 @@ interface FormDataTypes {
   newPassword: string;
   newPassMatch: string;
   profileImage: File | null;
-  profileImageKey: string
- }
+  profileImageKey: string;
+}
 
 interface ProfileProps {
   toggleSideBar: boolean;
@@ -28,6 +28,7 @@ interface ProfileProps {
 }
 
 const USER_API_URL = "/api/user";
+const S3_URL = "http://localhost:3000/s3/presignedUrl";
 
 const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
   const queryClient = useQueryClient();
@@ -81,7 +82,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
       e.target.files.length > 0
     ) {
       newValue = e.target.files[0];
-      console.log(e.target.files)
+      console.log(e.target.files[0]);
     }
 
     setLocalFormData((prev) => ({
@@ -127,7 +128,10 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
         if (!areDatesEqual(localData[key], serverData[key])) {
           return true;
         }
-      } else if (localData[key as keyof FormDataTypes] !== serverData[key as keyof FormDataTypes]) {
+      } else if (
+        localData[key as keyof FormDataTypes] !==
+        serverData[key as keyof FormDataTypes]
+      ) {
         return true;
       }
     }
@@ -139,8 +143,8 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
       const response = await axios.get(
         "http://localhost:3000/api/user?email=michaelalex03@outlook.com"
       );
-      
-      const data = {...serverFormData}
+
+      const data = { ...serverFormData };
       const fetchedProfile = updateSharedFields(data, response.data);
 
       setServerFormData(fetchedProfile);
@@ -163,6 +167,41 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
         occupation: localFormData.occupation,
         location: localFormData.location,
       };
+
+      let fileType = "image/jpeg";
+      if (localFormData.profileImage?.name.endsWith(".png")) {
+        fileType = "image/png";
+      } else if (
+        localFormData.profileImage?.name.endsWith(".jpg") ||
+        localFormData.profileImage?.name.endsWith(".jpeg")
+      ) {
+        fileType = "image/jpeg";
+      }
+
+      if(serverFormData.profileImage !== localFormData.profileImage){
+          const s3Response = await axios.get(S3_URL, {
+            params: {
+              fileType: fileType
+            }
+          });
+
+          const { key, publicUrl, uploadUrl } = s3Response.data;
+          console.log("upload", uploadUrl)
+
+          const file = localFormData.profileImage;
+
+          const uploadResponse = await axios.post(uploadUrl, file,  {
+            headers: {
+              "Content-Type": fileType
+            }
+          });
+
+          console.log("TEST", uploadResponse);
+
+          if (uploadResponse.status !== 200){
+            throw new Error('failed to upload to s3')
+          }
+      }
 
       const response = await axios.patch(
         "http://localhost:3000/api/user",
@@ -293,7 +332,12 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
 
       <div className="grid grid-cols-3 grid-rows-2 gap-10 w-full p-6">
         <div className="col-span-1">
-          <ProfileOverview formData={serverFormData} toggleEditProfile={toggleEditProfile}/>
+          <ProfileOverview
+            formData={serverFormData}
+            toggleEditProfile={toggleEditProfile}
+            handleFormChange={handleFormDataChange}
+            localProfileImage={localFormData.profileImage}
+          />
         </div>
         <div className="col-span-2 row-span-2">
           <PersonalInfo
