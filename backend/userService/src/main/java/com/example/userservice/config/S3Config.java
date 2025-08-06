@@ -14,11 +14,18 @@ public class S3Config {
     @Value("${aws.region}")
     private String region;
 
+    @Value("${aws.accessKeyId}")
+    private String accessKey;
+
+    @Value("${aws.secretKeyId}")
+    private String secretKey;
+
     @Bean
     public S3Presigner s3Presigner() {
         return S3Presigner.builder()
                 .region(Region.of(region))
-                .credentialsProvider(DefaultCredentialsProvider.create())
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();
     }
 }

@@ -19,7 +19,7 @@ public class S3Controller {
         this.s3Service = s3Service;
     }
 
-    @GetMapping("/presigned-url")
+    @GetMapping("/presignedUrl")
     public ResponseEntity<?> getPresignedUrl(@RequestParam String fileType) {
         if (fileType == null || fileType.isEmpty()) {
             return ResponseEntity.badRequest().body("fileType is required");

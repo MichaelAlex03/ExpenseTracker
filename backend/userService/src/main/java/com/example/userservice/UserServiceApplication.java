@@ -18,8 +18,8 @@ public class UserServiceApplication {
 			System.setProperty("spring.datasource.username", dotenv.get("SPRING_DATASOURCE_USERNAME"));
 			System.setProperty("spring.datasource.password", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
 
-			System.setProperty("AWS_ACCESS_KEY_ID", dotenv.get("AWS_ACCESS_KEY_ID"));
-			System.setProperty("AWS_SECRET_ACCESS_KEY", dotenv.get("AWS_SECRET_ACCESS_KEY"));
+			System.setProperty("aws.accessKeyId", dotenv.get("AWS_ACCESS_KEY_ID"));
+			System.setProperty("aws.secretKeyId", dotenv.get("AWS_SECRET_ACCESS_KEY"));
 			System.setProperty("aws.region", dotenv.get("S3_REGION"));
 			System.setProperty("aws.bucketName", dotenv.get("S3_BUCKET_NAME"));
 
