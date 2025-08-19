@@ -48,6 +48,12 @@ public class UserService {
             if(input.getLocation() != null){
                 newUser.setLocation(input.getLocation());
             }
+            if(input.getProfileImage() != null){
+                newUser.setProfileImage(input.getProfileImage());
+            }
+            if(input.getProfileImageKey() != null){
+                newUser.setProfileImageKey(input.getProfileImageKey());
+            }
             return userRepository.save(newUser);
         } else {
             throw new RuntimeException("User not found");

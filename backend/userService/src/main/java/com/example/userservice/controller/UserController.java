@@ -37,7 +37,9 @@ public class UserController {
                             userInfo.getPhoneNumber(),
                             userInfo.getDateOfBirth(),
                             userInfo.getOccupation(),
-                            userInfo.getLocation()
+                            userInfo.getLocation(),
+                            userInfo.getProfileImage(),
+                            userInfo.getProfileImageKey()
                     ));
         }
 
@@ -57,7 +59,9 @@ public class UserController {
                         updatedUser.getPhoneNumber(),
                         updatedUser.getDateOfBirth(),
                         updatedUser.getOccupation(),
-                        updatedUser.getLocation()
+                        updatedUser.getLocation(),
+                        updatedUser.getProfileImage(),
+                        updatedUser.getProfileImageKey()
                 ));
     }
 

@@ -14,6 +14,8 @@ public class UserFetchResponse {
     private Date dateOfBirth;
     private String occupation;
     private String location;
+    private String profileImage;
+    private String profileImageKey;
 
     public UserFetchResponse(
             String firstName,
@@ -22,7 +24,9 @@ public class UserFetchResponse {
             String phoneNumber,
             Date dateOfBirth,
             String occupation,
-            String location
+            String location,
+            String profileImage,
+            String profileImageKey
     ){
         this.firstName = firstName;
         this.lastName = lastName;
@@ -31,5 +35,7 @@ public class UserFetchResponse {
         this.dateOfBirth = dateOfBirth;
         this.occupation = occupation;
         this.location = location;
+        this.profileImage = profileImage;
+        this.profileImageKey = profileImageKey;
     }
 }
