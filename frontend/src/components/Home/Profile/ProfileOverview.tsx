@@ -12,7 +12,7 @@ interface FormDataTypes {
   password: string;
   newPassword: string;
   newPassMatch: string;
-  profileImage: File | null;
+  profileImage: File | string | null;
 }
 interface ProfileOverviewProps {
   formData: FormDataTypes;
@@ -20,7 +20,7 @@ interface ProfileOverviewProps {
   handleFormChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
-  localProfileImage: File | null;
+  localProfileImage: File | string | null;
 }
 
 const ProfileOverview = ({
@@ -40,11 +40,14 @@ const ProfileOverview = ({
       setPreviewUrl(undefined);
       return;
     }
+    if (typeof localProfileImage === "string") {
+      setPreviewUrl(localProfileImage);
+    } else if (localProfileImage instanceof File) {
+      const url = URL.createObjectURL(localProfileImage);
+      setPreviewUrl(url);
 
-    const url = URL.createObjectURL(localProfileImage);
-    setPreviewUrl(url);
-
-    return () => URL.revokeObjectURL(url);
+      return () => URL.revokeObjectURL(url);
+    }
   }, [localProfileImage]);
 
   return (

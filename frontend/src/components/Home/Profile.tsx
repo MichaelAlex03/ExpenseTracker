@@ -18,7 +18,7 @@ interface FormDataTypes {
   password: string;
   newPassword: string;
   newPassMatch: string;
-  profileImage: File | null;
+  profileImage: File | string | null;
   profileImageKey: string;
 }
 
@@ -157,23 +157,17 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
 
   const handleUpdateProfile = async () => {
     try {
-      const body = {
-        firstName: localFormData.firstName,
-        lastName: localFormData.lastName,
-        userEmail: localFormData.email,
-        newPassword: null,
-        phoneNumber: localFormData.phoneNum,
-        dateOfBirth: null,
-        occupation: localFormData.occupation,
-        location: localFormData.location,
-      };
 
       let fileType = "image/jpeg";
-      if (localFormData.profileImage?.name.endsWith(".png")) {
+      let imageKey = "";
+      let profileImage = "";
+
+      if (localFormData.profileImage instanceof File && localFormData.profileImage.name.endsWith(".png")) {
         fileType = "image/png";
       } else if (
-        localFormData.profileImage?.name.endsWith(".jpg") ||
-        localFormData.profileImage?.name.endsWith(".jpeg")
+        localFormData.profileImage instanceof File &&
+        (localFormData.profileImage.name.endsWith(".jpg") ||
+         localFormData.profileImage.name.endsWith(".jpeg"))
       ) {
         fileType = "image/jpeg";
       }
@@ -187,10 +181,12 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
 
           const { key, publicUrl, uploadUrl } = s3Response.data;
           console.log("upload", uploadUrl)
+          imageKey = key;
+          profileImage = publicUrl;
 
           const file = localFormData.profileImage;
 
-          const uploadResponse = await axios.post(uploadUrl, file,  {
+          const uploadResponse = await axios.put(uploadUrl, file,  {
             headers: {
               "Content-Type": fileType
             }
@@ -202,6 +198,19 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
             throw new Error('failed to upload to s3')
           }
       }
+
+      const body = {
+        firstName: localFormData.firstName,
+        lastName: localFormData.lastName,
+        userEmail: localFormData.email,
+        newPassword: null,
+        phoneNumber: localFormData.phoneNum,
+        dateOfBirth: null,
+        occupation: localFormData.occupation,
+        location: localFormData.location,
+        profileImage: profileImage ?? localFormData.profileImage,
+        profileImageKey: imageKey ?? localFormData.profileImageKey
+      };
 
       const response = await axios.patch(
         "http://localhost:3000/api/user",

@@ -61,7 +61,7 @@ interface FormDataTypes{
     password: string;
     newPassword: string;
     newPassMatch: string;
-    profileImage: File | null;
+    profileImage: File | string | null;
 }
 
 import React from "react";
