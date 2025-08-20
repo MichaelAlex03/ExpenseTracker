@@ -11,6 +11,7 @@ import ExpenseCategories from "./Expense/ExpenseCategories";
 import BudgetStatus from "./Expense/BudgetStatus";
 import QuickStats from "./Expense/QuickStats";
 import { useState } from "react";
+import AddExpense from "./Expense/AddExpense";
 
 interface ExpenseProps {
   toggleSideBar: boolean;
@@ -21,6 +22,9 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   const [monthlyExpenses, setMonthlyExpenses] = useState<string>("0.00");
   const [averageExpensePerTransaction, setAverageExpensePerTransaction] = useState<string>("0.00");
   const [weeklyExpenses, setWeeklyExpenses] = useState<string>("0.00");
+  const [toggleAddExpense, setToggleAddExpense] = useState<boolean>(false);
+
+  console.log(toggleAddExpense)
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
@@ -47,6 +51,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
         <button
           className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
         "
+          onClick={() => setToggleAddExpense(!toggleAddExpense)}
         >
           <PlusIcon className="w-5 h-5" color="white" />
           <p className="text-white text-base font-bold">Add Expense</p>
@@ -81,6 +86,13 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
           <BudgetStatus />
         </div>
       </div>
+      {
+        toggleAddExpense && (
+          <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
+            <AddExpense />
+          </div>
+        )
+      }
     </div>
   );
 };
