@@ -51,7 +51,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
         <button
           className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
         "
-          onClick={() => setToggleAddExpense(!toggleAddExpense)}
+          onClick={() => setToggleAddExpense(true)}
         >
           <PlusIcon className="w-5 h-5" color="white" />
           <p className="text-white text-base font-bold">Add Expense</p>
@@ -89,7 +89,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
       {
         toggleAddExpense && (
           <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
-            <AddExpense />
+            <AddExpense setToggleAddExpense={setToggleAddExpense} />
           </div>
         )
       }

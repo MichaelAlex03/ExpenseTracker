@@ -10,6 +10,7 @@ import IncomeHistory from "./Income/IncomeHistory";
 import IncomeCategories from "./Income/IncomeCategories";
 import MonthlyProjections from "./Income/MonthlyProjections";
 import { useState } from "react";
+import AddIncome from "./Income/AddIncome";
 
 interface IncomeProps {
   toggleSideBar: boolean;
@@ -21,6 +22,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   const [totalMonthlyIncome, setTotalMonthlyIncome] = useState<string>("0.00");
   const [monthlyRecurring, setMonthlyRecurring] = useState<string>("0.00");
   const [averagePerSource, setAveragePerSource] = useState<string>("0.00");
+  const [toggleAddIncome, setToggleAddIncome] = useState<boolean>(false);
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
@@ -47,6 +49,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
         <button
           className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
         "
+          onClick={() => setToggleAddIncome(true)}
         >
           <PlusIcon className="w-5 h-5" color="white" />
           <p className="text-white text-base font-bold">Add Income</p>
@@ -80,6 +83,13 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
           <MonthlyProjections />
         </div>
       </div>
+      {
+        toggleAddIncome && (
+          <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
+            <AddIncome setToggleAddIncome={setToggleAddIncome} />
+          </div>
+        )
+      }
     </div>
   );
 };

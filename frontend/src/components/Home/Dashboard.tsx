@@ -12,6 +12,7 @@ import RecentTransactions from "./Dashboard/RecentTransactions";
 import TopCategories from "./Dashboard/TopCategories";
 import BudgetProgress from "./Dashboard/BudgetProgress";
 import { useState } from "react";
+import AddTransaction from "./Dashboard/AddTransaction";
 
 interface DashboardProps {
   toggleSideBar: boolean;
@@ -23,7 +24,8 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const [totalBalance, setTotalBalance] = useState<string>("0.00");
   const [totalIncome, setTotalIncome] = useState<string>("0.00");
   const [totalExpenses, setTotalExpenses] = useState<string>("0.00");
-  const [savingsRate, setSavingsRate] = useState<string>("0.00")
+  const [savingsRate, setSavingsRate] = useState<string>("0.00");
+  const [toggleAddTransaction, setToggleAddTransaction] = useState<boolean>(false);
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
@@ -50,6 +52,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
         <button
           className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
         "
+          onClick={() => setToggleAddTransaction(true)}
         >
           <PlusIcon className="w-5 h-5" color="white" />
           <p className="text-white text-base font-bold">Add Transaction</p>
@@ -80,6 +83,13 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
         <TopCategories />
         <BudgetProgress />
       </div>
+      {
+        toggleAddTransaction && (
+          <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
+            <AddTransaction setToggleAddTransaction={setToggleAddTransaction} />
+          </div>
+        )
+      }
     </div>
   );
 };

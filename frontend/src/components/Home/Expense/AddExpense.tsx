@@ -19,7 +19,6 @@ interface ExpenseObjectProps {
 }
 
 interface AddExpenseProps {
-    toggleAddExpense: boolean;
     setToggleAddExpense: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -48,7 +47,7 @@ const paymentMethods = [
     "Check",
 ];
 
-const AddExpense = () => {
+const AddExpense = ({ setToggleAddExpense }: AddExpenseProps) => {
 
     const [expenseObject, setExpenseObject] = useState<ExpenseObjectProps>({
         amount: "",
@@ -74,7 +73,7 @@ const AddExpense = () => {
     }
 
     const handleAddExpense = () => {
-        
+
     }
 
     return (
@@ -99,11 +98,14 @@ const AddExpense = () => {
                             <label htmlFor='amount' className='font-semibold text-lg'>Amount *</label>
                         </div>
                         <input
-                            type="text"
+                            type="number"
                             id="amount"
                             name="amount"
+                            value={expenseObject.amount}
+                            onChange={handleExpenseChange}
                             placeholder="0.00"
                             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+                            step="0.01"
                         />
                     </div>
 
@@ -116,6 +118,8 @@ const AddExpense = () => {
                             type="text"
                             id="description"
                             name="description"
+                            value={expenseObject.description}
+                            onChange={handleExpenseChange}
                             placeholder="What did you spend your money on?"
                             className="border border-gray-300 p-2 rounded-lg text-sm w-full"
                         />
@@ -146,19 +150,19 @@ const AddExpense = () => {
                         <div className='flex flex-col gap-1 w-full'>
                             <div className='flex flex-row items-center gap-2'>
                                 <CreditCard className='h-4 w-4' />
-                                <label htmlFor='category' className='font-semibold text-lg'>Payment Method *</label>
+                                <label htmlFor='paymentMethod' className='font-semibold text-lg'>Payment Method *</label>
                             </div>
                             <select
-                                id="category"
-                                name="category"
-                                value={expenseObject.category}
+                                id="paymentMethod"
+                                name="paymentMethod"
+                                value={expenseObject.paymentMethod}
                                 onChange={handleExpenseChange}
                                 className="border border-gray-300 p-2 rounded-lg text-sm w-full"
                             >
                                 <option value="" disabled>How did you pay?</option>
-                                {categories.map((category) => (
-                                    <option key={category} value={category}>
-                                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                                {paymentMethods.map((method) => (
+                                    <option key={method} value={method}>
+                                        {method.charAt(0).toUpperCase() + method.slice(1)}
                                     </option>
                                 ))}
                             </select>
@@ -199,7 +203,10 @@ const AddExpense = () => {
                 <div
                     className='flex flex-row w-full justify-end gap-4 mt-5'
                 >
-                    <button className='flex flex-row items-center px-4 py-2 border border-gray-300 rounded-lg gap-2 cursor-pointer'>
+                    <button
+                        className='flex flex-row items-center px-4 py-2 border border-gray-300 rounded-lg gap-2 cursor-pointer'
+                        onClick={() => setToggleAddExpense(false)}
+                    >
                         <X className='h-4 w-4' />
                         <p className='text-sm'>Cancel</p>
                     </button>
