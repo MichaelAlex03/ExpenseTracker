@@ -1,4 +1,19 @@
 package com.spring.transactionservice.dto;
 
-public class AddExpenseDto {
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Date;
+
+
+@Getter
+@Setter
+public class AddExpenseDto{
+    private Date dateOfExpense;
+    private String expenseDescription;
+    private String expenseAmount;
+    private String expenseCategory;
+    private String expensePaymentMethod;
+    private String additionalNotes;
 }
