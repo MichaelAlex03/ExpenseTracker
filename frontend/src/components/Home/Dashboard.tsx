@@ -27,6 +27,10 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const [savingsRate, setSavingsRate] = useState<string>("0.00");
   const [toggleAddTransaction, setToggleAddTransaction] = useState<boolean>(false);
 
+  const fetchTransactionData = async () => {
+    
+  }
+
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">

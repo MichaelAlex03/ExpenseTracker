@@ -90,7 +90,6 @@ const paymentMethods = [
 const AddTransaction = ({ setToggleAddTransaction }: AddTransactionProps) => {
 
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('income');
-
   const [transaction, setTransaction] = useState<Transaction>({
     transactionType: 'income',
     amount: '',
