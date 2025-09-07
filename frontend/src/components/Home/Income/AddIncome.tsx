@@ -8,6 +8,7 @@ import {
   Save,
   X,
 } from "lucide-react";
+import useAxiosPrivate from '../../../../hooks/useAxiosPrivate'
 
 interface IncomeObjectProps {
   amount: string
@@ -44,6 +45,8 @@ const frequencies = [
   "one-time",
 ];
 
+const INCOME_URL = '/api/transaction/income'
+
 
 const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
 
@@ -55,6 +58,8 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
     dateOfIncome: new Date(),
     additionalNotes: ""
   });
+
+  const axiosPrivate = useAxiosPrivate();
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -70,8 +75,16 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
     }))
   }
 
-  const handleAddIncome = () => {
+  const handleAddIncome = async () => {
 
+
+    try {
+      await axiosPrivate.post(INCOME_URL,
+        incomeObject
+      )
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (

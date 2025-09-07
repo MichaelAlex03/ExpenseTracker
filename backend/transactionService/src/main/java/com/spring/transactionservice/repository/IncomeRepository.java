@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface IncomeRepository extends JpaRepository<Income, Integer> {
     Optional<Income> findById(Integer userId);
+    Optional<Income> findByTransactionId(Integer transactionId);
 }
