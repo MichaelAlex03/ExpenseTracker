@@ -31,6 +31,12 @@ public class Income{
     @Column(name = "additional_notes")
     private String additionalNotes;
 
+    @Column(name = "user_id")
+    private Integer userId;
+
+    @Column(name = "income_description")
+    private String incomeDescription;
+
     public Income(){
     }
 
@@ -39,12 +45,16 @@ public class Income{
             String incomeAmount,
             String incomeCategory,
             String incomeFrequency,
-            String additionalNotes
+            String additionalNotes,
+            Integer userId,
+            String incomeDescription
     ){
         this.dateOfIncome = dateOfIncome;
         this.incomeAmount = incomeAmount;
         this.incomeCategory = incomeCategory;
         this.incomeFrequency = incomeFrequency;
         this.additionalNotes = additionalNotes;
+        this.userId = userId;
+        this.incomeDescription = incomeDescription;
     }
 }

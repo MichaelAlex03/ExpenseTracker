@@ -6,6 +6,7 @@ import com.spring.transactionservice.model.Expense;
 import com.spring.transactionservice.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,20 +24,25 @@ public class ExpenseService {
                 input.getExpenseAmount(),
                 input.getExpenseCategory(),
                 input.getExpensePaymentMethod(),
-                input.getAdditionalNotes()
+                input.getAdditionalNotes(),
+                input.getUserId()
         );
 
         expenseRepository.save(newExpense);
     }
 
     public void deleteExpenseTransaction(Integer id){
-        Optional<Expense> expenseToDelete = expenseRepository.findByTransactionId(id);
+        Optional<Expense> expenseToDelete = expenseRepository.findById(id);
         if(expenseToDelete.isPresent()){
             Expense expense = expenseToDelete.get();
             expenseRepository.delete(expense);
         } else {
             throw new RuntimeException("Transaction not found");
         }
+    }
+
+    public List<Expense> getAllExpenseTransactions(Integer userId){
+        return expenseRepository.findByUserId(userId);
     }
 
 }

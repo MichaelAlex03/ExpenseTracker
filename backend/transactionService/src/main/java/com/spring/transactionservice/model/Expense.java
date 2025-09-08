@@ -34,6 +34,9 @@ public class Expense{
     @Column(name = "additional_notes")
     private String additionalNotes;
 
+    @Column(name = "user_id")
+    private Integer userId;
+
     public Expense(){
     }
 
@@ -43,7 +46,8 @@ public class Expense{
             String expenseAmount,
             String expenseCategory,
             String expensePaymentMethod,
-            String additionalNotes
+            String additionalNotes,
+            Integer userId
     ){
         this.dateOfExpense = dateOfExpense;
         this.expenseDescription = expenseDescription;
@@ -51,5 +55,6 @@ public class Expense{
         this.expenseCategory = expenseCategory;
         this.expensePaymentMethod = expensePaymentMethod;
         this.additionalNotes = additionalNotes;
+        this.userId = userId;
     }
 }

@@ -16,4 +16,5 @@ public class AddExpenseDto{
     private String expenseCategory;
     private String expensePaymentMethod;
     private String additionalNotes;
+    private Integer userId;
 }

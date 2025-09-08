@@ -9,10 +9,12 @@ import {
   X,
 } from "lucide-react";
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate'
+import axios from 'axios';
+import useAuth from '../../../../hooks/useAuth';
 
 interface IncomeObjectProps {
   amount: string
-  incomeSource: string
+  incomeDescription: string
   category: string
   frequency: string
   dateOfIncome: Date
@@ -52,7 +54,7 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
 
   const [incomeObject, setIncomeObject] = useState<IncomeObjectProps>({
     amount: "",
-    incomeSource: "",
+    incomeDescription: "",
     category: "",
     frequency: "",
     dateOfIncome: new Date(),
@@ -60,6 +62,7 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
   });
 
   const axiosPrivate = useAxiosPrivate();
+  const { auth } = useAuth();
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -75,13 +78,28 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
     }))
   }
 
+  console.log(auth.userId)
+
   const handleAddIncome = async () => {
 
 
+    // This is the format of the AddIncomeDto in the spring backend
+    let body = {
+      dateOfIncome: incomeObject.dateOfIncome,
+      incomeAmount: incomeObject.amount,
+      incomeCategory: incomeObject.category,
+      incomeFrequency: incomeObject.frequency,
+      additionalNotes: incomeObject.additionalNotes,
+      userId: auth.userId,
+      incomeDescription: incomeObject.incomeDescription
+    }
+
+
     try {
-      await axiosPrivate.post(INCOME_URL,
-        incomeObject
-      )
+      const response = await axios.post("http://localhost:3001/api/transaction/income", body);
+      if (response.status === 201) {
+        setToggleAddIncome(false);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -123,15 +141,15 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
           <div className='flex flex-col gap-1'>
             <div className='flex flex-row items-center gap-2'>
               <Briefcase className='h-4 w-4' />
-              <label htmlFor='source' className='font-semibold text-lg'>Income Source *</label>
+              <label htmlFor='descirption' className='font-semibold text-lg'>Income Description *</label>
             </div>
             <input
               type="text"
-              id="source"
-              name="incomeSource"
-              value={incomeObject.incomeSource}
+              id="descirption"
+              name="incomeDescription"
+              value={incomeObject.incomeDescription}
               onChange={handleIncomeChange}
-              placeholder="e.g., Salary, Freelance Project, Dividend Payment"
+              placeholder="Where did this money come from?"
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             />
           </div>
@@ -221,7 +239,10 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
             <X className='h-4 w-4' />
             <p className='text-sm'>Cancel</p>
           </button>
-          <button className='flex flex-row items-center px-4 py-2 bg-green-500/90 rounded-lg gap-2 cursor-pointer'>
+          <button
+            className='flex flex-row items-center px-4 py-2 bg-green-500/90 rounded-lg gap-2 cursor-pointer'
+            onClick={handleAddIncome}
+          >
             <Save className='h-4 w-4' color='white' />
             <p className='text-white text-sm'>Save Income</p>
           </button>

@@ -8,6 +8,8 @@ import {
     Save,
     X,
 } from "lucide-react";
+import axios from 'axios';
+import useAuth from '../../../../hooks/useAuth';
 
 interface ExpenseObjectProps {
     amount: string
@@ -58,6 +60,8 @@ const AddExpense = ({ setToggleAddExpense }: AddExpenseProps) => {
         additionalNotes: ""
     });
 
+    const { auth } = useAuth();
+
     const handleExpenseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         let newValue: string | Date = value;
@@ -72,8 +76,28 @@ const AddExpense = ({ setToggleAddExpense }: AddExpenseProps) => {
         }))
     }
 
-    const handleAddExpense = () => {
+    const handleAddExpense = async () => {
 
+        // This is the format of the AddExpenseDto in the spring backend
+        let body = {
+            dateOfExpense: expenseObject.dateOfExpense,
+            expenseDescription: expenseObject.description,
+            expenseAmount: expenseObject.amount,
+            expenseCategory: expenseObject.category,
+            expensePaymentMethod: expenseObject.paymentMethod,
+            additionalNotes: expenseObject.additionalNotes,
+            userId: auth.userId
+        }
+
+
+        try {
+            const response = await axios.post("http://localhost:3001/api/transaction/expense", body);
+            if (response.status === 201) {
+                setToggleAddExpense(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -210,7 +234,10 @@ const AddExpense = ({ setToggleAddExpense }: AddExpenseProps) => {
                         <X className='h-4 w-4' />
                         <p className='text-sm'>Cancel</p>
                     </button>
-                    <button className='flex flex-row items-center px-4 py-2 bg-red-500/90 rounded-lg gap-2 cursor-pointer'>
+                    <button
+                        className='flex flex-row items-center px-4 py-2 bg-red-500/90 rounded-lg gap-2 cursor-pointer'
+                        onClick={handleAddExpense}
+                    >
                         <Save className='h-4 w-4' color='white' />
                         <p className='text-white text-sm'>Save Expenses</p>
                     </button>

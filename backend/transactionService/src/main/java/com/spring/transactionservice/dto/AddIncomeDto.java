@@ -13,4 +13,6 @@ public class AddIncomeDto {
     private String incomeCategory;
     private String incomeFrequency;
     private String additionalNotes;
+    private Integer userId;
+    private String incomeDescription;
 }
