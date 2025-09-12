@@ -225,7 +225,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
   const { data, isLoading } = useQuery({
     queryKey: ["profile", auth?.email],
     queryFn: fetchProfile,
-    staleTime: Infinity,
+    staleTime: Infinity
   });
 
   const updateProfileMutation = useMutation({

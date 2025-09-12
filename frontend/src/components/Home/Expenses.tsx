@@ -12,6 +12,8 @@ import BudgetStatus from "./Expense/BudgetStatus";
 import QuickStats from "./Expense/QuickStats";
 import { useState } from "react";
 import AddExpense from "./Expense/AddExpense";
+import useAuth from "../../../hooks/useAuth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface ExpenseProps {
   toggleSideBar: boolean;
@@ -19,12 +21,28 @@ interface ExpenseProps {
 }
 const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
 
+  const { auth } = useAuth();
+
   const [monthlyExpenses, setMonthlyExpenses] = useState<string>("0.00");
   const [averageExpensePerTransaction, setAverageExpensePerTransaction] = useState<string>("0.00");
   const [weeklyExpenses, setWeeklyExpenses] = useState<string>("0.00");
   const [toggleAddExpense, setToggleAddExpense] = useState<boolean>(false);
 
   console.log(toggleAddExpense)
+
+  const fetchExpenseTransactionData = async () => {
+
+  }
+
+  const { data: expenseData, isLoading: expenseLoading } = useQuery({
+    queryKey: ["expenses", auth?.email],
+    queryFn: fetchExpenseTransactionData,
+    staleTime: Infinity
+  });
+
+  const updateExpenseTransactionsMutation = useMutation({
+    
+  });
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">

@@ -10,12 +10,16 @@ const OAuthSuccess = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const accessToken = params.get("accessToken");
+    const email = params.get("email");
+    const userId = params.get("userId");
     console.log(accessToken);
 
     if (accessToken) {
       setAuth({
         ...auth,
-        accessToken,
+        accessToken: accessToken || "",
+        email: email || "",
+        userId: userId ? Number(userId) : 0 
       });
       if (auth.accessToken) {
         navigate("/home");

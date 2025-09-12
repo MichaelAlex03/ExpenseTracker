@@ -13,23 +13,82 @@ import TopCategories from "./Dashboard/TopCategories";
 import BudgetProgress from "./Dashboard/BudgetProgress";
 import { useState } from "react";
 import AddTransaction from "./Dashboard/AddTransaction";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import useAuth from "../../../hooks/useAuth";
 
 interface DashboardProps {
   toggleSideBar: boolean;
   setToggleSideBar: (val: boolean) => void;
 }
 
+interface IncomeTransaction {
+  amount: string
+  incomeDescription: string
+  category: string
+  frequency: string
+  dateOfIncome: Date
+  additionalNotes: string
+}
+
+interface ExpenseTransaction {
+  amount: string
+  description: string
+  category: string
+  paymentMethod: string
+  dateOfExpense: Date
+  additionalNotes: string
+}
+
 const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
+  const queryClient = useQueryClient();
+
+  const { auth } = useAuth();
+  console.log(auth)
 
   const [totalBalance, setTotalBalance] = useState<string>("0.00");
   const [totalIncome, setTotalIncome] = useState<string>("0.00");
   const [totalExpenses, setTotalExpenses] = useState<string>("0.00");
   const [savingsRate, setSavingsRate] = useState<string>("0.00");
   const [toggleAddTransaction, setToggleAddTransaction] = useState<boolean>(false);
+  const [incomeTransaction, setIncomeTransaction] = useState<IncomeTransaction>({
+    amount: '',
+    incomeDescription: '',
+    category: '',
+    frequency: '',
+    dateOfIncome: new Date(),
+    additionalNotes: ''
+  } as IncomeTransaction);
+  const [expenseTransaction, setExpenseTransaction] = useState<ExpenseTransaction>({} as ExpenseTransaction);
 
-  const fetchTransactionData = async () => {
-    
+  const fetchExpenseTransactionData = async () => {
+
   }
+
+  const fetchIncomeTransactionData = async () => {
+
+  }
+
+
+  const { data: expenseData, isLoading: expenseLoading } = useQuery({
+    queryKey: ["expenses", auth?.email],
+    queryFn: fetchExpenseTransactionData,
+    staleTime: Infinity
+  });
+
+  const { data: incomeData, isLoading: incomeLoading } = useQuery({
+    queryKey: ["income", auth?.email],
+    queryFn: fetchIncomeTransactionData,
+    staleTime: Infinity
+  });
+
+  const updateExpenseTransactionsMutation = useMutation({
+    
+  });
+
+  const updateIncomeTransactionsMutation = useMutation({
+
+  });
+
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">

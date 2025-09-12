@@ -11,18 +11,59 @@ import IncomeCategories from "./Income/IncomeCategories";
 import MonthlyProjections from "./Income/MonthlyProjections";
 import { useState } from "react";
 import AddIncome from "./Income/AddIncome";
+import useAuth from "../../../hooks/useAuth";
+import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface IncomeProps {
   toggleSideBar: boolean;
   setToggleSideBar: (val: boolean) => void;
 }
 
+interface IncomeObject {
+  amount: string
+  incomeDescription: string
+  category: string
+  frequency: string
+  dateOfIncome: Date
+  additionalNotes: string
+}
+
 const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
+
+  const { auth } = useAuth();
+
+
+  const queryClient = useQueryClient();
 
   const [totalMonthlyIncome, setTotalMonthlyIncome] = useState<string>("0.00");
   const [monthlyRecurring, setMonthlyRecurring] = useState<string>("0.00");
   const [averagePerSource, setAveragePerSource] = useState<string>("0.00");
   const [toggleAddIncome, setToggleAddIncome] = useState<boolean>(false);
+
+  const [incomeTransactions, setIncomeTransactions] = useState<IncomeObject[]>([])
+
+
+  const fetchIncomeTransactionData = async () => {
+    const response = await axios.get(
+      "http://localhost:3000/api/transaction/income",
+      {
+        params: 27
+      }
+    )
+
+    console.log(response);
+  }
+
+  const { data: incomeData, isLoading: incomeLoading } = useQuery({
+    queryKey: ["income", auth?.email],
+    queryFn: fetchIncomeTransactionData,
+    staleTime: Infinity
+  });
+
+  const updateIncomeTransactionsMutation = useMutation({
+
+  });
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
