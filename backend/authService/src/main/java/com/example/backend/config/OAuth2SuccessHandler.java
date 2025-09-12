@@ -1,5 +1,6 @@
 package com.example.backend.config;
 
+import com.example.backend.model.User;
 import com.example.backend.service.GithubEmailService;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.UserService;
@@ -67,8 +68,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler{
         String accessToken = jwtService.generateTokenOAuth(email);
         String refreshToken = jwtService.generateRefreshTokenOAuth(email);
 
+        Integer userId;
         if (!userService.doesUserExist(email)){
-            userService.registerOAuthUser(email, refreshToken);
+            User newOAuthUser = userService.registerOAuthUser(email, refreshToken);
+            userId = newOAuthUser.getId();
+        } else {
+            userId = userService.getUserId(email);
         }
 
 
@@ -83,6 +88,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler{
 
         String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/oauth2/success")
                 .queryParam("accessToken", accessToken)
+                .queryParam("email", email)
+                .queryParam("userId", userId)
                 .build().toUriString();
 
         response.sendRedirect(redirectUrl);

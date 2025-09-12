@@ -71,24 +71,32 @@ public class AuthController {
         String email = jwtService.extractUsername(refreshToken);
         Optional<User> user = userService.getUserInfo(email);
 
+        String accessToken = "";
+        User existingUser = new User();
+
         if(user.isPresent()){
-            User existingUser = user.get();
+            existingUser = user.get();
             boolean valid = jwtService.isTokenValid(refreshToken, existingUser);
             if(valid){
-                String accessToken = jwtService.generateToken(existingUser);
-
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(new RefreshResponse(
-                                existingUser.getUserEmail(),
-                                existingUser.getId(),
-                                accessToken
-                        ));
+               accessToken = jwtService.generateToken(existingUser);
             }
+        } else {
+            throw new RuntimeException("Refresh token not valid");
         }
 
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new RefreshResponse(
+                        existingUser.getUserEmail(),
+                        existingUser.getId(),
+                        accessToken
+                ));
+    }
 
-        throw new RuntimeException("Invalid refresh token");
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(@RequestParam String email){
+        authService.logout(email);
+        return ResponseEntity.ok("Logged Out");
     }
 
 

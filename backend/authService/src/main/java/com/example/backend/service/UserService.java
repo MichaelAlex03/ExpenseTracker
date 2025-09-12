@@ -23,7 +23,7 @@ public class UserService {
         return user.isPresent();
     }
 
-    public void registerOAuthUser(String email, String refreshToken){
+    public User registerOAuthUser(String email, String refreshToken){
         User newOAuthUser = new User(
                 null,
                 null,
@@ -31,6 +31,16 @@ public class UserService {
                 email
         );
         newOAuthUser.setRefreshToken(refreshToken);
-        userRepository.save(newOAuthUser);
+        return userRepository.save(newOAuthUser);
+    }
+
+    public Integer getUserId(String email){
+        Optional<User> user = userRepository.findByUserEmail(email);
+        if (user.isPresent()){
+            User presentUser = user.get();
+            return presentUser.getId();
+        } else {
+            throw new RuntimeException("User does not exist with this email");
+        }
     }
 }

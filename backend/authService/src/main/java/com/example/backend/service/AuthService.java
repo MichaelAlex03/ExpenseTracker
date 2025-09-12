@@ -73,6 +73,15 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    public void logout(String email){
+        Optional<User> optionalUser = userRepository.findByUserEmail(email);
+        if (optionalUser.isPresent()){
+            User user = optionalUser.get();
+            user.setRefreshToken(null);
+            userRepository.save(user);
+        }
+    }
+
 
 
 
