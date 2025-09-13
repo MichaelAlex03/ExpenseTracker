@@ -63,6 +63,8 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
     staleTime: Infinity,
   });
 
+  console.log(incomeTransactions)
+
   const handleAddIncome = async (incomeObject: IncomeObject) => {
 
 
@@ -101,6 +103,9 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
       setIncomeTransactions(data)
     }
   }, [data])
+
+  console.log("cache", data);
+  console.log("income", incomeTransactions);
 
 
   return (

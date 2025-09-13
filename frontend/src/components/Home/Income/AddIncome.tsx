@@ -8,8 +8,6 @@ import {
   Save,
   X,
 } from "lucide-react";
-import useAxiosPrivate from '../../../../hooks/useAxiosPrivate'
-import axios from 'axios';
 import useAuth from '../../../../hooks/useAuth';
 import type { UseMutationResult } from '@tanstack/react-query';
 

@@ -8,8 +8,7 @@ import {
     Save,
     X,
 } from "lucide-react";
-import axios from 'axios';
-import useAuth from '../../../../hooks/useAuth';
+import type { UseMutationResult } from '@tanstack/react-query';
 
 interface ExpenseObjectProps {
     amount: string
@@ -22,6 +21,7 @@ interface ExpenseObjectProps {
 
 interface AddExpenseProps {
     setToggleAddExpense: React.Dispatch<React.SetStateAction<boolean>>;
+    mutation: UseMutationResult<any, Error, ExpenseObjectProps, unknown>;
 }
 
 const categories = [
@@ -49,7 +49,7 @@ const paymentMethods = [
     "Check",
 ];
 
-const AddExpense = ({ setToggleAddExpense }: AddExpenseProps) => {
+const AddExpense = ({ setToggleAddExpense, mutation }: AddExpenseProps) => {
 
     const [expenseObject, setExpenseObject] = useState<ExpenseObjectProps>({
         amount: "",
@@ -59,8 +59,6 @@ const AddExpense = ({ setToggleAddExpense }: AddExpenseProps) => {
         dateOfExpense: new Date(),
         additionalNotes: ""
     });
-
-    const { auth } = useAuth();
 
     const handleExpenseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -74,30 +72,6 @@ const AddExpense = ({ setToggleAddExpense }: AddExpenseProps) => {
             ...prev,
             [name]: newValue
         }))
-    }
-
-    const handleAddExpense = async () => {
-
-        // This is the format of the AddExpenseDto in the spring backend
-        let body = {
-            dateOfExpense: expenseObject.dateOfExpense,
-            expenseDescription: expenseObject.description,
-            expenseAmount: expenseObject.amount,
-            expenseCategory: expenseObject.category,
-            expensePaymentMethod: expenseObject.paymentMethod,
-            additionalNotes: expenseObject.additionalNotes,
-            userId: auth.userId
-        }
-
-
-        try {
-            const response = await axios.post("http://localhost:3001/api/transaction/expense", body);
-            if (response.status === 201) {
-                setToggleAddExpense(false);
-            }
-        } catch (error) {
-            console.log(error);
-        }
     }
 
     return (
@@ -236,7 +210,7 @@ const AddExpense = ({ setToggleAddExpense }: AddExpenseProps) => {
                     </button>
                     <button
                         className='flex flex-row items-center px-4 py-2 bg-red-500/90 rounded-lg gap-2 cursor-pointer'
-                        onClick={handleAddExpense}
+                        onClick={() => mutation.mutate(expenseObject)}
                     >
                         <Save className='h-4 w-4' color='white' />
                         <p className='text-white text-sm'>Save Expenses</p>

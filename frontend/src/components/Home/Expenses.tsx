@@ -10,39 +10,103 @@ import RecentExpenses from "./Expense/RecentExpenses";
 import ExpenseCategories from "./Expense/ExpenseCategories";
 import BudgetStatus from "./Expense/BudgetStatus";
 import QuickStats from "./Expense/QuickStats";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddExpense from "./Expense/AddExpense";
 import useAuth from "../../../hooks/useAuth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 
 interface ExpenseProps {
   toggleSideBar: boolean;
   setToggleSideBar: (val: boolean) => void;
 }
+
+interface ExpenseObject {
+  amount: string
+  description: string
+  category: string
+  paymentMethod: string
+  dateOfExpense: Date
+  additionalNotes: string
+}
+
 const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
 
   const { auth } = useAuth();
+
+  const queryClient = useQueryClient();
 
   const [monthlyExpenses, setMonthlyExpenses] = useState<string>("0.00");
   const [averageExpensePerTransaction, setAverageExpensePerTransaction] = useState<string>("0.00");
   const [weeklyExpenses, setWeeklyExpenses] = useState<string>("0.00");
   const [toggleAddExpense, setToggleAddExpense] = useState<boolean>(false);
 
+  const [expenseTransactions, setExpenseTransactions] = useState<ExpenseObject[]>([]);
+
   console.log(toggleAddExpense)
 
   const fetchExpenseTransactionData = async () => {
-
+    console.log(auth.userId);
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/transaction/expense?userId=${auth.userId}`,
+      )
+      setExpenseTransactions(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  const { data: expenseData, isLoading: expenseLoading } = useQuery({
-    queryKey: ["expenses", auth?.email],
+  const { data, isLoading } = useQuery({
+    queryKey: ["expenses", auth?.userId],
     queryFn: fetchExpenseTransactionData,
     staleTime: Infinity
   });
 
+  const handleAddExpense = async (expenseObject: ExpenseObject) => {
+
+    // This is the format of the AddExpenseDto in the spring backend
+    let body = {
+      dateOfExpense: expenseObject.dateOfExpense,
+      expenseDescription: expenseObject.description,
+      expenseAmount: expenseObject.amount,
+      expenseCategory: expenseObject.category,
+      expensePaymentMethod: expenseObject.paymentMethod,
+      additionalNotes: expenseObject.additionalNotes,
+      userId: auth.userId
+    }
+
+
+    try {
+      const response = await axios.post("http://localhost:3001/api/transaction/expense", body);
+      console.log(response)
+      if (response.status === 201) {
+        setToggleAddExpense(false);
+      }
+      return response.data
+    } catch (error) {
+      console.log(error);
+      console.log((error as Error).message)
+    }
+  }
+
   const updateExpenseTransactionsMutation = useMutation({
-    
+    mutationFn: handleAddExpense,
+    onSuccess: (newExpenseTransaction) => {
+      queryClient.setQueryData(["expenses", auth.userId], (oldData: ExpenseObject[]) =>
+        [...(oldData || []), newExpenseTransaction])
+    }
   });
+
+  useEffect(() => {
+    if (data) {
+      setExpenseTransactions(data)
+    }
+  }, [data])
+
+  console.log("cache", data)
+  console.log("expenses", expenseTransactions)
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
@@ -107,7 +171,10 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
       {
         toggleAddExpense && (
           <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
-            <AddExpense setToggleAddExpense={setToggleAddExpense} />
+            <AddExpense
+              setToggleAddExpense={setToggleAddExpense}
+              mutation={updateExpenseTransactionsMutation}
+            />
           </div>
         )
       }
