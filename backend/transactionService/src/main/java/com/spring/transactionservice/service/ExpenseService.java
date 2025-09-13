@@ -17,7 +17,7 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
     }
 
-    public void addExpenseTransaction(AddExpenseDto input){
+    public Expense addExpenseTransaction(AddExpenseDto input){
         Expense newExpense = new Expense(
                 input.getDateOfExpense(),
                 input.getExpenseDescription(),
@@ -28,7 +28,7 @@ public class ExpenseService {
                 input.getUserId()
         );
 
-        expenseRepository.save(newExpense);
+        return expenseRepository.save(newExpense);
     }
 
     public void deleteExpenseTransaction(Integer id){

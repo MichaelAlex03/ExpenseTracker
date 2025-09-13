@@ -4,6 +4,8 @@ import com.spring.transactionservice.dto.AddExpenseDto;
 import com.spring.transactionservice.dto.AddIncomeDto;
 import com.spring.transactionservice.model.Expense;
 import com.spring.transactionservice.model.Income;
+import com.spring.transactionservice.responses.AddExpenseTransactionResponse;
+import com.spring.transactionservice.responses.AddIncomeTransactionResponse;
 import com.spring.transactionservice.service.ExpenseService;
 import com.spring.transactionservice.service.IncomeService;
 import org.apache.coyote.Response;
@@ -27,19 +29,37 @@ public class TransactionController {
     }
 
     @PostMapping("/income")
-    public ResponseEntity<?> addIncomeTransaction(@RequestBody AddIncomeDto income){
-        incomeService.addIncomeTransaction(income);
+    public ResponseEntity<AddIncomeTransactionResponse> addIncomeTransaction(@RequestBody AddIncomeDto income){
+        Income newIncomeAdded = incomeService.addIncomeTransaction(income);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("Income Transaction added");
+                .body(new AddIncomeTransactionResponse(
+                        newIncomeAdded.getId(),
+                        newIncomeAdded.getDateOfIncome(),
+                        newIncomeAdded.getIncomeAmount(),
+                        newIncomeAdded.getIncomeCategory(),
+                        newIncomeAdded.getIncomeFrequency(),
+                        newIncomeAdded.getAdditionalNotes(),
+                        newIncomeAdded.getUserId(),
+                        newIncomeAdded.getIncomeDescription()
+                ));
     }
 
     @PostMapping("/expense")
-    public ResponseEntity<?> addExpenseTransaction(@RequestBody AddExpenseDto expense){
-        expenseService.addExpenseTransaction(expense);
+    public ResponseEntity<AddExpenseTransactionResponse> addExpenseTransaction(@RequestBody AddExpenseDto expense){
+        Expense newExpense = expenseService.addExpenseTransaction(expense);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("Expense Transaction added");
+                .body(new AddExpenseTransactionResponse(
+                        newExpense.getId(),
+                        newExpense.getDateOfExpense(),
+                        newExpense.getExpenseDescription(),
+                        newExpense.getExpenseAmount(),
+                        newExpense.getExpenseCategory(),
+                        newExpense.getExpensePaymentMethod(),
+                        newExpense.getAdditionalNotes(),
+                        newExpense.getUserId()
+                ));
     }
 
     @GetMapping("/expense")

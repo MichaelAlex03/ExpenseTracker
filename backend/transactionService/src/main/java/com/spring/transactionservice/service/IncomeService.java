@@ -16,7 +16,7 @@ public class IncomeService {
         this.incomeRepository = incomeRepository;
     }
 
-    public void addIncomeTransaction(AddIncomeDto input){
+    public Income addIncomeTransaction(AddIncomeDto input){
         System.out.println("User" + input.getUserId());
         Income newIncome = new Income(
                 input.getDateOfIncome(),
@@ -28,7 +28,7 @@ public class IncomeService {
                 input.getIncomeDescription()
         );
 
-        incomeRepository.save(newIncome);
+        return incomeRepository.save(newIncome);
     }
 
     public void deleteIncomeTransaction(Integer id){
