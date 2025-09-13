@@ -11,6 +11,7 @@ import {
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate'
 import axios from 'axios';
 import useAuth from '../../../../hooks/useAuth';
+import type { UseMutationResult } from '@tanstack/react-query';
 
 interface IncomeObjectProps {
   amount: string
@@ -23,6 +24,7 @@ interface IncomeObjectProps {
 
 interface AddIncomeProps {
   setToggleAddIncome: React.Dispatch<React.SetStateAction<boolean>>;
+  mutation: UseMutationResult<any, Error, IncomeObjectProps, unknown>;
 }
 
 const incomeCategories = [
@@ -50,7 +52,7 @@ const frequencies = [
 const INCOME_URL = '/api/transaction/income'
 
 
-const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
+const AddIncome = ({ setToggleAddIncome, mutation }: AddIncomeProps) => {
 
   const [incomeObject, setIncomeObject] = useState<IncomeObjectProps>({
     amount: "",
@@ -61,7 +63,6 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
     additionalNotes: ""
   });
 
-  const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -79,31 +80,6 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
   }
 
   console.log(auth.userId)
-
-  const handleAddIncome = async () => {
-
-
-    // This is the format of the AddIncomeDto in the spring backend
-    let body = {
-      dateOfIncome: incomeObject.dateOfIncome,
-      incomeAmount: incomeObject.amount,
-      incomeCategory: incomeObject.category,
-      incomeFrequency: incomeObject.frequency,
-      additionalNotes: incomeObject.additionalNotes,
-      userId: auth.userId,
-      incomeDescription: incomeObject.incomeDescription
-    }
-
-
-    try {
-      const response = await axios.post("http://localhost:3001/api/transaction/income", body);
-      if (response.status === 201) {
-        setToggleAddIncome(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   return (
     <div className='w-full h-full flex items-center justify-center'>
@@ -241,7 +217,7 @@ const AddIncome = ({ setToggleAddIncome }: AddIncomeProps) => {
           </button>
           <button
             className='flex flex-row items-center px-4 py-2 bg-green-500/90 rounded-lg gap-2 cursor-pointer'
-            onClick={handleAddIncome}
+            onClick={() => mutation.mutate(incomeObject)}
           >
             <Save className='h-4 w-4' color='white' />
             <p className='text-white text-sm'>Save Income</p>

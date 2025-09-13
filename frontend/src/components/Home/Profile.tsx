@@ -65,7 +65,7 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     profileImageKey: "",
   });
 
-  const { auth, setAuth } = useAuth();
+  const { auth } = useAuth();
 
   const handleFormDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

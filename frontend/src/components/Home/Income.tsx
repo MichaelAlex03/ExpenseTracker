@@ -9,7 +9,7 @@ import MetricCard from "./MetricCard";
 import IncomeHistory from "./Income/IncomeHistory";
 import IncomeCategories from "./Income/IncomeCategories";
 import MonthlyProjections from "./Income/MonthlyProjections";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddIncome from "./Income/AddIncome";
 import useAuth from "../../../hooks/useAuth";
 import axios from "axios";
@@ -45,25 +45,63 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
 
 
   const fetchIncomeTransactionData = async () => {
-    const response = await axios.get(
-      "http://localhost:3000/api/transaction/income",
-      {
-        params: 27
-      }
-    )
-
-    console.log(response);
+    console.log(auth.userId);
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/transaction/income?userId=${auth.userId}`,
+      )
+      setIncomeTransactions(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  const { data: incomeData, isLoading: incomeLoading } = useQuery({
-    queryKey: ["income", auth?.email],
+  const { data, isLoading } = useQuery({
+    queryKey: ["income", auth.userId],
     queryFn: fetchIncomeTransactionData,
-    staleTime: Infinity
+    staleTime: Infinity,
   });
+
+  const handleAddIncome = async (incomeObject: IncomeObject) => {
+
+
+    // This is the format of the AddIncomeDto in the spring backend
+    let body = {
+      dateOfIncome: incomeObject.dateOfIncome,
+      incomeAmount: incomeObject.amount,
+      incomeCategory: incomeObject.category,
+      incomeFrequency: incomeObject.frequency,
+      additionalNotes: incomeObject.additionalNotes,
+      userId: auth.userId,
+      incomeDescription: incomeObject.incomeDescription
+    }
+
+    try {
+      const response = await axios.post("http://localhost:3001/api/transaction/income", body);
+      if (response.status === 201) {
+        setToggleAddIncome(false);
+      }
+      return response.data
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const updateIncomeTransactionsMutation = useMutation({
-
+    mutationFn: handleAddIncome,
+    onSuccess: (newIncomeTransaction) => {
+      queryClient.setQueryData(["income", auth.userId], (oldData: IncomeObject[]) => 
+      [...(oldData || []), newIncomeTransaction])
+    }
   });
+
+  useEffect(() => {
+    if (data) {
+      setIncomeTransactions(data)
+    }
+  }, [data])
+
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
@@ -127,7 +165,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
       {
         toggleAddIncome && (
           <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
-            <AddIncome setToggleAddIncome={setToggleAddIncome} />
+            <AddIncome setToggleAddIncome={setToggleAddIncome} mutation={updateIncomeTransactionsMutation} />
           </div>
         )
       }
