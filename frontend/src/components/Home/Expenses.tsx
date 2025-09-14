@@ -79,7 +79,10 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
 
 
     try {
-      const response = await axios.post("http://localhost:3001/api/transaction/expense", body);
+      const response = await axios.post(
+        "http://localhost:3001/api/transaction/expense",
+        body
+      );
       console.log(response)
       if (response.status === 201) {
         setToggleAddExpense(false);

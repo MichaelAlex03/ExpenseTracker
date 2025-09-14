@@ -20,6 +20,17 @@ interface IncomeProps {
   setToggleSideBar: (val: boolean) => void;
 }
 
+//Income object returned from POST api call
+interface IncomeResponseObject {
+  incomeAmount: string
+  incomeDescription: string
+  category: string
+  frequency: string
+  dateOfIncome: Date
+  additionalNotes: string
+}
+
+//Income object for creation of income transaction
 interface IncomeObject {
   amount: string
   incomeDescription: string
@@ -41,7 +52,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   const [averagePerSource, setAveragePerSource] = useState<string>("0.00");
   const [toggleAddIncome, setToggleAddIncome] = useState<boolean>(false);
 
-  const [incomeTransactions, setIncomeTransactions] = useState<IncomeObject[]>([])
+  const [incomeTransactions, setIncomeTransactions] = useState<IncomeResponseObject[]>([]);
 
 
   const fetchIncomeTransactionData = async () => {
@@ -63,10 +74,44 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
     staleTime: Infinity,
   });
 
+  const calculateStatsDirectly = () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    const monthlyTransactions = incomeTransactions.filter(transaction => {
+      const transactionDate = new Date(transaction.dateOfIncome);
+      return transactionDate.getMonth() === currentMonth &&
+        transactionDate.getFullYear() === currentYear;
+    });
+
+    const total = monthlyTransactions.reduce((sum, transaction) => {
+      return sum + parseFloat(transaction.incomeAmount || "0");
+    }, 0);
+
+    const recurring = monthlyTransactions.reduce((sum, transaction) => {
+      if (transaction.frequency === "weekly") {
+        return sum + (4 * parseFloat(transaction.incomeAmount || "0"));
+      } else if (transaction.frequency === "bi-weekly") {
+        return sum + (2 * parseFloat(transaction.incomeAmount || "0"));
+      } else if (transaction.frequency === "monthly"){
+        return sum + parseFloat(transaction.incomeAmount || "0")
+      } else {
+        return sum;
+      }
+    }, 0);
+
+
+    setAveragePerSource((total / monthlyTransactions.length).toFixed(2));
+    setMonthlyRecurring(recurring.toFixed(2));
+    setTotalMonthlyIncome(total.toFixed(2));
+
+  }
+
+  console.log("monthlyIncome", totalMonthlyIncome)
   console.log(incomeTransactions)
 
   const handleAddIncome = async (incomeObject: IncomeObject) => {
-
 
     // This is the format of the AddIncomeDto in the spring backend
     let body = {
@@ -93,16 +138,24 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   const updateIncomeTransactionsMutation = useMutation({
     mutationFn: handleAddIncome,
     onSuccess: (newIncomeTransaction) => {
-      queryClient.setQueryData(["income", auth.userId], (oldData: IncomeObject[]) => 
-      [...(oldData || []), newIncomeTransaction])
+      queryClient.setQueryData(["income", auth.userId], (oldData: IncomeObject[]) =>
+        [...(oldData || []), newIncomeTransaction])
     }
   });
 
+  //Make sure to keep incomeTransactions insync with local cache
   useEffect(() => {
     if (data) {
-      setIncomeTransactions(data)
+      setIncomeTransactions(data);
     }
-  }, [data])
+  }, [data]);
+
+  //Recalculate stats everytime incomeTransactions state is modified
+  useEffect(() => {
+    if (incomeTransactions.length > 0) {
+      calculateStatsDirectly();
+    }
+  }, [incomeTransactions]);
 
   console.log("cache", data);
   console.log("income", incomeTransactions);
