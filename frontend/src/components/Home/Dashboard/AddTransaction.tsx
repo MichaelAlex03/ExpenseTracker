@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import axios from 'axios';
 import useAuth from '../../../../hooks/useAuth';
+import type { UseMutationResult } from '@tanstack/react-query';
 
 interface BaseTransaction {
   amount: string;

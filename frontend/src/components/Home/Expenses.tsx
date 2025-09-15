@@ -21,6 +21,19 @@ interface ExpenseProps {
   setToggleSideBar: (val: boolean) => void;
 }
 
+//Expense object returned from POST api call
+interface ExpenseResponseObject {
+  id: number
+  userId: number
+  expenseAmount: string
+  expenseDescription: string
+  expenseCategory: string
+  expensePaymentMethod: string
+  dateOfExpense: Date
+  additionalNotes: string
+}
+
+//Expense object for creation of expense transaction
 interface ExpenseObject {
   amount: string
   description: string
@@ -41,12 +54,11 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   const [weeklyExpenses, setWeeklyExpenses] = useState<string>("0.00");
   const [toggleAddExpense, setToggleAddExpense] = useState<boolean>(false);
 
-  const [expenseTransactions, setExpenseTransactions] = useState<ExpenseObject[]>([]);
+  const [expenseTransactions, setExpenseTransactions] = useState<ExpenseResponseObject[]>([]);
 
   console.log(toggleAddExpense)
 
   const fetchExpenseTransactionData = async () => {
-    console.log(auth.userId);
     try {
       const response = await axios.get(
         `http://localhost:3001/api/transaction/expense?userId=${auth.userId}`,
@@ -63,6 +75,52 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
     queryFn: fetchExpenseTransactionData,
     staleTime: Infinity
   });
+
+  const calculateStatsDirectly = () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    const monthlyTransactions = expenseTransactions.filter(transaction => {
+      const transactionDate = new Date(transaction.dateOfExpense);
+      return transactionDate.getMonth() === currentMonth &&
+        transactionDate.getFullYear() === currentYear;
+    });
+
+    const total = monthlyTransactions.reduce((sum, transaction) => {
+      return sum + parseFloat(transaction.expenseAmount || "0");
+    }, 0);
+
+    // Calculate current week boundaries
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+    // Calculate start of week (Sunday)
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    // Calculate end of week (Saturday)
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const weeklyTransactions = expenseTransactions.filter(transaction => {
+      const transactionDate = new Date(transaction.dateOfExpense);
+      return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
+    });
+
+    console.log("weeklyTransactions", weeklyTransactions)
+
+    const weeklyTotal = weeklyTransactions.reduce((sum, transaction) => {
+      return sum + parseFloat(transaction.expenseAmount || "0");
+    }, 0)
+
+    setWeeklyExpenses(weeklyTotal.toFixed(2));
+    setAverageExpensePerTransaction((total / monthlyTransactions.length).toFixed(2));
+    setMonthlyExpenses(total.toFixed(2));
+
+  }
 
   const handleAddExpense = async (expenseObject: ExpenseObject) => {
 
@@ -97,7 +155,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   const updateExpenseTransactionsMutation = useMutation({
     mutationFn: handleAddExpense,
     onSuccess: (newExpenseTransaction) => {
-      queryClient.setQueryData(["expenses", auth.userId], (oldData: ExpenseObject[]) =>
+      queryClient.setQueryData(["expenses", auth.userId], (oldData: ExpenseResponseObject[]) =>
         [...(oldData || []), newExpenseTransaction])
     }
   });
@@ -107,6 +165,12 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
       setExpenseTransactions(data)
     }
   }, [data])
+
+  useEffect(() => {
+    if (expenseTransactions.length > 0) {
+      calculateStatsDirectly();
+    }
+  }, [expenseTransactions])
 
   console.log("cache", data)
   console.log("expenses", expenseTransactions)

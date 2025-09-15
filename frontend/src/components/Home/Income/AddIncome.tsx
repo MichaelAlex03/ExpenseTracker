@@ -11,6 +11,7 @@ import {
 import useAuth from '../../../../hooks/useAuth';
 import type { UseMutationResult } from '@tanstack/react-query';
 
+//Income object for creation of income transaction
 interface IncomeObjectProps {
   amount: string
   incomeDescription: string
@@ -20,9 +21,28 @@ interface IncomeObjectProps {
   additionalNotes: string
 }
 
+//Income object returned from POST api call
+interface IncomeResponseObject {
+  id: number
+  incomeAmount: string
+  incomeDescription: string
+  incomeCategory: string
+  incomeFrequency: string
+  dateOfIncome: Date
+  additionalNotes: string
+  userId: number
+}
+
+/**
+ * * For useMutationResult generic parameters:
+ * @template TData - Return type from mutation (IncomeResponseObject)
+ * @template TError - Error: The error type that can be thrown  
+ * @template TVariables - IncomeObjectProps: The input data type for the mutation
+ * @template TContext - unknown: Context type (not used)
+ */
 interface AddIncomeProps {
   setToggleAddIncome: React.Dispatch<React.SetStateAction<boolean>>;
-  mutation: UseMutationResult<any, Error, IncomeObjectProps, unknown>;
+  mutation: UseMutationResult<IncomeResponseObject, Error, IncomeObjectProps, unknown>;
 }
 
 const incomeCategories = [
@@ -47,7 +67,6 @@ const frequencies = [
   "one-time",
 ];
 
-const INCOME_URL = '/api/transaction/income'
 
 
 const AddIncome = ({ setToggleAddIncome, mutation }: AddIncomeProps) => {

@@ -15,26 +15,33 @@ import { useState } from "react";
 import AddTransaction from "./Dashboard/AddTransaction";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
+import axios from "axios";
 
 interface DashboardProps {
   toggleSideBar: boolean;
   setToggleSideBar: (val: boolean) => void;
 }
 
-interface IncomeTransaction {
-  amount: string
+//Income object returned from POST api call
+interface IncomeResponseObject {
+  id: number
+  incomeAmount: string
   incomeDescription: string
-  category: string
-  frequency: string
+  incomeCategory: string
+  incomeFrequency: string
   dateOfIncome: Date
   additionalNotes: string
+  userId: number
 }
 
-interface ExpenseTransaction {
-  amount: string
-  description: string
-  category: string
-  paymentMethod: string
+//Expense object returned from POST api call
+interface ExpenseResponseObject {
+  id: number
+  userId: number
+  expenseAmount: string
+  expenseDescription: string
+  expenseCategory: string
+  expensePaymentMethod: string
   dateOfExpense: Date
   additionalNotes: string
 }
@@ -50,44 +57,73 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const [totalExpenses, setTotalExpenses] = useState<string>("0.00");
   const [savingsRate, setSavingsRate] = useState<string>("0.00");
   const [toggleAddTransaction, setToggleAddTransaction] = useState<boolean>(false);
-  const [incomeTransaction, setIncomeTransaction] = useState<IncomeTransaction>({
-    amount: '',
+  const [incomeTransaction, setIncomeTransactions] = useState<IncomeResponseObject>({
+    id: 0,
+    incomeAmount: '',
     incomeDescription: '',
-    category: '',
-    frequency: '',
+    incomeCategory: '',
+    incomeFrequency: '',
     dateOfIncome: new Date(),
+    additionalNotes: '',
+    userId: 0
+  });
+  const [expenseTransaction, setExpenseTransactions] = useState<ExpenseResponseObject>({
+    id: 0,
+    userId: 0,
+    expenseAmount: '',
+    expenseDescription: '',
+    expenseCategory: '',
+    expensePaymentMethod: '',
+    dateOfExpense: new Date(),
     additionalNotes: ''
-  } as IncomeTransaction);
-  const [expenseTransaction, setExpenseTransaction] = useState<ExpenseTransaction>({} as ExpenseTransaction);
+  });
 
   const fetchExpenseTransactionData = async () => {
-
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/transaction/expense?userId=${auth.userId}`,
+      )
+      setExpenseTransactions(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const fetchIncomeTransactionData = async () => {
-
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/transaction/income?userId=${auth.userId}`,
+      )
+      setIncomeTransactions(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-
   const { data: expenseData, isLoading: expenseLoading } = useQuery({
-    queryKey: ["expenses", auth?.email],
+    queryKey: ["expenses", auth?.userId],
     queryFn: fetchExpenseTransactionData,
     staleTime: Infinity
   });
 
   const { data: incomeData, isLoading: incomeLoading } = useQuery({
-    queryKey: ["income", auth?.email],
+    queryKey: ["income", auth?.userId],
     queryFn: fetchIncomeTransactionData,
     staleTime: Infinity
   });
 
   const updateExpenseTransactionsMutation = useMutation({
-    
+
   });
 
   const updateIncomeTransactionsMutation = useMutation({
 
   });
+
+  console.log("cache", expenseData);
+  console.log("cacheeee", incomeData);
 
 
   return (

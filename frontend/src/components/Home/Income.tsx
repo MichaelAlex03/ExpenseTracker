@@ -22,12 +22,14 @@ interface IncomeProps {
 
 //Income object returned from POST api call
 interface IncomeResponseObject {
+  id: number
   incomeAmount: string
   incomeDescription: string
-  category: string
-  frequency: string
+  incomeCategory: string
+  incomeFrequency: string
   dateOfIncome: Date
   additionalNotes: string
+  userId: number
 }
 
 //Income object for creation of income transaction
@@ -56,7 +58,6 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
 
 
   const fetchIncomeTransactionData = async () => {
-    console.log(auth.userId);
     try {
       const response = await axios.get(
         `http://localhost:3001/api/transaction/income?userId=${auth.userId}`,
@@ -90,16 +91,17 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
     }, 0);
 
     const recurring = monthlyTransactions.reduce((sum, transaction) => {
-      if (transaction.frequency === "weekly") {
+      if (transaction.incomeFrequency === "weekly") {
         return sum + (4 * parseFloat(transaction.incomeAmount || "0"));
-      } else if (transaction.frequency === "bi-weekly") {
+      } else if (transaction.incomeFrequency === "bi-weekly") {
         return sum + (2 * parseFloat(transaction.incomeAmount || "0"));
-      } else if (transaction.frequency === "monthly"){
+      } else if (transaction.incomeFrequency === "monthly"){
         return sum + parseFloat(transaction.incomeAmount || "0")
       } else {
         return sum;
       }
     }, 0);
+
 
 
     setAveragePerSource((total / monthlyTransactions.length).toFixed(2));
@@ -108,7 +110,8 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
 
   }
 
-  console.log("monthlyIncome", totalMonthlyIncome)
+  console.log("monthlyIncome", totalMonthlyIncome);
+  console.log("recurring", monthlyRecurring);
   console.log(incomeTransactions)
 
   const handleAddIncome = async (incomeObject: IncomeObject) => {
@@ -138,7 +141,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   const updateIncomeTransactionsMutation = useMutation({
     mutationFn: handleAddIncome,
     onSuccess: (newIncomeTransaction) => {
-      queryClient.setQueryData(["income", auth.userId], (oldData: IncomeObject[]) =>
+      queryClient.setQueryData(["income", auth.userId], (oldData: IncomeResponseObject[]) =>
         [...(oldData || []), newIncomeTransaction])
     }
   });

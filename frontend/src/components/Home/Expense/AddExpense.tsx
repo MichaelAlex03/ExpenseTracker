@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { UseMutationResult } from '@tanstack/react-query';
 
+//Expense object for creation of expense transaction
 interface ExpenseObjectProps {
     amount: string
     description: string
@@ -19,9 +20,28 @@ interface ExpenseObjectProps {
     additionalNotes: string
 }
 
+//Expense object returned from POST api call
+interface ExpenseResponseObject {
+    id: number
+    userId: number
+    expenseAmount: string
+    expenseDescription: string
+    expenseCategory: string
+    expensePaymentMethod: string
+    dateOfExpense: Date
+    additionalNotes: string
+}
+
+/**
+ * * For useMutationResult generic parameters:
+ * @template TData - Return type from mutation (ExpenseResponseObject)
+ * @template TError - Error: The error type that can be thrown  
+ * @template TVariables - ExpenseObjectProps: The input data type for the mutation
+ * @template TContext - unknown: Context type (not used)
+ */
 interface AddExpenseProps {
     setToggleAddExpense: React.Dispatch<React.SetStateAction<boolean>>;
-    mutation: UseMutationResult<any, Error, ExpenseObjectProps, unknown>;
+    mutation: UseMutationResult<ExpenseResponseObject, Error, ExpenseObjectProps, unknown>;
 }
 
 const categories = [
