@@ -1,8 +1,10 @@
 package com.spring.transactionservice.responses;
 
+import lombok.Getter;
+
 import java.util.Date;
 
-
+@Getter
 public class AddExpenseTransactionResponse {
     private Integer id;
     private Date dateOfExpense;

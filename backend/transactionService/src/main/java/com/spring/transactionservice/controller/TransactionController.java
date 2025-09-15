@@ -47,19 +47,24 @@ public class TransactionController {
 
     @PostMapping("/expense")
     public ResponseEntity<AddExpenseTransactionResponse> addExpenseTransaction(@RequestBody AddExpenseDto expense){
-        Expense newExpense = expenseService.addExpenseTransaction(expense);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new AddExpenseTransactionResponse(
-                        newExpense.getId(),
-                        newExpense.getDateOfExpense(),
-                        newExpense.getExpenseDescription(),
-                        newExpense.getExpenseAmount(),
-                        newExpense.getExpenseCategory(),
-                        newExpense.getExpensePaymentMethod(),
-                        newExpense.getAdditionalNotes(),
-                        newExpense.getUserId()
-                ));
+        try{
+            Expense newExpense = expenseService.addExpenseTransaction(expense);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new AddExpenseTransactionResponse(
+                            newExpense.getId(),
+                            newExpense.getDateOfExpense(),
+                            newExpense.getExpenseDescription(),
+                            newExpense.getExpenseAmount(),
+                            newExpense.getExpenseCategory(),
+                            newExpense.getExpensePaymentMethod(),
+                            newExpense.getAdditionalNotes(),
+                            newExpense.getUserId()
+                    ));
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @GetMapping("/expense")

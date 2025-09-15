@@ -1,9 +1,11 @@
 package com.spring.transactionservice.responses;
 
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
 
+@Getter
 public class AddIncomeTransactionResponse {
     private Integer id;
     private Date dateOfIncome;
