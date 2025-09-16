@@ -22,6 +22,7 @@ interface BaseTransaction {
   additionalNotes: string;
 }
 
+//Income object for creation of income transaction
 interface IncomeTransaction extends BaseTransaction {
   transactionType: 'income';
   incomeDescription: string;
@@ -29,6 +30,7 @@ interface IncomeTransaction extends BaseTransaction {
   frequency: string;
 }
 
+//Expense object for creation of expense transaction
 interface ExpenseTransaction extends BaseTransaction {
   transactionType: 'expense';
   description: string;
@@ -36,10 +38,43 @@ interface ExpenseTransaction extends BaseTransaction {
   paymentMethod: string;
 }
 
+//Income object returned from POST api call
+interface IncomeResponseObject {
+  id: number
+  incomeAmount: string
+  incomeDescription: string
+  incomeCategory: string
+  incomeFrequency: string
+  dateOfIncome: Date
+  additionalNotes: string
+  userId: number
+}
+
+//Expense object returned from POST api call
+interface ExpenseResponseObject {
+  id: number
+  userId: number
+  expenseAmount: string
+  expenseDescription: string
+  expenseCategory: string
+  expensePaymentMethod: string
+  dateOfExpense: Date
+  additionalNotes: string
+}
+
 type Transaction = IncomeTransaction | ExpenseTransaction;
 
+/**
+ * * For useMutationResult generic parameters:
+ * @template TData - Return type from mutation (IncomeResponseObject)
+ * @template TError - Error: The error type that can be thrown  
+ * @template TVariables - IncomeObjectProps: The input data type for the mutation
+ * @template TContext - unknown: Context type (not used)
+ */
 interface AddTransactionProps {
   setToggleAddTransaction: React.Dispatch<React.SetStateAction<boolean>>;
+  incomeMutation: UseMutationResult<IncomeResponseObject, Error, IncomeTransaction, unknown>;
+  expenseMutation: UseMutationResult<ExpenseResponseObject, Error, ExpenseTransaction, unknown>;
 }
 
 const incomeCategories = [
@@ -89,7 +124,7 @@ const paymentMethods = [
   "Check",
 ];
 
-const AddTransaction = ({ setToggleAddTransaction }: AddTransactionProps) => {
+const AddTransaction = ({ setToggleAddTransaction, incomeMutation, expenseMutation }: AddTransactionProps) => {
 
   const { auth } = useAuth();
 
@@ -147,60 +182,8 @@ const AddTransaction = ({ setToggleAddTransaction }: AddTransactionProps) => {
   };
 
 
-  const handleAddExpense = async () => {
 
-    let body = {}
-
-    if (transaction.transactionType === 'expense') {
-      // This is the format of the AddExpenseDto in the spring backend
-      body = {
-        dateOfExpense: transaction.dateOfTransaction,
-        expenseDescription: transaction.description,
-        expenseAmount: transaction.amount,
-        expenseCategory: transaction.category,
-        expensePaymentMethod: transaction.paymentMethod,
-        additionalNotes: transaction.additionalNotes,
-        userId: auth.userId
-      }
-    }
-
-
-    try {
-      const response = await axios.post("http://localhost:3001/api/transaction/expense", body);
-      if (response.status === 201) {
-        setToggleAddTransaction(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleAddIncome = async () => {
-    let body = {}
-
-    if (transaction.transactionType === 'income') {
-      // This is the format of the AddIncomeDto in the spring backend
-      body = {
-        dateOfIncome: transaction.dateOfTransaction,
-        incomeAmount: transaction.amount,
-        incomeCategory: transaction.category,
-        incomeFrequency: transaction.frequency,
-        additionalNotes: transaction.additionalNotes,
-        userId: auth.userId,
-        incomeDescription: transaction.incomeDescription
-      }
-    }
-
-
-      try {
-        const response = await axios.post("http://localhost:3001/api/transaction/income", body);
-        if (response.status === 201) {
-          setToggleAddTransaction(false);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
+ 
 
     return (
       <div className='fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50'>
@@ -455,7 +438,7 @@ const AddTransaction = ({ setToggleAddTransaction }: AddTransactionProps) => {
                 ? 'bg-green-500 hover:bg-green-600 text-white'
                 : 'bg-red-500 hover:bg-red-600 text-white'
                 }`}
-              onClick={transactionType === 'income' ? handleAddIncome : handleAddExpense}
+              onClick={() => transactionType === 'income' ? incomeMutation.mutate(transaction as IncomeTransaction) : expenseMutation.mutate(transaction as ExpenseTransaction)}
             >
               <Save className='h-4 w-4' />
               <span className='text-sm'>Save {transactionType === 'income' ? 'Income' : 'Expense'}</span>

@@ -42,6 +42,7 @@ interface IncomeObject {
   additionalNotes: string
 }
 
+
 const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
 
   const { auth } = useAuth();
@@ -53,6 +54,10 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   const [monthlyRecurring, setMonthlyRecurring] = useState<string>("0.00");
   const [averagePerSource, setAveragePerSource] = useState<string>("0.00");
   const [toggleAddIncome, setToggleAddIncome] = useState<boolean>(false);
+
+  // Month selector state management
+  const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false); // Controls visibility of month selector modal
+  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date()); // Tracks which month is currently selected for viewing stats
 
   const [incomeTransactions, setIncomeTransactions] = useState<IncomeResponseObject[]>([]);
 
@@ -95,7 +100,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
         return sum + (4 * parseFloat(transaction.incomeAmount || "0"));
       } else if (transaction.incomeFrequency === "bi-weekly") {
         return sum + (2 * parseFloat(transaction.incomeAmount || "0"));
-      } else if (transaction.incomeFrequency === "monthly"){
+      } else if (transaction.incomeFrequency === "monthly") {
         return sum + parseFloat(transaction.incomeAmount || "0")
       } else {
         return sum;
@@ -138,7 +143,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
     }
   }
 
-  const updateIncomeTransactionsMutation = useMutation({
+  const addIncomeTransactionsMutation = useMutation({
     mutationFn: handleAddIncome,
     onSuccess: (newIncomeTransaction) => {
       queryClient.setQueryData(["income", auth.userId], (oldData: IncomeResponseObject[]) =>
@@ -186,14 +191,31 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
           </p>
         </div>
 
-        <button
-          className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
+        {/* Button container - holds both month selector and add transaction buttons */}
+        <div className="flex flex-row gap-3">
+          {/* Month Selector Button - Blue button that shows current selected month */}
+          <button
+            className="flex flex-row items-center gap-3 bg-blue-600 rounded-xl p-2 cursor-pointer h-10 px-4
+          "
+            onClick={() => setToggleMonthSelector(true)} // Opens the month selector modal
+          >
+            <Calendar className="w-4 h-4" color="white" /> {/* Calendar icon */}
+            <p className="text-white text-sm font-bold">
+              {/* Dynamically displays selected month/year (e.g., "January 2024") */}
+              {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </p>
+          </button>
+
+          {/* Original Add Transaction Button - unchanged */}
+          <button
+            className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
         "
-          onClick={() => setToggleAddIncome(true)}
-        >
-          <PlusIcon className="w-5 h-5" color="white" />
-          <p className="text-white text-base font-bold">Add Income</p>
-        </button>
+            onClick={() => setToggleAddIncome(true)}
+          >
+            <PlusIcon className="w-5 h-5" color="white" />
+            <p className="text-white text-base font-bold">Add Income</p>
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-4 grid-cols-3 w-full p-6">
@@ -226,7 +248,99 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
       {
         toggleAddIncome && (
           <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
-            <AddIncome setToggleAddIncome={setToggleAddIncome} mutation={updateIncomeTransactionsMutation} />
+            <AddIncome setToggleAddIncome={setToggleAddIncome} mutation={addIncomeTransactionsMutation} />
+          </div>
+        )
+      }
+       {/* Month Selector Modal - Conditionally rendered when toggleMonthSelector is true */}
+       {
+        toggleMonthSelector && (
+          <div className="fixed inset-0 w-full h-full bg-black/40 z-50 flex items-center justify-center">
+            {/* Modal content container - white rounded box */}
+            <div className="bg-white rounded-xl p-6 w-[400px]">
+              <div className="flex flex-col gap-4">
+                {/* Modal header with title and close button */}
+                <div className="flex flex-row items-center justify-between">
+                  <h2 className="text-xl font-semibold">Select Month</h2>
+                  <button
+                    onClick={() => setToggleMonthSelector(false)} // Closes modal when clicked
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕ {/* Close button (X) */}
+                  </button>
+                </div>
+                
+                {/* Month grid - 3 columns x 4 rows for all 12 months */}
+                <div className="grid grid-cols-3 gap-3">
+                  {Array.from({ length: 12 }, (_, i) => {
+                    const date = new Date(selectedMonth.getFullYear(), i, 1); // Create date for each month
+                    const monthName = date.toLocaleDateString('en-US', { month: 'short' }); // Get abbreviated month name (Jan, Feb, etc.)
+                    const isSelected = selectedMonth.getMonth() === i; // Check if this month is currently selected
+                    
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          // When month is clicked: update selectedMonth and close modal
+                          setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
+                          setToggleMonthSelector(false);
+                        }}
+                        className={`p-3 rounded-lg border-2 transition-colors ${
+                          isSelected 
+                            ? 'border-blue-500 bg-blue-50 text-blue-700' // Selected month styling (blue)
+                            : 'border-gray-200 hover:border-gray-300' // Unselected month styling (gray)
+                        }`}
+                      >
+                        {monthName} {/* Display month name (Jan, Feb, etc.) */}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {/* Year navigation buttons */}
+                <div className="flex flex-row gap-2">
+                  {/* Previous Year Button */}
+                  <button
+                    onClick={() => {
+                      const newYear = selectedMonth.getFullYear() - 1; // Decrease year by 1
+                      setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1)); // Update selectedMonth with new year
+                    }}
+                    className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    ← Previous Year
+                  </button>
+                  {/* Next Year Button */}
+                  <button
+                    onClick={() => {
+                      const newYear = selectedMonth.getFullYear() + 1; // Increase year by 1
+                      setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1)); // Update selectedMonth with new year
+                    }}
+                    className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    Next Year →
+                  </button>
+                </div>
+                
+                {/* Today button - resets to current month/year */}
+                <button
+                  onClick={() => {
+                    setSelectedMonth(new Date()); // Set to current month and year
+                    setToggleMonthSelector(false); // Close modal
+                  }}
+                  className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Today
+                </button>
+                
+                {/* Current selection display */}
+                <div className="text-center">
+                  <p className="text-lg font-semibold">
+                    {/* Show full month name and year (e.g., "January 2024") */}
+                    {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )
       }
