@@ -71,114 +71,56 @@ interface ExpenseResponseObject {
 
 const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const queryClient = useQueryClient();
-
   const { auth } = useAuth();
-  console.log(auth)
+
+  // Define months array at the top level of the component
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const [totalBalance, setTotalBalance] = useState<string>("0.00");
   const [totalIncome, setTotalIncome] = useState<string>("0.00");
   const [totalExpenses, setTotalExpenses] = useState<string>("0.00");
   const [savingsRate, setSavingsRate] = useState<string>("0.00");
   const [toggleAddTransaction, setToggleAddTransaction] = useState<boolean>(false);
-  
-  // Month selector state management
-  const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false); // Controls visibility of month selector modal
-  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date()); // Tracks which month is currently selected for viewing stats
-  const [incomeTransactions, setIncomeTransactions] = useState<IncomeResponseObject>({
-    id: 0,
-    incomeAmount: '',
-    incomeDescription: '',
-    incomeCategory: '',
-    incomeFrequency: '',
-    dateOfIncome: new Date(),
-    additionalNotes: '',
-    userId: 0
-  });
-  const [expenseTransactions, setExpenseTransactions] = useState<ExpenseResponseObject>({
-    id: 0,
-    userId: 0,
-    expenseAmount: '',
-    expenseDescription: '',
-    expenseCategory: '',
-    expensePaymentMethod: '',
-    dateOfExpense: new Date(),
-    additionalNotes: ''
-  });
-
-  // const calculateStatsDirectly = () => {
-  //   const currentDate = new Date();
-  //   const currentMonth = currentDate.getMonth();
-  //   const currentYear = currentDate.getFullYear();
-
-  //   const monthlyTransactions = incomeTransactions.filter(transaction => {
-  //     const transactionDate = new Date(transaction.dateOfIncome);
-  //     return transactionDate.getMonth() === currentMonth &&
-  //       transactionDate.getFullYear() === currentYear;
-  //   });
-
-  //   const total = monthlyTransactions.reduce((sum, transaction) => {
-  //     return sum + parseFloat(transaction.incomeAmount || "0");
-  //   }, 0);
-
-  //   const recurring = monthlyTransactions.reduce((sum, transaction) => {
-  //     if (transaction.incomeFrequency === "weekly") {
-  //       return sum + (4 * parseFloat(transaction.incomeAmount || "0"));
-  //     } else if (transaction.incomeFrequency === "bi-weekly") {
-  //       return sum + (2 * parseFloat(transaction.incomeAmount || "0"));
-  //     } else if (transaction.incomeFrequency === "monthly"){
-  //       return sum + parseFloat(transaction.incomeAmount || "0")
-  //     } else {
-  //       return sum;
-  //     }
-  //   }, 0);
-
-
-
-   
-
-  // }
+  const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false);
+  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
 
   const fetchExpenseTransactionData = async () => {
     try {
       const response = await axios.get(
         `http://localhost:3001/api/transaction/expense?userId=${auth.userId}`,
-      )
-      setExpenseTransactions(response.data);
+      );
       return response.data;
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const fetchIncomeTransactionData = async () => {
     try {
       const response = await axios.get(
         `http://localhost:3001/api/transaction/income?userId=${auth.userId}`,
-      )
-      setIncomeTransactions(response.data);
+      );
       return response.data;
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
-  const { data: expenseData, isLoading: expenseLoading } = useQuery({
+  const { data: expenseData } = useQuery({
     queryKey: ["expenses", auth?.userId],
     queryFn: fetchExpenseTransactionData,
     staleTime: Infinity
   });
 
-  const { data: incomeData, isLoading: incomeLoading } = useQuery({
+  const { data: incomeData } = useQuery({
     queryKey: ["income", auth?.userId],
     queryFn: fetchIncomeTransactionData,
     staleTime: Infinity
   });
 
   const handleAddExpenseTransaction = async (expenseObject: ExpenseTransaction) => {
-    let body = {}
-
-    // This is the format of the AddExpenseDto in the spring backend
-    body = {
+    const body = {
       dateOfExpense: expenseObject.dateOfTransaction,
       expenseDescription: expenseObject.description,
       expenseAmount: expenseObject.amount,
@@ -186,8 +128,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
       expensePaymentMethod: expenseObject.paymentMethod,
       additionalNotes: expenseObject.additionalNotes,
       userId: auth.userId
-
-    }
+    };
 
     try {
       const response = await axios.post("http://localhost:3001/api/transaction/expense", body);
@@ -198,13 +139,10 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleAddIncomeTransactions = async (incomeObject: IncomeTransaction) => {
-    let body = {}
-
-    // This is the format of the AddIncomeDto in the spring backend
-    body = {
+    const body = {
       dateOfIncome: incomeObject.dateOfTransaction,
       incomeAmount: incomeObject.amount,
       incomeCategory: incomeObject.category,
@@ -212,9 +150,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
       additionalNotes: incomeObject.additionalNotes,
       userId: auth.userId,
       incomeDescription: incomeObject.incomeDescription
-
-    }
-
+    };
 
     try {
       const response = await axios.post("http://localhost:3001/api/transaction/income", body);
@@ -225,7 +161,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const addExpenseTransactionsMutation = useMutation({
     mutationFn: handleAddExpenseTransaction,
@@ -243,16 +179,46 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
     }
   });
 
-  //Recalculate stats everytime incomeTransactions state is modified
+  // Function to calculate stats based on the selected month
+  const calculateStatsForMonth = () => {
+    if (!incomeData || !expenseData) return;
+
+    const selectedMonthIncome = incomeData.filter((income: IncomeResponseObject) => {
+      const incomeDate = new Date(income.dateOfIncome);
+      return (
+        incomeDate.getMonth() === selectedMonth.getMonth() &&
+        incomeDate.getFullYear() === selectedMonth.getFullYear()
+      );
+    });
+
+    const selectedMonthExpenses = expenseData.filter((expense: ExpenseResponseObject) => {
+      const expenseDate = new Date(expense.dateOfExpense);
+      return (
+        expenseDate.getMonth() === selectedMonth.getMonth() &&
+        expenseDate.getFullYear() === selectedMonth.getFullYear()
+      );
+    });
+
+    const totalIncomeForMonth = selectedMonthIncome.reduce(
+      (sum: number, income: IncomeResponseObject) => sum + parseFloat(income.incomeAmount),
+      0
+    );
+    const totalExpensesForMonth = selectedMonthExpenses.reduce(
+      (sum: number, expense: ExpenseResponseObject) => sum + parseFloat(expense.expenseAmount),
+      0
+    );
+
+    setTotalIncome(totalIncomeForMonth.toFixed(2));
+    setTotalExpenses(totalExpensesForMonth.toFixed(2));
+    setTotalBalance((totalIncomeForMonth - totalExpensesForMonth).toFixed(2));
+
+    const savingsRate = totalIncomeForMonth > 0 ? ((totalIncomeForMonth - totalExpensesForMonth) / totalIncomeForMonth) * 100 : 0;
+    setSavingsRate(savingsRate.toFixed(2));
+  };
+
   useEffect(() => {
-    // if (incomeTransactions) {
-    //   calculateStatsDirectly();
-    // }
-  }, [incomeTransactions]);
-
-  console.log("cache", expenseData);
-  console.log("cacheeee", incomeData);
-
+    calculateStatsForMonth();
+  }, [selectedMonth, incomeData, expenseData]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
@@ -276,25 +242,19 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
           </p>
         </div>
 
-        {/* Button container - holds both month selector and add transaction buttons */}
         <div className="flex flex-row gap-3">
-          {/* Month Selector Button - Blue button that shows current selected month */}
           <button
-            className="flex flex-row items-center gap-3 bg-blue-600 rounded-xl p-2 cursor-pointer h-10 px-4
-          "
-            onClick={() => setToggleMonthSelector(true)} // Opens the month selector modal
+            className="flex flex-row items-center gap-3 bg-blue-600 rounded-xl p-2 cursor-pointer h-10 px-4"
+            onClick={() => setToggleMonthSelector(true)}
           >
-            <Calendar className="w-4 h-4" color="white" /> {/* Calendar icon */}
+            <Calendar className="w-4 h-4" color="white" />
             <p className="text-white text-sm font-bold">
-              {/* Dynamically displays selected month/year (e.g., "January 2024") */}
               {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </p>
           </button>
           
-          {/* Original Add Transaction Button - unchanged */}
           <button
-            className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10
-          "
+            className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10"
             onClick={() => setToggleAddTransaction(true)}
           >
             <PlusIcon className="w-5 h-5" color="white" />
@@ -316,121 +276,117 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
 
       <div className="grid gap-4 grid-cols-5 w-full p-6">
         <div className="col-span-3">
-          <MonthlyOverview />
+          <MonthlyOverview 
+            incomeData={incomeData || []}
+            expenseData={expenseData || []}
+            selectedMonth={selectedMonth}
+          />
         </div>
         <div className="col-span-2">
-          <RecentTransactions />
+          <RecentTransactions 
+            incomeData={incomeData || []}
+            expenseData={expenseData || []}
+            selectedMonth={selectedMonth}
+          />
         </div>
       </div>
 
       <div className="grid gap-4 grid-cols-2 w-full p-6">
-        <TopCategories />
+        <TopCategories 
+          incomeData={incomeData || []}
+          expenseData={expenseData || []}
+          selectedMonth={selectedMonth}
+        />
         <BudgetProgress />
       </div>
-      {
-        toggleAddTransaction && (
-          <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
-            <AddTransaction
-              setToggleAddTransaction={setToggleAddTransaction}
-              incomeMutation={addIncomeTransactionsMutation}
-              expenseMutation={addExpenseTransactionsMutation}
-            />
-          </div>
-        )
-      }
+
+      {toggleAddTransaction && (
+        <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
+          <AddTransaction
+            setToggleAddTransaction={setToggleAddTransaction}
+            incomeMutation={addIncomeTransactionsMutation}
+            expenseMutation={addExpenseTransactionsMutation}
+          />
+        </div>
+      )}
       
-      {/* Month Selector Modal - Conditionally rendered when toggleMonthSelector is true */}
-      {
-        toggleMonthSelector && (
-          <div className="fixed inset-0 w-full h-full bg-black/40 z-50 flex items-center justify-center">
-            {/* Modal content container - white rounded box */}
-            <div className="bg-white rounded-xl p-6 w-[400px]">
-              <div className="flex flex-col gap-4">
-                {/* Modal header with title and close button */}
-                <div className="flex flex-row items-center justify-between">
-                  <h2 className="text-xl font-semibold">Select Month</h2>
-                  <button
-                    onClick={() => setToggleMonthSelector(false)} // Closes modal when clicked
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    ✕ {/* Close button (X) */}
-                  </button>
-                </div>
-                
-                {/* Month grid - 3 columns x 4 rows for all 12 months */}
-                <div className="grid grid-cols-3 gap-3">
-                  {Array.from({ length: 12 }, (_, i) => {
-                    const date = new Date(selectedMonth.getFullYear(), i, 1); // Create date for each month
-                    const monthName = date.toLocaleDateString('en-US', { month: 'short' }); // Get abbreviated month name (Jan, Feb, etc.)
-                    const isSelected = selectedMonth.getMonth() === i; // Check if this month is currently selected
-                    
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          // When month is clicked: update selectedMonth and close modal
-                          setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
-                          setToggleMonthSelector(false);
-                        }}
-                        className={`p-3 rounded-lg border-2 transition-colors ${
-                          isSelected 
-                            ? 'border-blue-500 bg-blue-50 text-blue-700' // Selected month styling (blue)
-                            : 'border-gray-200 hover:border-gray-300' // Unselected month styling (gray)
-                        }`}
-                      >
-                        {monthName} {/* Display month name (Jan, Feb, etc.) */}
-                      </button>
-                    );
-                  })}
-                </div>
-                
-                {/* Year navigation buttons */}
-                <div className="flex flex-row gap-2">
-                  {/* Previous Year Button */}
-                  <button
-                    onClick={() => {
-                      const newYear = selectedMonth.getFullYear() - 1; // Decrease year by 1
-                      setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1)); // Update selectedMonth with new year
-                    }}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                  >
-                    ← Previous Year
-                  </button>
-                  {/* Next Year Button */}
-                  <button
-                    onClick={() => {
-                      const newYear = selectedMonth.getFullYear() + 1; // Increase year by 1
-                      setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1)); // Update selectedMonth with new year
-                    }}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                  >
-                    Next Year →
-                  </button>
-                </div>
-                
-                {/* Today button - resets to current month/year */}
+      {toggleMonthSelector && (
+        <div className="fixed inset-0 w-full h-full bg-black/40 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-xl p-6 w-[400px]">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row items-center justify-between">
+                <h2 className="text-xl font-semibold">Select Month</h2>
+                <button
+                  onClick={() => setToggleMonthSelector(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-3">
+                {months.map((monthName, i) => {
+                  const isSelected = selectedMonth.getMonth() === i;
+                  
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
+                        setToggleMonthSelector(false);
+                      }}
+                      className={`p-3 rounded-lg border-2 transition-colors ${
+                        isSelected 
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      {monthName}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <div className="flex flex-row gap-2">
                 <button
                   onClick={() => {
-                    setSelectedMonth(new Date()); // Set to current month and year
-                    setToggleMonthSelector(false); // Close modal
+                    const newYear = selectedMonth.getFullYear() - 1;
+                    setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1));
                   }}
-                  className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Today
+                  ← Previous Year
                 </button>
-                
-                {/* Current selection display */}
-                <div className="text-center">
-                  <p className="text-lg font-semibold">
-                    {/* Show full month name and year (e.g., "January 2024") */}
-                    {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                  </p>
-                </div>
+                <button
+                  onClick={() => {
+                    const newYear = selectedMonth.getFullYear() + 1;
+                    setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1));
+                  }}
+                  className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Next Year →
+                </button>
+              </div>
+              
+              <button
+                onClick={() => {
+                  setSelectedMonth(new Date());
+                  setToggleMonthSelector(false);
+                }}
+                className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Today
+              </button>
+              
+              <div className="text-center">
+                <p className="text-lg font-semibold">
+                  {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </p>
               </div>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
     </div>
   );
 };
