@@ -49,6 +49,9 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
 
   const queryClient = useQueryClient();
 
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
   const [monthlyExpenses, setMonthlyExpenses] = useState<string>("0.00");
   const [averageExpensePerTransaction, setAverageExpensePerTransaction] = useState<string>("0.00");
   const [weeklyExpenses, setWeeklyExpenses] = useState<string>("0.00");
@@ -74,37 +77,29 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
     }
   }
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["expenses", auth?.userId],
     queryFn: fetchExpenseTransactionData,
     staleTime: Infinity
   });
 
   const calculateStatsDirectly = () => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-
     const monthlyTransactions = expenseTransactions.filter(transaction => {
       const transactionDate = new Date(transaction.dateOfExpense);
-      return transactionDate.getMonth() === currentMonth &&
-        transactionDate.getFullYear() === currentYear;
+      return transactionDate.getMonth() === selectedMonth.getMonth() &&
+        transactionDate.getFullYear() === selectedMonth.getFullYear();
     });
 
     const total = monthlyTransactions.reduce((sum, transaction) => {
       return sum + parseFloat(transaction.expenseAmount || "0");
     }, 0);
 
-    // Calculate current week boundaries
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-
-    // Calculate start of week (Sunday)
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - dayOfWeek);
+    // Calculate week boundaries for the selected month
+    const startOfWeek = new Date(selectedMonth);
+    const dayOfWeek = startOfWeek.getDay();
+    startOfWeek.setDate(selectedMonth.getDate() - dayOfWeek);
     startOfWeek.setHours(0, 0, 0, 0);
 
-    // Calculate end of week (Saturday)
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
     endOfWeek.setHours(23, 59, 59, 999);
@@ -114,16 +109,13 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
       return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
     });
 
-    console.log("weeklyTransactions", weeklyTransactions)
-
     const weeklyTotal = weeklyTransactions.reduce((sum, transaction) => {
       return sum + parseFloat(transaction.expenseAmount || "0");
-    }, 0)
+    }, 0);
 
     setWeeklyExpenses(weeklyTotal.toFixed(2));
-    setAverageExpensePerTransaction((total / monthlyTransactions.length).toFixed(2));
+    setAverageExpensePerTransaction(monthlyTransactions.length > 0 ? (total / monthlyTransactions.length).toFixed(2) : "0.00");
     setMonthlyExpenses(total.toFixed(2));
-
   }
 
   const handleAddExpense = async (expenseObject: ExpenseObject) => {
@@ -174,7 +166,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
     if (expenseTransactions.length > 0) {
       calculateStatsDirectly();
     }
-  }, [expenseTransactions])
+  }, [expenseTransactions, selectedMonth])
 
   console.log("cache", data)
   console.log("expenses", expenseTransactions)
@@ -249,11 +241,11 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
 
       <div className="grid grid-cols-5 w-full p-6 gap-8">
         <div className="flex flex-col col-span-3 gap-8">
-          <RecentExpenses />
+          <RecentExpenses expenses={expenseTransactions} selectedMonth={selectedMonth}/>
           <QuickStats />
         </div>
         <div className="col-span-2 flex flex-col gap-4">
-          <ExpenseCategories />
+          <ExpenseCategories expenses={expenseTransactions} selectedMonth={selectedMonth} />
           <BudgetStatus />
         </div>
       </div>
@@ -287,29 +279,27 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
 
                 {/* Month grid - 3 columns x 4 rows for all 12 months */}
                 <div className="grid grid-cols-3 gap-3">
-                  {Array.from({ length: 12 }, (_, i) => {
-                    const date = new Date(selectedMonth.getFullYear(), i, 1); // Create date for each month
-                    const monthName = date.toLocaleDateString('en-US', { month: 'short' }); // Get abbreviated month name (Jan, Feb, etc.)
-                    const isSelected = selectedMonth.getMonth() === i; // Check if this month is currently selected
-
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          // When month is clicked: update selectedMonth and close modal
-                          setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
-                          setToggleMonthSelector(false);
-                        }}
-                        className={`p-3 rounded-lg border-2 transition-colors ${isSelected
-                            ? 'border-blue-500 bg-blue-50 text-blue-700' // Selected month styling (blue)
-                            : 'border-gray-200 hover:border-gray-300' // Unselected month styling (gray)
-                          }`}
-                      >
-                        {monthName} {/* Display month name (Jan, Feb, etc.) */}
-                      </button>
-                    );
-                  })}
-                </div>
+                {months.map((monthName, i) => {
+                  const isSelected = selectedMonth.getMonth() === i;
+                  
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
+                        setToggleMonthSelector(false);
+                      }}
+                      className={`p-3 rounded-lg border-2 transition-colors ${
+                        isSelected 
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      {monthName}
+                    </button>
+                  );
+                })}
+              </div>
 
                 {/* Year navigation buttons */}
                 <div className="flex flex-row gap-2">

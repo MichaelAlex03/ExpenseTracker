@@ -81,14 +81,12 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   });
 
   const calculateStatsDirectly = () => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
+  
 
     const monthlyTransactions = incomeTransactions.filter(transaction => {
       const transactionDate = new Date(transaction.dateOfIncome);
-      return transactionDate.getMonth() === currentMonth &&
-        transactionDate.getFullYear() === currentYear;
+      return transactionDate.getMonth() === selectedMonth.getMonth() &&
+        transactionDate.getFullYear() === selectedMonth.getFullYear();
     });
 
     const total = monthlyTransactions.reduce((sum, transaction) => {
@@ -163,14 +161,14 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
     if (incomeTransactions.length > 0) {
       calculateStatsDirectly();
     }
-  }, [incomeTransactions]);
+  }, [incomeTransactions, selectedMonth]);
 
   console.log("cache", data);
   console.log("income", incomeTransactions);
 
 
   return (
-    <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
+    <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">
         <button
           onClick={() => setToggleSideBar(!toggleSideBar)}
@@ -236,12 +234,12 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
         />
       </div>
 
-      <div className="grid grid-cols-4 w-full p-6 gap-8">
-        <div className="col-span-2 h-full">
-          <IncomeHistory />
+      <div className="grid grid-cols-5 w-full p-6 gap-8">
+        <div className="flex flex-col col-span-3 gap-8">
+          <IncomeHistory selectedMonth={selectedMonth} incomes={incomeTransactions} />
         </div>
         <div className="col-span-2 flex flex-col gap-4">
-          <IncomeCategories />
+          <IncomeCategories selectedMonth={selectedMonth} incomes={incomeTransactions} />
           <MonthlyProjections />
         </div>
       </div>
