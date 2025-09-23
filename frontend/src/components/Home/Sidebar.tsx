@@ -2,7 +2,8 @@ import {
   LayoutDashboard,
   TrendingDown,
   TrendingUp,
-  User
+  User,
+  PieChart
 } from "lucide-react";
 
 interface SidebarProps {
@@ -14,6 +15,8 @@ interface SidebarProps {
   setShowExpenses: (val: boolean) => void;
   showProfile: boolean;
   setShowProfile: (val: boolean) => void;
+  showBudgets: boolean;
+  setShowBudgets: (val: boolean) => void;
 }
 
 const Sidebar = ({
@@ -25,6 +28,8 @@ const Sidebar = ({
   setShowExpenses,
   showProfile,
   setShowProfile,
+  showBudgets,
+  setShowBudgets
 }: SidebarProps) => {
   return (
     <div className="w-full flex flex-col p-4 items-ceneter">
@@ -51,6 +56,7 @@ const Sidebar = ({
               setShowExpenses(false);
               setShowProfile(false);
               setShowIncome(false);
+              setShowBudgets(false);
             }}
           >
             <LayoutDashboard className="h-4 w-4" color="white" />
@@ -64,6 +70,7 @@ const Sidebar = ({
               setShowExpenses(false);
               setShowProfile(false);
               setShowIncome(false);
+              setShowBudgets(false);
             }}
           >
             <LayoutDashboard className="h-4 w-4" color="white" />
@@ -79,6 +86,7 @@ const Sidebar = ({
               setShowExpenses(false);
               setShowProfile(false);
               setShowIncome(true);
+              setShowBudgets(false);
             }}
           >
             <TrendingUp className="h-4 w-4" color="white" />
@@ -92,6 +100,7 @@ const Sidebar = ({
               setShowExpenses(false);
               setShowProfile(false);
               setShowIncome(true);
+              setShowBudgets(false);
             }}
           >
             <TrendingUp className="h-4 w-4" color="white" />
@@ -107,6 +116,7 @@ const Sidebar = ({
               setShowExpenses(true);
               setShowProfile(false);
               setShowIncome(false);
+              setShowBudgets(false);
             }}
           >
             <TrendingDown className="h-4 w-4" color="white" />
@@ -120,10 +130,41 @@ const Sidebar = ({
               setShowExpenses(true);
               setShowProfile(false);
               setShowIncome(false);
+              setShowBudgets(false);
             }}
           >
             <TrendingDown className="h-4 w-4" color="white" />
             <p className="text-white">Expenses</p>
+          </button>
+        )}
+
+        {showBudgets ? (
+          <button
+            className="flex flex-row items-center gap-2 px-2 py-1 bg-[#27272A] rounded-xl"
+            onClick={() => {
+              setShowDashboard(false);
+              setShowExpenses(false);
+              setShowProfile(false);
+              setShowIncome(false);
+              setShowBudgets(true);
+            }}
+          >
+            <PieChart className="h-4 w-4" color="white" />
+            <p className="text-white">Budgets</p>
+          </button>
+        ) : (
+          <button
+            className="flex flex-row items-center gap-2 hover:bg-[#27272A] px-2 py-1 rounded-xl"
+            onClick={() => {
+              setShowDashboard(false);
+              setShowExpenses(false);
+              setShowProfile(false);
+              setShowIncome(false);
+              setShowBudgets(true);
+            }}
+          >
+            <PieChart className="h-4 w-4" color="white" />
+            <p className="text-white">Budgets</p>
           </button>
         )}
 
@@ -135,6 +176,7 @@ const Sidebar = ({
               setShowExpenses(false);
               setShowProfile(true);
               setShowIncome(false);
+              setShowBudgets(false);
             }}
           >
             <User className="h-4 w-4" color="white" />
@@ -148,12 +190,15 @@ const Sidebar = ({
               setShowExpenses(false);
               setShowProfile(true);
               setShowIncome(false);
+              setShowBudgets(false);
             }}
           >
             <User className="h-4 w-4" color="white" />
             <p className="text-white">Profile</p>
           </button>
         )}
+
+
       </div>
     </div>
   );

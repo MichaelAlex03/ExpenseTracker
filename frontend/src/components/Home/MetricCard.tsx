@@ -1,5 +1,4 @@
 import type { LucideIcon } from "lucide-react";
-import React from "react";
 
 interface MetricCardProps {
   title: string;
@@ -9,12 +8,16 @@ interface MetricCardProps {
 
 const MetricCard = ({ title, icon: Icon, amount }: MetricCardProps) => {
   return (
-    <div className="flex flex-col border-1 border-gray-300 shadow-lg p-6 rounded-xl">
-      <div className="flex flex-row justify-between">
-        <p className="text-sm text-[#71717A]">{title}</p>
-        <Icon />
+    <div className="flex flex-col gap-4 bg-white border border-gray-200 shadow-sm rounded-xl p-6 w-full h-full">
+      <div className="flex flex-row items-center gap-4">
+        <div className="bg-[#FAFAFA] p-4 rounded-xl">
+          <Icon className="w-6 h-6" />
+        </div>
+        <div className="flex flex-col">
+          <h1 className="font-medium text-base text-[#18181B]">{title}</h1>
+          <p className="text-3xl font-bold text-[#18181B]">{amount}</p>
+        </div>
       </div>
-      <p className="text-2xl font-bold">{amount}</p>
     </div>
   );
 };

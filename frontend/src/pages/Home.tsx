@@ -1,3 +1,4 @@
+import Budgets from "@/components/Home/Budgets";
 import Dashboard from "@/components/Home/Dashboard";
 import Expenses from "@/components/Home/Expenses";
 import Income from "@/components/Home/Income";
@@ -10,6 +11,7 @@ const Home = () => {
   const [showIncome, setShowIncome] = useState<boolean>(false);
   const [showExpenses, setShowExpenses] = useState<boolean>(false);
   const [showProfile, setShowProfile] = useState<boolean>(false);
+  const [showBudgets, setShowBudgets] = useState<boolean>(false);
 
   const [toggleSideBar, setToggleSideBar] = useState<boolean>(true);
 
@@ -25,6 +27,8 @@ const Home = () => {
           setShowExpenses={setShowExpenses}
           showProfile={showProfile}
           setShowProfile={setShowProfile}
+          showBudgets={showBudgets}
+          setShowBudgets={setShowBudgets}
         />
       </div>
 
@@ -53,6 +57,14 @@ const Home = () => {
             setToggleSideBar={setToggleSideBar}
           />
         )}
+        {
+          showBudgets && (
+            <Budgets
+              toggleSideBar={toggleSideBar}
+              setToggleSideBar={setToggleSideBar}
+            />
+          )
+        }
       </div>
     </main>
   );
