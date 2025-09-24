@@ -67,9 +67,10 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
 
           <button
             className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10"
+            onClick={() => setToggleAddBudget(true)}
           >
             <PlusIcon className="w-5 h-5" color="white" />
-            <p className="text-white text-base font-bold">Add Transaction</p>
+            <p className="text-white text-base font-bold">Add Budget</p>
           </button>
         </div>
       </div>
@@ -97,7 +98,7 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
 
       {toggleAddBudget && (
         <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
-          <AddBudget />
+          <AddBudget setToggleAddBudget={setToggleAddBudget}/>
         </div>
       )}
 
