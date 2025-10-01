@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   PanelLeft,
   PlusIcon,
@@ -11,13 +11,53 @@ import MetricCard from "./MetricCard";
 import ActiveBudgets from './Budgets/ActiveBudgets';
 import SpendingByCategory from './Budgets/SpendingByCategory';
 import AddBudget from './Budgets/AddBudget';
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import useAuth from "../../../hooks/useAuth";
+import axios from 'axios';
 
 interface BudgetsProps {
   toggleSideBar: boolean;
   setToggleSideBar: (val: boolean) => void;
 }
 
+//Budget object returned from server (cache objects layout)
+interface BudgetResponseObject {
+  id: number,
+  budgetName: string,
+  budgetCategory: string,
+  budgetLimit: string,
+  budgetNotes: string,
+  recurring: string,
+  userId: number
+  budgetDate: Date
+}
+
+//Budget object used for budget object creation
+interface BudgetObject {
+  budgetName: string,
+  budgetCategory: string,
+  budgetLimit: string,
+  budgetNotes: string,
+  recurring: string,
+  userId: number
+  budgetDate: Date
+}
+
+//Expense object returned from server(cache object layout)
+interface ExpenseResponseObject {
+  id: number
+  userId: number
+  expenseAmount: string
+  expenseDescription: string
+  expenseCategory: string
+  expensePaymentMethod: string
+  dateOfExpense: Date
+  additionalNotes: string
+}
+
 const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
+  const queryClient = useQueryClient();
+  const { auth } = useAuth();
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -25,12 +65,118 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
   // State for month selection
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false);
-  
+
   // These will be updated when budget functionality is implemented
   const [totalBudgetForMonth, setTotalBudgetForMonth] = useState<string>("0.00");
   const [totalSpentForMonth, setTotalSpentForMonth] = useState<string>("0.00");
   const [totalRemainingForMonth, setTotalRemainingForMonth] = useState<string>("0.00");
   const [toggleAddBudget, setToggleAddBudget] = useState<boolean>(false);
+
+  const [expenseTransactions, setExpenseTransactions] = useState<ExpenseResponseObject[]>([]);
+
+
+  const handleAddBudget = async (budgetObject: BudgetObject) => {
+    try {
+      const response = await axios.post(`http://localhost:3002/api/budget`, budgetObject)
+      setToggleAddBudget(false);
+      return response.data
+    } catch (error) {
+      console.error(error)
+    }
+
+  }
+
+  const fetchBudgets = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3002/api/budget?userId=${auth.userId}`
+      )
+      return response.data
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const fetchExpenseTransactionData = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/transaction/expense?userId=${auth.userId}`,
+      )
+      setExpenseTransactions(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const { data: budgetsData } = useQuery({
+    queryKey: ["budgets", auth.userId],
+    queryFn: fetchBudgets,
+    staleTime: Infinity
+  });
+
+  const addBudgetMutation = useMutation({
+    mutationFn: handleAddBudget,
+    onSuccess: (newBudgetData) => {
+      queryClient.setQueryData(["budgets", auth.userId], (oldData: BudgetResponseObject[]) =>
+        [...(oldData || []), newBudgetData]
+      )
+    }
+  })
+
+  const { data: expenseData } = useQuery({
+    queryKey: ["expenses", auth?.userId],
+    queryFn: fetchExpenseTransactionData,
+    staleTime: Infinity
+  })
+
+  console.log(budgetsData);
+  console.log("expense", expenseData)
+
+  // Function to calculate stats based on the selected month
+  const calculateStatsForMonth = () => {
+    if (!budgetsData || !expenseData) return;
+
+    //Gets all budgets for the selected month
+    const selectedMonthBudget = budgetsData.filter((budget: BudgetResponseObject) => {
+      const budgetDate = new Date(budget.budgetDate);
+      return (
+        (budgetDate.getMonth() === selectedMonth.getMonth() &&
+          budgetDate.getFullYear() === selectedMonth.getFullYear())
+        || budget.recurring
+      );
+    });
+
+
+    const selectedMonthExpenses = expenseData.filter((expense: ExpenseResponseObject) => {
+      const expenseDate = new Date(expense.dateOfExpense);
+      return (
+        expenseDate.getMonth() === selectedMonth.getMonth() &&
+        expenseDate.getFullYear() === selectedMonth.getFullYear()
+      );
+    });
+
+    const totalBudgetForMonth = selectedMonthBudget.reduce(
+      (sum: number, budget: BudgetResponseObject) => sum + parseFloat(budget.budgetLimit),
+      0
+    );
+    const totalExpensesForMonth = selectedMonthExpenses.reduce(
+      (sum: number, expense: ExpenseResponseObject) => sum + parseFloat(expense.expenseAmount),
+      0
+    );
+
+
+
+    setTotalBudgetForMonth(totalBudgetForMonth.toFixed(2));
+    setTotalSpentForMonth(totalExpensesForMonth.toFixed(2));
+    setTotalRemainingForMonth((totalBudgetForMonth - totalExpensesForMonth).toFixed(2));
+
+  };
+
+
+  useEffect(() => {
+    calculateStatsForMonth()
+  }, [selectedMonth, expenseData, budgetsData])
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
@@ -50,7 +196,7 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
         <div className="flex flex-col items-start">
           <h1 className="text-3xl font-bold">Budgets</h1>
           <p className="text-base text-[#71717A]">
-          Create budgets by category and track your spending
+            Create budgets by category and track your spending
           </p>
         </div>
 
@@ -87,18 +233,21 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
 
       <div className="grid gap-4 grid-cols-5 w-full p-6">
         <div className="col-span-3">
-          <ActiveBudgets/>
+          <ActiveBudgets />
         </div>
         <div className="col-span-2">
-          <SpendingByCategory/>
+          <SpendingByCategory />
         </div>
       </div>
 
-      
+
 
       {toggleAddBudget && (
         <div className="fixed inset-0 w-full h-full bg-black/40 z-50">
-          <AddBudget setToggleAddBudget={setToggleAddBudget}/>
+          <AddBudget
+            setToggleAddBudget={setToggleAddBudget}
+            mutation={addBudgetMutation}
+          />
         </div>
       )}
 

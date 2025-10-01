@@ -10,19 +10,8 @@ import {
   Target
 } from "lucide-react";
 import type { UseMutationResult } from '@tanstack/react-query';
+import useAuth from "../../../../hooks/useAuth";
 
-
-/**
- * * For useMutationResult generic parameters:
- * @template TData - Return type from mutation (ExpenseResponseObject)
- * @template TError - Error: The error type that can be thrown  
- * @template TVariables - ExpenseObjectProps: The input data type for the mutation
- * @template TContext - unknown: Context type (not used)
- */
-interface AddBudgetProps {
-  setToggleAddBudget: React.Dispatch<React.SetStateAction<boolean>>;
-  // mutation: UseMutationResult<ExpenseResponseObject, Error, ExpenseObjectProps, unknown>;
-}
 
 
 const categories = [
@@ -39,29 +28,44 @@ const categories = [
 ];
 
 
-//Budget object returned from POST api call
-interface BudgetResponseObject{
-  id: number
-  budgetName: string
-  budgetCategory: string
-  budgetLimit: string
-  budgetNotes: string
-  recurring: string
+//Budget object returned from server
+interface BudgetResponseObject {
+  id: number,
+  budgetName: string,
+  budgetCategory: string,
+  budgetLimit: string,
+  budgetNotes: string,
+  recurring: string,
   userId: number
   budgetDate: Date
 }
 
-//Budget object for creation of budget
+//Budget object used for budget object creation
 interface BudgetObject {
-  budgetName: string
-  budgetCategory: string
-  budgetLimit: string
-  budgetNotes: string
-  recurring: string
+  budgetName: string,
+  budgetCategory: string,
+  budgetLimit: string,
+  budgetNotes: string,
+  recurring: string,
+  userId: number
   budgetDate: Date
 }
 
-const AddBudget = ({ setToggleAddBudget }: AddBudgetProps) => {
+/**
+ * * For useMutationResult generic parameters:
+ * @template TData - Return type from mutation (ExpenseResponseObject)
+ * @template TError - Error: The error type that can be thrown  
+ * @template TVariables - ExpenseObjectProps: The input data type for the mutation
+ * @template TContext - unknown: Context type (not used)
+ */
+interface AddBudgetProps {
+  setToggleAddBudget: React.Dispatch<React.SetStateAction<boolean>>;
+  mutation: UseMutationResult<BudgetResponseObject, Error, BudgetObject, unknown>;
+}
+
+const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
+
+  const { auth } = useAuth();
 
   const [budgetObject, setBudgetObject] = useState<BudgetObject>({
     budgetName: "",
@@ -69,17 +73,13 @@ const AddBudget = ({ setToggleAddBudget }: AddBudgetProps) => {
     budgetLimit: "",
     budgetNotes: "",
     recurring: "",
+    userId: auth.userId,
     budgetDate: new Date()
   })
 
   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { value, name } = e.target;
-    let newValue: string | Date = value;
-
-    if (name === "dateOfBudget") {
-      newValue = new Date(value)
-    }
-    setBudgetObject({ ...budgetObject, [name]: newValue });
+    setBudgetObject({ ...budgetObject, [name]: value });
   }
 
   return (
@@ -100,15 +100,30 @@ const AddBudget = ({ setToggleAddBudget }: AddBudgetProps) => {
         <div className='flex flex-col gap-6 mt-10'>
           <div className='flex flex-col gap-1'>
             <div className='flex flex-row items-center gap-2'>
-              <label htmlFor='name' className='font-semibold text-lg'>Budget Name *</label>
+              <label htmlFor='budgetName' className='font-semibold text-lg'>Budget Name *</label>
             </div>
             <input
               type="text"
-              id="name"
-              name="name"
+              id="budgetName"
+              name="budgetName"
               value={budgetObject.budgetName}
               onChange={handleBudgetChange}
               placeholder='e.g Food Budget'
+              className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            />
+          </div>
+
+
+          <div className='flex flex-col gap-1'>
+            <div className='flex flex-row items-center gap-2'>
+              <label htmlFor='budgetLimit' className='font-semibold text-lg'>Budget Amount *</label>
+            </div>
+            <input
+              type="number"
+              id="budgetLimit"
+              name="budgetLimit"
+              value={budgetObject.budgetLimit}
+              onChange={handleBudgetChange}
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
             />
           </div>
@@ -121,7 +136,7 @@ const AddBudget = ({ setToggleAddBudget }: AddBudgetProps) => {
             </div>
             <select
               id="category"
-              name="category"
+              name="budgetCategory"
               value={budgetObject.budgetCategory}
               onChange={handleBudgetChange}
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
@@ -161,10 +176,10 @@ const AddBudget = ({ setToggleAddBudget }: AddBudgetProps) => {
               <input
                 type="date"
                 id="date"
-                name="dateOfBudget"
+                name="budgetDate"
                 value={budgetObject.budgetDate.toISOString().split('T')[0]}
-                onChange={handleBudgetChange}
                 className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+                disabled
               />
             </div>
           </div>
@@ -176,7 +191,7 @@ const AddBudget = ({ setToggleAddBudget }: AddBudgetProps) => {
             </div>
             <textarea
               id="additionalNotes"
-              name="additionalNotes"
+              name="budgetNotes"
               value={budgetObject.budgetNotes}
               onChange={handleBudgetChange}
               placeholder="Add any additional notes here..."
@@ -197,7 +212,7 @@ const AddBudget = ({ setToggleAddBudget }: AddBudgetProps) => {
           </button>
           <button
             className='flex flex-row items-center px-4 py-2 bg-black rounded-lg gap-2 cursor-pointer'
-          // onClick={() => mutation.mutate(expenseObject)}
+            onClick={() => mutation.mutate(budgetObject)}
           >
             <Save className='h-4 w-4' color='white' />
             <p className='text-white text-sm'>Save Expenses</p>
@@ -205,6 +220,7 @@ const AddBudget = ({ setToggleAddBudget }: AddBudgetProps) => {
         </div>
       </div>
     </div>
+
   )
 }
 

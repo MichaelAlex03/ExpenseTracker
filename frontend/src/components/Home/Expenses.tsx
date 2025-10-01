@@ -21,7 +21,7 @@ interface ExpenseProps {
   setToggleSideBar: (val: boolean) => void;
 }
 
-//Expense object returned from POST api call
+//Expense object returned from server
 interface ExpenseResponseObject {
   id: number
   userId: number
