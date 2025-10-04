@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X } from 'lucide-react';
-import type { IncomeResponseObject } from '../../../types/transactions';
+import type { IncomeResponseObject } from '../../../types/types';
 
 interface IncomeHistoryProps {
   incomes: IncomeResponseObject[];

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { IncomeResponseObject, ExpenseResponseObject } from '../../../types/transactions';
+import type { IncomeResponseObject, ExpenseResponseObject } from '../../../types/types';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface TopCategoriesProps {

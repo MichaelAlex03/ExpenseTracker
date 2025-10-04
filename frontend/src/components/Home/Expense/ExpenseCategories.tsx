@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { type ExpenseResponseObject } from "../../../types/transactions";
+import { type ExpenseResponseObject } from "../../../types/types";
 import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 
 interface ExpenseCategoriesProps {

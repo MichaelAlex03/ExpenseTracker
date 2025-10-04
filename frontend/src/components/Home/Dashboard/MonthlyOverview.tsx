@@ -1,5 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { type IncomeResponseObject, type ExpenseResponseObject } from '../../../types/transactions';
+import { type IncomeResponseObject, type ExpenseResponseObject } from '../../../types/types';
 
 interface MonthlyOverviewProps {
   incomeData: IncomeResponseObject[];

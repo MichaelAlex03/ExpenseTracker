@@ -21,3 +21,15 @@ export interface IncomeResponseObject {
     dateOfExpense: Date
     additionalNotes: string
   }
+
+//Budget object returned from server (cache objects layout)
+export interface BudgetResponseObject {
+  id: number,
+  budgetName: string,
+  budgetCategory: string,
+  budgetLimit: string,
+  budgetNotes: string,
+  recurring: string,
+  userId: number
+  budgetDate: Date
+}

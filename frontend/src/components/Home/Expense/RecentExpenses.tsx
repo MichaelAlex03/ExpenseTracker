@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import type { ExpenseResponseObject } from '../../../types/transactions';
+import type { ExpenseResponseObject } from '../../../types/types';
 
 interface RecentExpensesProps {
   expenses: ExpenseResponseObject[];

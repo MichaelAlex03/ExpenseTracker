@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { type IncomeResponseObject } from "../../../types/transactions";
+import { type IncomeResponseObject } from "../../../types/types";
 import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 
 interface IncomeCategoriesProps {
