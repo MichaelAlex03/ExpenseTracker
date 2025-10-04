@@ -24,7 +24,6 @@ const categories = [
   "bills",
   "education",
   "travel",
-  "other"
 ];
 
 
@@ -148,78 +147,81 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
                 </option>
               ))}
             </select>
-          </div>
+        
+        </div>
 
-          <div className='flex flex-row w-full gap-4'>
-            <div className='flex flex-col gap-1 w-full'>
-              <div className='flex flex-row items-center gap-2'>
-                <CreditCard className='h-4 w-4' />
-                <label htmlFor='recurring' className='font-semibold text-lg'>Recurring *</label>
-              </div>
-              <select
-                id="recurring"
-                name="recurring"
-                value={budgetObject.recurring}
-                onChange={handleBudgetChange}
-                className="border border-gray-300 p-2 rounded-lg text-sm w-full"
-              >
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
 
-            <div className='flex flex-col gap-1 w-full'>
-              <div className='flex flex-row items-center gap-2'>
-                <CalendarIcon className='h-4 w-4' />
-                <label htmlFor='date' className='font-semibold text-lg'>Date *</label>
-              </div>
-              <input
-                type="date"
-                id="date"
-                name="budgetDate"
-                value={budgetObject.budgetDate.toISOString().split('T')[0]}
-                className="border border-gray-300 p-2 rounded-lg text-sm w-full"
-                disabled
-              />
-            </div>
-          </div>
 
-          <div className='flex flex-col gap-1'>
+        <div className='flex flex-row w-full gap-4'>
+          <div className='flex flex-col gap-1 w-full'>
             <div className='flex flex-row items-center gap-2'>
-              <FileText className='h-4 w-4' />
-              <label htmlFor='additionalNotes' className='font-semibold text-lg'>Additional Notes(Optional)</label>
+              <CreditCard className='h-4 w-4' />
+              <label htmlFor='recurring' className='font-semibold text-lg'>Recurring *</label>
             </div>
-            <textarea
-              id="additionalNotes"
-              name="budgetNotes"
-              value={budgetObject.budgetNotes}
+            <select
+              id="recurring"
+              name="recurring"
+              value={budgetObject.recurring}
               onChange={handleBudgetChange}
-              placeholder="Add any additional notes here..."
-              className="border border-gray-300 p-2 rounded-lg text-sm w-full h-18"
+              className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+            >
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+
+          <div className='flex flex-col gap-1 w-full'>
+            <div className='flex flex-row items-center gap-2'>
+              <CalendarIcon className='h-4 w-4' />
+              <label htmlFor='date' className='font-semibold text-lg'>Date *</label>
+            </div>
+            <input
+              type="date"
+              id="date"
+              name="budgetDate"
+              value={budgetObject.budgetDate.toISOString().split('T')[0]}
+              className="border border-gray-300 p-2 rounded-lg text-sm w-full"
+              disabled
             />
           </div>
         </div>
 
-        <div
-          className='flex flex-row w-full justify-end gap-4 mt-5'
-        >
-          <button
-            className='flex flex-row items-center px-4 py-2 border border-gray-300 rounded-lg gap-2 cursor-pointer'
-            onClick={() => setToggleAddBudget(false)}
-          >
-            <X className='h-4 w-4' />
-            <p className='text-sm'>Cancel</p>
-          </button>
-          <button
-            className='flex flex-row items-center px-4 py-2 bg-black rounded-lg gap-2 cursor-pointer'
-            onClick={() => mutation.mutate(budgetObject)}
-          >
-            <Save className='h-4 w-4' color='white' />
-            <p className='text-white text-sm'>Save Expenses</p>
-          </button>
+        <div className='flex flex-col gap-1'>
+          <div className='flex flex-row items-center gap-2'>
+            <FileText className='h-4 w-4' />
+            <label htmlFor='additionalNotes' className='font-semibold text-lg'>Additional Notes(Optional)</label>
+          </div>
+          <textarea
+            id="additionalNotes"
+            name="budgetNotes"
+            value={budgetObject.budgetNotes}
+            onChange={handleBudgetChange}
+            placeholder="Add any additional notes here..."
+            className="border border-gray-300 p-2 rounded-lg text-sm w-full h-18"
+          />
         </div>
       </div>
+
+      <div
+        className='flex flex-row w-full justify-end gap-4 mt-5'
+      >
+        <button
+          className='flex flex-row items-center px-4 py-2 border border-gray-300 rounded-lg gap-2 cursor-pointer'
+          onClick={() => setToggleAddBudget(false)}
+        >
+          <X className='h-4 w-4' />
+          <p className='text-sm'>Cancel</p>
+        </button>
+        <button
+          className='flex flex-row items-center px-4 py-2 bg-black rounded-lg gap-2 cursor-pointer'
+          onClick={() => mutation.mutate(budgetObject)}
+        >
+          <Save className='h-4 w-4' color='white' />
+          <p className='text-white text-sm'>Save Expenses</p>
+        </button>
+      </div>
     </div>
+    </div >
 
   )
 }

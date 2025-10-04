@@ -105,9 +105,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
       }
     }, 0);
 
-
-
-    setAveragePerSource((total / monthlyTransactions.length).toFixed(2));
+    setAveragePerSource(monthlyTransactions.length > 0 ? (total / monthlyTransactions.length).toFixed(2) : "0.00");
     setMonthlyRecurring(recurring.toFixed(2));
     setTotalMonthlyIncome(total.toFixed(2));
 

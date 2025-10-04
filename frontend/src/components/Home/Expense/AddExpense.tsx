@@ -54,8 +54,7 @@ const categories = [
     "bills",
     "education",
     "travel",
-    "other"
-];
+  ];
 
 const paymentMethods = [
     "Credit Card",

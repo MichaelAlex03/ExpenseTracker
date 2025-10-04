@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import MetricCard from "./MetricCard";
 import ActiveBudgets from './Budgets/ActiveBudgets';
-import SpendingByCategory from './Budgets/SpendingByCategory';
 import AddBudget from './Budgets/AddBudget';
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
@@ -64,6 +63,7 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
 
   // State for month selection
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [currentSelectedMonth, setCurrentSelectedMonth] = useState<Date>(selectedMonth);
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false);
 
   // These will be updated when budget functionality is implemented
@@ -130,9 +130,6 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
     staleTime: Infinity
   })
 
-  console.log(budgetsData);
-  console.log("expense", expenseData)
-
   // Function to calculate stats based on the selected month
   const calculateStatsForMonth = () => {
     if (!budgetsData || !expenseData) return;
@@ -172,6 +169,12 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
     setTotalRemainingForMonth((totalBudgetForMonth - totalExpensesForMonth).toFixed(2));
 
   };
+
+
+  const updateDate = () => {
+    setSelectedMonth(currentSelectedMonth)
+    setToggleMonthSelector(false)
+  }
 
 
   useEffect(() => {
@@ -231,13 +234,12 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
         />
       </div>
 
-      <div className="grid gap-4 grid-cols-5 w-full p-6">
-        <div className="col-span-3">
-          <ActiveBudgets />
-        </div>
-        <div className="col-span-2">
-          <SpendingByCategory />
-        </div>
+      <div className="flex w-full p-6">
+        <ActiveBudgets
+          budgets={budgetsData}
+          expenses={expenseData}
+          selectedMonth={selectedMonth}
+        />
       </div>
 
 
@@ -267,14 +269,13 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
 
               <div className="grid grid-cols-3 gap-3">
                 {months.map((monthName, i) => {
-                  const isSelected = selectedMonth.getMonth() === i;
+                  const isSelected = currentSelectedMonth.getMonth() === i;
 
                   return (
                     <button
                       key={i}
                       onClick={() => {
-                        setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
-                        setToggleMonthSelector(false);
+                        setCurrentSelectedMonth(new Date(currentSelectedMonth.getFullYear(), i, 1));
                       }}
                       className={`p-3 rounded-lg border-2 transition-colors ${isSelected
                         ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -290,8 +291,8 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
               <div className="flex flex-row gap-2">
                 <button
                   onClick={() => {
-                    const newYear = selectedMonth.getFullYear() - 1;
-                    setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1));
+                    const newYear = currentSelectedMonth.getFullYear() - 1;
+                    setCurrentSelectedMonth(new Date(newYear, currentSelectedMonth.getMonth(), 1));
                   }}
                   className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
@@ -299,8 +300,8 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
                 </button>
                 <button
                   onClick={() => {
-                    const newYear = selectedMonth.getFullYear() + 1;
-                    setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1));
+                    const newYear = currentSelectedMonth.getFullYear() + 1;
+                    setCurrentSelectedMonth(new Date(newYear, currentSelectedMonth.getMonth(), 1));
                   }}
                   className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
@@ -308,19 +309,30 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
                 </button>
               </div>
 
-              <button
-                onClick={() => {
-                  setSelectedMonth(new Date());
-                  setToggleMonthSelector(false);
-                }}
-                className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Today
-              </button>
+              <div className='flex flex-col gap-4'>
+                <button
+                  onClick={() => {
+                    setSelectedMonth(new Date());
+                    setCurrentSelectedMonth(new Date())
+                    setToggleMonthSelector(false);
+                  }}
+                  className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Today
+                </button>
+                <button
+                  onClick={() => {
+                    updateDate()
+                  }}
+                  className="w-full p-2 bg-gray-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Done
+                </button>
+              </div>
 
               <div className="text-center">
                 <p className="text-lg font-semibold">
-                  {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  {currentSelectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </p>
               </div>
             </div>
