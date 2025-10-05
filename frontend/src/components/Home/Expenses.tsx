@@ -8,7 +8,6 @@ import {
 import MetricCard from "./MetricCard";
 import RecentExpenses from "./Expense/RecentExpenses";
 import ExpenseCategories from "./Expense/ExpenseCategories";
-import BudgetStatus from "./Expense/BudgetStatus";
 import QuickStats from "./Expense/QuickStats";
 import { useState, useEffect } from "react";
 import AddExpense from "./Expense/AddExpense";
@@ -246,7 +245,6 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
         </div>
         <div className="col-span-2 flex flex-col gap-4">
           <ExpenseCategories expenses={expenseTransactions} selectedMonth={selectedMonth} />
-          <BudgetStatus />
         </div>
       </div>
       {

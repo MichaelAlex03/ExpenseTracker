@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import type { BudgetResponseObject, ExpenseResponseObject } from '@/types/types'
-import { X } from 'lucide-react';
+import { X, Pencil, Trash2 } from 'lucide-react';
 
 interface ActiveBudgetProps {
   budgets: BudgetResponseObject[]
@@ -12,7 +12,10 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [spentPerCategory, setSpentPerCategory] = useState<Map<string, number>>(new Map());
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [editTooltip, setEditTooltip] = useState<string | null>(null);
+  const [deleteTooltip, setDeleteTooltip] = useState<string | null>(null);
 
   const filterBudgetsByMonth = (listOfBudgets: BudgetResponseObject[]) => {
     const monthlyBudgets = listOfBudgets?.filter(budget => {
@@ -69,6 +72,14 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
     );
   }
 
+  const handleRemoveBudget = async () => {
+
+  }
+
+  const handleUpdateBudget = async () => {
+
+  }
+
 
   useEffect(() => {
     calculateSpentByCategory(expenses);
@@ -92,6 +103,9 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
           <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
             Progress
           </th>
+          <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
@@ -113,6 +127,42 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
             </td>
             <td className={`px-6 py-4 whitespace-nowrap ${showAll ? 'text-base' : 'text-sm'}`}>
               {renderProgressBar(budget)}
+            </td>
+            <td className={`px-6 py-4 whitespace-nowrap ${showAll ? 'text-base' : 'text-sm'}`}>
+              <div className='flex flex-row items-center justify-end gap-8 relative pr-8'>
+                <div className="relative">
+                  <button
+                    className='cursor-pointer hover:bg-gray-300 transition-colors duration-150 ease-in-out px-3 py-3 rounded-lg'
+                    onClick={() => setIsEditModalOpen(true)}
+                    onMouseEnter={() => setEditTooltip(String(budget.id))}
+                    onMouseLeave={() => setEditTooltip(null)}
+                  >
+                    <Pencil width={20} height={20} />
+                  </button>
+                  {editTooltip === String(budget.id) && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
+                      Edit Budget
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
+                    </div>
+                  )}
+                </div>
+                <div className="relative">
+                  <button
+                    className='cursor-pointer hover:bg-gray-300 transition-colors duration-150 ease-in-out px-3 py-3 rounded-lg'
+                    onClick={() => setDeleteModalOpen(true)}
+                    onMouseEnter={() => setDeleteTooltip(String(budget.id))}
+                    onMouseLeave={() => setDeleteTooltip(null)}
+                  >
+                    <Trash2 width={20} height={20} />
+                  </button>
+                  {deleteTooltip === String(budget.id) && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
+                      Delete Budget
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
+                    </div>
+                  )}
+                </div>
+              </div>
             </td>
           </tr>
         ))}
@@ -164,6 +214,39 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
               </div>
               <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
                 <BudgetTable data={filteredBudgets || []} showAll={true} />
+              </div>
+            </div>
+          </div>
+        )
+      }
+      {
+        isEditModalOpen && (
+          <div>
+
+          </div>
+        )
+      }
+      {
+        deleteModalOpen && (
+          <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50'>
+            <div className='bg-white flex-col items-center justify-center rounded-xl p-6 w-2/5'>
+              <div className='flex flex-col items-start gap-4'>
+                <h1 className='font-bold text-xl'>Delete Budget?</h1>
+                <p className='text-base text-gray-500'>This action cannot be undone</p>
+              </div>
+              <div className='w-full gap-6 flex items-center justify-end'>
+                <button
+                  className='border-1 border-gray-500/40 px-4 py-2 rounded-lg hover:bg-gray-400/20 transition-colors duration-150 cursor-pointer'
+                  onClick={() => setDeleteModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className='bg-black px-4 py-2 rounded-lg cursor-pointer text-white'
+                  onClick={handleRemoveBudget}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>
