@@ -19,7 +19,7 @@ interface BudgetsProps {
   setToggleSideBar: (val: boolean) => void;
 }
 
-//Budget object returned from server (cache objects layout)
+//Budget object returned from server (cache objects layout) and used for updating budget
 interface BudgetResponseObject {
   id: number,
   budgetName: string,
@@ -109,11 +109,37 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
     }
   }
 
+  const handleRemoveBudget = async (budgetToDelete: number) => {
+    try {
+      await axios.delete(`http://localhost:3002/api/budget?budgetId=${budgetToDelete}`);
+      return budgetToDelete;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to delete budget");
+    }
+  }
+
+  const handleUpdateBudget = async (budgetObject: BudgetResponseObject) => {
+    try {
+      const response = await axios.patch('http://localhost:3002/api/budget', budgetObject);
+      return response.data
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to update budget");
+    }
+  }
+
   const { data: budgetsData } = useQuery({
     queryKey: ["budgets", auth.userId],
     queryFn: fetchBudgets,
     staleTime: Infinity
   });
+
+  const { data: expenseData } = useQuery({
+    queryKey: ["expenses", auth?.userId],
+    queryFn: fetchExpenseTransactionData,
+    staleTime: Infinity
+  })
 
   const addBudgetMutation = useMutation({
     mutationFn: handleAddBudget,
@@ -124,11 +150,24 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
     }
   })
 
-  const { data: expenseData } = useQuery({
-    queryKey: ["expenses", auth?.userId],
-    queryFn: fetchExpenseTransactionData,
-    staleTime: Infinity
+  const removeBudgetMutation = useMutation({
+    mutationFn: handleRemoveBudget,
+    onSuccess: (budgetId: number) => {
+      queryClient.setQueryData(["budgets", auth.userId], (oldData: BudgetResponseObject[]) => (
+        (oldData || []).filter(budget => budget.id !== budgetId)
+      ))
+    }
   })
+
+  const updateBudgetMutation = useMutation({
+    mutationFn: handleUpdateBudget,
+    onSuccess: (updatedBudget: BudgetResponseObject) => {
+      queryClient.setQueryData(["budgets", auth.userId], (oldData: BudgetResponseObject[]) => ([
+        ...(oldData || []).filter(budget => budget.id !== updatedBudget.id), updatedBudget
+      ]))
+    }
+  })
+
 
   // Function to calculate stats based on the selected month
   const calculateStatsForMonth = () => {
@@ -180,6 +219,8 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
   useEffect(() => {
     calculateStatsForMonth()
   }, [selectedMonth, expenseData, budgetsData])
+
+  console.log(budgetsData)
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
@@ -239,6 +280,8 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
           budgets={budgetsData}
           expenses={expenseData}
           selectedMonth={selectedMonth}
+          mutation={removeBudgetMutation}
+          updateBudgetMutation={updateBudgetMutation}
         />
       </div>
 

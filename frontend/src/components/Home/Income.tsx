@@ -54,7 +54,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   const [monthlyRecurring, setMonthlyRecurring] = useState<string>("0.00");
   const [averagePerSource, setAveragePerSource] = useState<string>("0.00");
   const [toggleAddIncome, setToggleAddIncome] = useState<boolean>(false);
-
+  
   // Month selector state management
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false); // Controls visibility of month selector modal
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date()); // Tracks which month is currently selected for viewing stats
@@ -81,7 +81,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   });
 
   const calculateStatsDirectly = () => {
-  
+
 
     const monthlyTransactions = incomeTransactions.filter(transaction => {
       const transactionDate = new Date(transaction.dateOfIncome);
@@ -139,11 +139,51 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
     }
   }
 
+  const handleRemoveIncome = async (incomeTransactionId: number) => {
+    try {
+      await axios.delete(`http://localhost:3001/api/transaction/income?transactionId=${incomeTransactionId}`)
+      return incomeTransactionId
+    } catch (error) {
+      throw new Error("Could not delete income transaction")
+    }
+  }
+
+  const handleUpdateIncome = async (incomeObject: IncomeResponseObject) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3001/api/transaction/income`,
+        incomeObject
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Could not update income transaction");
+    }
+  };
+
   const addIncomeTransactionsMutation = useMutation({
     mutationFn: handleAddIncome,
     onSuccess: (newIncomeTransaction) => {
       queryClient.setQueryData(["income", auth.userId], (oldData: IncomeResponseObject[]) =>
         [...(oldData || []), newIncomeTransaction])
+    }
+  });
+
+  const removeIncomeTransactionMutation = useMutation({
+    mutationFn: handleRemoveIncome,
+    onSuccess: (incomeId: number) => {
+      queryClient.setQueryData(["income", auth.userId], (oldData: IncomeResponseObject[]) => (
+        (oldData || []).filter(income => income.id !== incomeId)
+      ))
+    }
+  })
+
+  const updateIncomeMutation = useMutation({
+    mutationFn: handleUpdateIncome,
+    onSuccess: (updatedIncome) => {
+      queryClient.setQueryData(["income", auth.userId], (oldData: IncomeResponseObject[]) => [
+        ...(oldData || []).filter(income => income.id !== updatedIncome.id),
+        updatedIncome
+      ]);
     }
   });
 
@@ -232,11 +272,16 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
         />
       </div>
 
-      <div className="grid grid-cols-5 w-full p-6 gap-8">
-        <div className="flex flex-col col-span-3 gap-8">
-          <IncomeHistory selectedMonth={selectedMonth} incomes={incomeTransactions} />
+      <div className="flex flex-col w-full p-6 gap-8">
+        <div>
+          <IncomeHistory 
+            selectedMonth={selectedMonth} 
+            incomes={incomeTransactions} 
+            mutation={removeIncomeTransactionMutation}
+            updateIncomeMutation={updateIncomeMutation}
+          />
         </div>
-        <div className="col-span-2 flex flex-col gap-4">
+        <div className="flex flex-row gap-4">
           <IncomeCategories selectedMonth={selectedMonth} incomes={incomeTransactions} />
           <MonthlyProjections />
         </div>
@@ -248,8 +293,8 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
           </div>
         )
       }
-       {/* Month Selector Modal - Conditionally rendered when toggleMonthSelector is true */}
-       {
+            {/* Month Selector Modal - Conditionally rendered when toggleMonthSelector is true */}
+      {
         toggleMonthSelector && (
           <div className="fixed inset-0 w-full h-full bg-black/40 z-50 flex items-center justify-center">
             {/* Modal content container - white rounded box */}
@@ -265,14 +310,14 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
                     ✕ {/* Close button (X) */}
                   </button>
                 </div>
-                
+
                 {/* Month grid - 3 columns x 4 rows for all 12 months */}
                 <div className="grid grid-cols-3 gap-3">
                   {Array.from({ length: 12 }, (_, i) => {
                     const date = new Date(selectedMonth.getFullYear(), i, 1); // Create date for each month
                     const monthName = date.toLocaleDateString('en-US', { month: 'short' }); // Get abbreviated month name (Jan, Feb, etc.)
                     const isSelected = selectedMonth.getMonth() === i; // Check if this month is currently selected
-                    
+
                     return (
                       <button
                         key={i}
@@ -281,18 +326,17 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
                           setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
                           setToggleMonthSelector(false);
                         }}
-                        className={`p-3 rounded-lg border-2 transition-colors ${
-                          isSelected 
+                        className={`p-3 rounded-lg border-2 transition-colors ${isSelected
                             ? 'border-blue-500 bg-blue-50 text-blue-700' // Selected month styling (blue)
                             : 'border-gray-200 hover:border-gray-300' // Unselected month styling (gray)
-                        }`}
+                          }`}
                       >
                         {monthName} {/* Display month name (Jan, Feb, etc.) */}
                       </button>
                     );
                   })}
                 </div>
-                
+
                 {/* Year navigation buttons */}
                 <div className="flex flex-row gap-2">
                   {/* Previous Year Button */}
@@ -316,7 +360,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
                     Next Year →
                   </button>
                 </div>
-                
+
                 {/* Today button - resets to current month/year */}
                 <button
                   onClick={() => {
@@ -327,7 +371,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
                 >
                   Today
                 </button>
-                
+
                 {/* Current selection display */}
                 <div className="text-center">
                   <p className="text-lg font-semibold">

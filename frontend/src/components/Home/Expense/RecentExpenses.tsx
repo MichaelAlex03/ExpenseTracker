@@ -1,14 +1,31 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Pencil, Trash2 } from 'lucide-react';
 import type { ExpenseResponseObject } from '../../../types/types';
+import type { UseMutationResult } from '@tanstack/react-query';
+import UpdateExpense from './UpdateExpense';
 
+/**
+ * * For useMutationResult generic parameters:
+ * @template TData - Return type from mutation
+ * @template TError - Error: The error type that can be thrown  
+ * @template TVariables - The input data type for the mutation
+ * @template TContext - unknown: Context type (not used)
+ */
 interface RecentExpensesProps {
   expenses: ExpenseResponseObject[];
   selectedMonth: Date;
+  mutation: UseMutationResult<number, Error, number, unknown>;
+  updateExpenseMutation: UseMutationResult<ExpenseResponseObject, Error, ExpenseResponseObject, unknown>;
 }
 
-const RecentExpenses = ({ expenses, selectedMonth }: RecentExpensesProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const RecentExpenses = ({ expenses, selectedMonth, mutation, updateExpenseMutation }: RecentExpensesProps) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [deleteTooltip, setDeleteTooltip] = useState<string | null>(null);
+  const [editTooltip, setEditTooltip] = useState<string | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<number>(0);
+  const [expenseToEdit, setExpenseToEdit] = useState<number>(0);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -23,7 +40,7 @@ const RecentExpenses = ({ expenses, selectedMonth }: RecentExpensesProps) => {
     return expenses.filter(expense => {
       const expenseDate = new Date(expense.dateOfExpense);
       return expenseDate.getMonth() === selectedMonth.getMonth() &&
-             expenseDate.getFullYear() === selectedMonth.getFullYear();
+        expenseDate.getFullYear() === selectedMonth.getFullYear();
     });
   };
 
@@ -48,12 +65,15 @@ const RecentExpenses = ({ expenses, selectedMonth }: RecentExpensesProps) => {
           <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
             Amount
           </th>
+          <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
         {(showAll ? data : data?.slice(0, 5))?.map((expense: ExpenseResponseObject) => (
-          <tr 
-            key={expense.id} 
+          <tr
+            key={expense.id}
             className="hover:bg-gray-50 transition-colors duration-150 ease-in-out"
           >
             <td className={`px-6 py-4 whitespace-nowrap ${showAll ? 'text-base' : 'text-sm'} text-gray-600`}>
@@ -73,12 +93,54 @@ const RecentExpenses = ({ expenses, selectedMonth }: RecentExpensesProps) => {
             <td className={`px-6 py-4 whitespace-nowrap ${showAll ? 'text-base' : 'text-sm'} text-right font-medium text-red-600`}>
               -${expense.expenseAmount}
             </td>
+            <td className={`px-6 py-4 whitespace-nowrap ${showAll ? 'text-base' : 'text-sm'} text-right font-medium text-gray-600`}>
+              <div className='flex flex-row items-center justify-end gap-8 relative pr-8'>
+                <div className="relative">
+                  <button
+                    className='cursor-pointer hover:bg-gray-300 transition-colors duration-150 ease-in-out px-3 py-3 rounded-lg'
+                    onClick={() => {
+                      setIsEditModalOpen(true);
+                      setExpenseToEdit(expense.id);
+                    }}
+                    onMouseEnter={() => setEditTooltip(String(expense.id))}
+                    onMouseLeave={() => setEditTooltip(null)}
+                  >
+                    <Pencil width={20} height={20} />
+                  </button>
+                  {editTooltip === String(expense.id) && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
+                      Edit Expense
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
+                    </div>
+                  )}
+                </div>
+                <div className="relative">
+                  <button
+                    className='cursor-pointer hover:bg-gray-300 transition-colors duration-150 ease-in-out px-3 py-3 rounded-lg'
+                    onClick={() => {
+                      setDeleteModalOpen(true)
+                      setExpenseToDelete(expense.id)
+                    }}
+                    onMouseEnter={() => setDeleteTooltip(String(expense.id))}
+                    onMouseLeave={() => setDeleteTooltip(null)}
+                  >
+                    <Trash2 width={20} height={20} />
+                  </button>
+                  {deleteTooltip === String(expense.id) && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
+                      Delete Expense
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </td>
           </tr>
         ))}
         {!data?.length && (
           <tr>
-            <td 
-              colSpan={5} 
+            <td
+              colSpan={5}
               className="px-6 py-8 text-center text-sm text-gray-500 bg-gray-50"
             >
               No expenses found
@@ -127,8 +189,49 @@ const RecentExpenses = ({ expenses, selectedMonth }: RecentExpensesProps) => {
           </div>
         </div>
       )}
+      {
+        isEditModalOpen && (
+          <div className="fixed inset-0 bg-black/40 z-50">
+            <UpdateExpense 
+              setToggleUpdateExpense={setIsEditModalOpen}
+              mutation={updateExpenseMutation}
+              expenseId={expenseToEdit}
+            />
+          </div>
+        )
+      }
+      {
+        deleteModalOpen && (
+          <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50'>
+            <div className='bg-white flex-col items-center justify-center rounded-xl p-6 w-2/5'>
+              <div className='flex flex-col items-start gap-4'>
+                <h1 className='font-bold text-xl'>Delete Expense?</h1>
+                <p className='text-base text-gray-500'>This action cannot be undone</p>
+              </div>
+              <div className='w-full gap-6 flex items-center justify-end'>
+                <button
+                  className='border-1 border-gray-500/40 px-4 py-2 rounded-lg hover:bg-gray-400/20 transition-colors duration-150 cursor-pointer'
+                  onClick={() => setDeleteModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className='bg-black px-4 py-2 rounded-lg cursor-pointer text-white'
+                  onClick={() => {
+                    mutation.mutate(expenseToDelete)
+                    setDeleteModalOpen(false)
+                  }
+                  }
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
     </>
   );
 };
 
-export default RecentExpenses
+export default RecentExpenses;

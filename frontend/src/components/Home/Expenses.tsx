@@ -48,14 +48,14 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
 
   const queryClient = useQueryClient();
 
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const [monthlyExpenses, setMonthlyExpenses] = useState<string>("0.00");
   const [averageExpensePerTransaction, setAverageExpensePerTransaction] = useState<string>("0.00");
   const [weeklyExpenses, setWeeklyExpenses] = useState<string>("0.00");
   const [toggleAddExpense, setToggleAddExpense] = useState<boolean>(false);
-
+  
   // Month selector state management
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false); // Controls visibility of month selector modal
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date()); // Tracks which month is currently selected for viewing stats
@@ -147,11 +147,53 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
     }
   }
 
+  const handleDeleteExpense = async (expenseId: number) => {
+    try {
+      await axios.delete(
+        `http://localhost:3001/api/transaction/expense?transactionId=${expenseId}`
+      );
+      return expenseId;
+    } catch (error) {
+      throw new Error("Error deleting expense")
+    }
+  }
+
+  const handleUpdateExpense = async (expenseObject: ExpenseResponseObject) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3001/api/transaction/expense`,
+        expenseObject
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Could not update expense transaction");
+    }
+  };
+
   const addExpenseTransactionsMutation = useMutation({
     mutationFn: handleAddExpense,
     onSuccess: (newExpenseTransaction) => {
       queryClient.setQueryData(["expenses", auth.userId], (oldData: ExpenseResponseObject[]) =>
         [...(oldData || []), newExpenseTransaction])
+    }
+  });
+
+  const removeExpenseMutation = useMutation({
+    mutationFn: handleDeleteExpense,
+    onSuccess: (expenseId: number) => {
+      queryClient.setQueryData(["expenses", auth.userId], (oldData: ExpenseResponseObject[]) => (
+        (oldData || []).filter(expense => expense.id !== expenseId)
+      ))
+    }
+  })
+
+  const updateExpenseMutation = useMutation({
+    mutationFn: handleUpdateExpense,
+    onSuccess: (updatedExpense) => {
+      queryClient.setQueryData(["expenses", auth.userId], (oldData: ExpenseResponseObject[]) => [
+        ...(oldData || []).filter(expense => expense.id !== updatedExpense.id),
+        updatedExpense
+      ]);
     }
   });
 
@@ -238,13 +280,18 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
         />
       </div>
 
-      <div className="grid grid-cols-5 w-full p-6 gap-8">
-        <div className="flex flex-col col-span-3 gap-8">
-          <RecentExpenses expenses={expenseTransactions} selectedMonth={selectedMonth}/>
-          <QuickStats />
+      <div className="flex flex-col w-full p-6 gap-8">
+        <div>
+          <RecentExpenses
+            expenses={expenseTransactions} 
+            selectedMonth={selectedMonth}
+            mutation={removeExpenseMutation}
+            updateExpenseMutation={updateExpenseMutation}
+          />
         </div>
-        <div className="col-span-2 flex flex-col gap-4">
+        <div className="flex flex-row gap-4">
           <ExpenseCategories expenses={expenseTransactions} selectedMonth={selectedMonth} />
+          <QuickStats />
         </div>
       </div>
       {
@@ -257,7 +304,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
           </div>
         )
       }
-      {/* Month Selector Modal - Conditionally rendered when toggleMonthSelector is true */}
+            {/* Month Selector Modal - Conditionally rendered when toggleMonthSelector is true */}
       {
         toggleMonthSelector && (
           <div className="fixed inset-0 w-full h-full bg-black/40 z-50 flex items-center justify-center">
@@ -277,27 +324,26 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
 
                 {/* Month grid - 3 columns x 4 rows for all 12 months */}
                 <div className="grid grid-cols-3 gap-3">
-                {months.map((monthName, i) => {
-                  const isSelected = selectedMonth.getMonth() === i;
-                  
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
-                        setToggleMonthSelector(false);
-                      }}
-                      className={`p-3 rounded-lg border-2 transition-colors ${
-                        isSelected 
+                  {months.map((monthName, i) => {
+                    const isSelected = selectedMonth.getMonth() === i;
+
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
+                          setToggleMonthSelector(false);
+                        }}
+                        className={`p-3 rounded-lg border-2 transition-colors ${isSelected
                           ? 'border-blue-500 bg-blue-50 text-blue-700'
                           : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      {monthName}
-                    </button>
-                  );
-                })}
-              </div>
+                          }`}
+                      >
+                        {monthName}
+                      </button>
+                    );
+                  })}
+                </div>
 
                 {/* Year navigation buttons */}
                 <div className="flex flex-row gap-2">

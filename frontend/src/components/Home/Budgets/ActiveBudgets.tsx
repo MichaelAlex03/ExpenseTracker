@@ -1,14 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import type { BudgetResponseObject, ExpenseResponseObject } from '@/types/types'
 import { X, Pencil, Trash2 } from 'lucide-react';
+import type { UseMutationResult } from '@tanstack/react-query';
+import UpdateBudget from './UpdateBudget';
 
+/**
+ * * For useMutationResult generic parameters:
+ * @template TData - Return type from mutation
+ * @template TError - Error: The error type that can be thrown  
+ * @template TVariables - The input data type for the mutation
+ * @template TContext - unknown: Context type (not used)
+ */
 interface ActiveBudgetProps {
   budgets: BudgetResponseObject[]
   expenses: ExpenseResponseObject[]
   selectedMonth: Date
+  mutation: UseMutationResult<number, Error, number, unknown>;
+  updateBudgetMutation: UseMutationResult<BudgetResponseObject, Error, BudgetResponseObject, unknown>;
 }
 
-const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) => {
+const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudgetMutation }: ActiveBudgetProps) => {
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [spentPerCategory, setSpentPerCategory] = useState<Map<string, number>>(new Map());
@@ -16,6 +27,8 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [editTooltip, setEditTooltip] = useState<string | null>(null);
   const [deleteTooltip, setDeleteTooltip] = useState<string | null>(null);
+  const [budgetToDelete, setBudgetToDelete] = useState<number>(0);
+  const [budgetToEdit, setBudgetToEdit] = useState<number>(0);
 
   const filterBudgetsByMonth = (listOfBudgets: BudgetResponseObject[]) => {
     const monthlyBudgets = listOfBudgets?.filter(budget => {
@@ -72,13 +85,7 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
     );
   }
 
-  const handleRemoveBudget = async () => {
 
-  }
-
-  const handleUpdateBudget = async () => {
-
-  }
 
 
   useEffect(() => {
@@ -133,7 +140,10 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
                 <div className="relative">
                   <button
                     className='cursor-pointer hover:bg-gray-300 transition-colors duration-150 ease-in-out px-3 py-3 rounded-lg'
-                    onClick={() => setIsEditModalOpen(true)}
+                    onClick={() => {
+                      setIsEditModalOpen(true)
+                      setBudgetToEdit(budget.id)
+                    }}
                     onMouseEnter={() => setEditTooltip(String(budget.id))}
                     onMouseLeave={() => setEditTooltip(null)}
                   >
@@ -149,7 +159,10 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
                 <div className="relative">
                   <button
                     className='cursor-pointer hover:bg-gray-300 transition-colors duration-150 ease-in-out px-3 py-3 rounded-lg'
-                    onClick={() => setDeleteModalOpen(true)}
+                    onClick={() => {
+                      setDeleteModalOpen(true)
+                      setBudgetToDelete(budget.id)
+                    }}
                     onMouseEnter={() => setDeleteTooltip(String(budget.id))}
                     onMouseLeave={() => setDeleteTooltip(null)}
                   >
@@ -221,8 +234,12 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
       }
       {
         isEditModalOpen && (
-          <div>
-
+          <div className='fixed inset-0 bg-black/40'>
+            <UpdateBudget
+              setToggleUpdateBudget={setIsEditModalOpen}
+              mutation={updateBudgetMutation}
+              budgetId={budgetToEdit}
+            />
           </div>
         )
       }
@@ -243,7 +260,11 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses }: ActiveBudgetProps) 
                 </button>
                 <button
                   className='bg-black px-4 py-2 rounded-lg cursor-pointer text-white'
-                  onClick={handleRemoveBudget}
+                  onClick={() => {
+                    mutation.mutate(budgetToDelete)
+                    setDeleteModalOpen(false)
+                  }
+                  }
                 >
                   Delete
                 </button>

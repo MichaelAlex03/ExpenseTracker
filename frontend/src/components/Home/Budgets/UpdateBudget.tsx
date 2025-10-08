@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Calendar as CalendarIcon,
   DollarSign,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { UseMutationResult } from '@tanstack/react-query';
 import useAuth from "../../../../hooks/useAuth";
+import axios from 'axios';
 
 
 
@@ -27,7 +28,7 @@ const categories = [
 ];
 
 
-//Budget object returned from server
+//Budget object returned from server and for updating budget object
 interface BudgetResponseObject {
   id: number,
   budgetName: string,
@@ -39,16 +40,6 @@ interface BudgetResponseObject {
   budgetDate: Date
 }
 
-//Budget object used for budget object creation
-interface BudgetObject {
-  budgetName: string,
-  budgetCategory: string,
-  budgetLimit: string,
-  budgetNotes: string,
-  recurring: string,
-  userId: number
-  budgetDate: Date
-}
 
 /**
  * * For useMutationResult generic parameters:
@@ -57,16 +48,18 @@ interface BudgetObject {
  * @template TVariables - ExpenseObjectProps: The input data type for the mutation
  * @template TContext - unknown: Context type (not used)
  */
-interface AddBudgetProps {
-  setToggleAddBudget: React.Dispatch<React.SetStateAction<boolean>>;
-  mutation: UseMutationResult<BudgetResponseObject, Error, BudgetObject, unknown>;
+interface UpdateBudgetProps {
+  setToggleUpdateBudget: React.Dispatch<React.SetStateAction<boolean>>;
+  mutation: UseMutationResult<BudgetResponseObject, Error, BudgetResponseObject, unknown>;
+  budgetId: number
 }
 
-const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
+const UpdateBudget = ({ setToggleUpdateBudget, mutation, budgetId }: UpdateBudgetProps) => {
 
   const { auth } = useAuth();
 
-  const [budgetObject, setBudgetObject] = useState<BudgetObject>({
+  const [budgetObject, setBudgetObject] = useState<BudgetResponseObject>({
+    id: 0,
     budgetName: "",
     budgetCategory: "",
     budgetLimit: "",
@@ -75,6 +68,23 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
     userId: auth.userId,
     budgetDate: new Date()
   })
+
+  const fetchBudget = async () => {
+    try {
+        const response = await axios.get(
+            `http://localhost:3002/api/budget/singleBudget?budgetId=${budgetId}`,
+          );
+        setBudgetObject(response.data);
+    } catch (error) {
+        console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchBudget()
+  }, [])
+
+
 
   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { value, name } = e.target;
@@ -170,7 +180,7 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
             </select>
           </div>
 
-          <div className='flex flex-col gap-1 w-full'>
+          {/* <div className='flex flex-col gap-1 w-full'>
             <div className='flex flex-row items-center gap-2'>
               <CalendarIcon className='h-4 w-4' />
               <label htmlFor='date' className='font-semibold text-lg'>Date *</label>
@@ -183,7 +193,7 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
               className="border border-gray-300 p-2 rounded-lg text-sm w-full"
               disabled
             />
-          </div>
+          </div> */}
         </div>
 
         <div className='flex flex-col gap-1'>
@@ -207,17 +217,20 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
       >
         <button
           className='flex flex-row items-center px-4 py-2 border border-gray-300 rounded-lg gap-2 cursor-pointer'
-          onClick={() => setToggleAddBudget(false)}
+          onClick={() => setToggleUpdateBudget(false)}
         >
           <X className='h-4 w-4' />
           <p className='text-sm'>Cancel</p>
         </button>
         <button
           className='flex flex-row items-center px-4 py-2 bg-black rounded-lg gap-2 cursor-pointer'
-          onClick={() => mutation.mutate(budgetObject)}
+          onClick={() => {
+            mutation.mutate(budgetObject)
+            setToggleUpdateBudget(false)
+          }}
         >
           <Save className='h-4 w-4' color='white' />
-          <p className='text-white text-sm'>Save Budget</p>
+          <p className='text-white text-sm'>Update Budget</p>
         </button>
       </div>
     </div>
@@ -226,4 +239,4 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
   )
 }
 
-export default AddBudget
+export default UpdateBudget
