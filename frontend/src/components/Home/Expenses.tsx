@@ -55,7 +55,10 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   const [averageExpensePerTransaction, setAverageExpensePerTransaction] = useState<string>("0.00");
   const [weeklyExpenses, setWeeklyExpenses] = useState<string>("0.00");
   const [toggleAddExpense, setToggleAddExpense] = useState<boolean>(false);
-  
+  const [largestExpense, setLargestExpense] = useState<string>("0.00");
+  const [mostFrequentCategory, setMostFrequentCategory] = useState<string>("");
+  const [dailyAverage, setDailyAverage] = useState<string>("0.00");
+
   // Month selector state management
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false); // Controls visibility of month selector modal
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date()); // Tracks which month is currently selected for viewing stats
@@ -83,6 +86,11 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   });
 
   const calculateStatsDirectly = () => {
+    let categoriesFrequency = new Map<string, number>();
+    let maxFrequency = 0;
+    let mostFrequentCategory = "";
+    let largestExpense = 0.00;
+
     const monthlyTransactions = expenseTransactions.filter(transaction => {
       const transactionDate = new Date(transaction.dateOfExpense);
       return transactionDate.getMonth() === selectedMonth.getMonth() &&
@@ -112,9 +120,53 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
       return sum + parseFloat(transaction.expenseAmount || "0");
     }, 0);
 
+    for(let i = 0; i < monthlyTransactions.length; i++){
+      let expenseCategory = monthlyTransactions[i].expenseCategory;
+      let expenseAmount = monthlyTransactions[i].expenseAmount;
+
+      if (categoriesFrequency.get(expenseCategory) !== undefined) {
+        categoriesFrequency.set(expenseCategory, categoriesFrequency.get(expenseCategory)! + 1);
+      } else {
+        categoriesFrequency.set(expenseCategory, 1);
+      }
+
+      if((categoriesFrequency.get(expenseCategory) ?? 0) > maxFrequency){
+          maxFrequency = (categoriesFrequency.get(expenseCategory) ?? 0)
+          mostFrequentCategory = expenseCategory;
+      }
+
+      if (parseFloat(expenseAmount) > largestExpense){
+        largestExpense = parseFloat(expenseAmount);
+      }
+
+      
+    }
+
+    console.log(largestExpense);
+    console.log(maxFrequency);
+    console.log(mostFrequentCategory)
+
+   
+    const today = new Date();
+    let daysElapsed = 0
+    
+    if (today.getMonth() === selectedMonth.getMonth() && today.getFullYear() === selectedMonth.getFullYear()){
+      daysElapsed = today.getDate()
+    } else if (selectedMonth < today) {
+      let date = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0);
+      daysElapsed = date.getDate()
+    } else {
+      daysElapsed = 1
+    }
+    
+    
+
     setWeeklyExpenses(weeklyTotal.toFixed(2));
     setAverageExpensePerTransaction(monthlyTransactions.length > 0 ? (total / monthlyTransactions.length).toFixed(2) : "0.00");
     setMonthlyExpenses(total.toFixed(2));
+    setDailyAverage((total / daysElapsed).toFixed(2));
+    setMostFrequentCategory(mostFrequentCategory);
+    setLargestExpense(largestExpense.toFixed(2));
   }
 
   const handleAddExpense = async (expenseObject: ExpenseObject) => {
@@ -209,8 +261,6 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
     }
   }, [expenseTransactions, selectedMonth])
 
-  console.log("cache", data)
-  console.log("expenses", expenseTransactions)
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
@@ -283,15 +333,23 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
       <div className="flex flex-col w-full p-6 gap-8">
         <div>
           <RecentExpenses
-            expenses={expenseTransactions} 
+            expenses={expenseTransactions}
             selectedMonth={selectedMonth}
             mutation={removeExpenseMutation}
             updateExpenseMutation={updateExpenseMutation}
           />
         </div>
-        <div className="flex flex-row gap-4">
-          <ExpenseCategories expenses={expenseTransactions} selectedMonth={selectedMonth} />
-          <QuickStats />
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-2">
+            <ExpenseCategories expenses={expenseTransactions} selectedMonth={selectedMonth} />
+          </div>
+          <div className="col-span-1">
+            <QuickStats
+              largestExpense={largestExpense}
+              mostFrequentCategory={mostFrequentCategory}
+              dailyAverage={dailyAverage} 
+            />
+          </div>
         </div>
       </div>
       {
@@ -304,7 +362,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
           </div>
         )
       }
-            {/* Month Selector Modal - Conditionally rendered when toggleMonthSelector is true */}
+      {/* Month Selector Modal - Conditionally rendered when toggleMonthSelector is true */}
       {
         toggleMonthSelector && (
           <div className="fixed inset-0 w-full h-full bg-black/40 z-50 flex items-center justify-center">
