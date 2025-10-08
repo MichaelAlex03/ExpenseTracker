@@ -60,8 +60,8 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudge
   }
 
   const renderProgressBar = (budget: BudgetResponseObject) => {
-    const spent = spentPerCategory.get(budget.budgetCategory) || 0;
-    const limit = parseFloat(budget.budgetLimit);
+    const spent = parseFloat((spentPerCategory.get(budget.budgetCategory) || 0).toFixed(2));
+    const limit = parseFloat(parseFloat(budget.budgetLimit).toFixed(2));
     const percentage = Math.min((spent / limit) * 100, 100);
 
     return (
@@ -234,7 +234,7 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudge
       }
       {
         isEditModalOpen && (
-          <div className='fixed inset-0 bg-black/40'>
+          <div className='fixed inset-0 bg-black/40 z-50'>
             <UpdateBudget
               setToggleUpdateBudget={setIsEditModalOpen}
               mutation={updateBudgetMutation}

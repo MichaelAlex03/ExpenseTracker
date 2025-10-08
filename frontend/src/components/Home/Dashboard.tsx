@@ -85,6 +85,17 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false);
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
 
+  const fetchBudgets = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3002/api/budget?userId=${auth.userId}`
+      )
+      return response.data
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const fetchExpenseTransactionData = async () => {
     try {
       const response = await axios.get(
@@ -116,6 +127,12 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const { data: incomeData } = useQuery({
     queryKey: ["income", auth?.userId],
     queryFn: fetchIncomeTransactionData,
+    staleTime: Infinity
+  });
+
+  const { data: budgetsData } = useQuery({
+    queryKey: ["budgets", auth.userId],
+    queryFn: fetchBudgets,
     staleTime: Infinity
   });
 
@@ -297,7 +314,11 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
           expenseData={expenseData || []}
           selectedMonth={selectedMonth}
         />
-        <BudgetProgress />
+        <BudgetProgress
+          budgets={budgetsData}
+          expenses={expenseData}
+          selectedMonth={selectedMonth} 
+        />
       </div>
 
       {toggleAddTransaction && (

@@ -8,6 +8,21 @@ interface MonthlyOverviewProps {
 }
 
 const MonthlyOverview = ({ incomeData, expenseData, selectedMonth }: MonthlyOverviewProps) => {
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const getOrdinalSuffix = (day: number): string => {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+
   const getDailyData = () => {
     const daysInMonth = new Date(
       selectedMonth.getFullYear(),
@@ -21,7 +36,6 @@ const MonthlyOverview = ({ incomeData, expenseData, selectedMonth }: MonthlyOver
       expenses: 0
     }));
 
-    // Filter and aggregate income data
     incomeData
       .filter(income => {
         const date = new Date(income.dateOfIncome);
@@ -35,7 +49,6 @@ const MonthlyOverview = ({ incomeData, expenseData, selectedMonth }: MonthlyOver
         dailyData[day - 1].income += parseFloat(income.incomeAmount);
       });
 
-    // Filter and aggregate expense data
     expenseData
       .filter(expense => {
         const date = new Date(expense.dateOfExpense);
@@ -49,10 +62,27 @@ const MonthlyOverview = ({ incomeData, expenseData, selectedMonth }: MonthlyOver
         dailyData[day - 1].expenses += parseFloat(expense.expenseAmount);
       });
 
+
     return dailyData;
   };
 
   const chartData = getDailyData();
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-2 border border-gray-200 rounded-md">
+          <p className="text-sm">{months[selectedMonth.getMonth()]} {label}{getOrdinalSuffix(label)}</p>
+          {payload.map((pld: any) => (
+            <p key={pld.name} style={{ color: pld.color }}>
+              {pld.name}: ${pld.value.toFixed(2)}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="flex flex-col border-1 border-gray-300 shadow-lg w-full rounded-xl p-6 min-h-102">
@@ -70,7 +100,7 @@ const MonthlyOverview = ({ incomeData, expenseData, selectedMonth }: MonthlyOver
             tick={{ fontSize: 12 }}
           />
           <YAxis />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Line type="monotone" dataKey="income" stroke="#4ADE80" strokeWidth={2} name="Income" dot={false} />
           <Line type="monotone" dataKey="expenses" stroke="#F87171" strokeWidth={2} name="Expenses" dot={false} />
