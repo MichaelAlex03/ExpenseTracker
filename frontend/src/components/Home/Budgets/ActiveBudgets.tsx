@@ -26,6 +26,8 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudge
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [editTooltip, setEditTooltip] = useState<string | null>(null);
+  const [modalEditTooltip, setModalEditTooltip] = useState<string | null>(null)
+  const [modalDeleteTooltip, setModaDeleteTooltip] = useState<string | null>(null)
   const [deleteTooltip, setDeleteTooltip] = useState<string | null>(null);
   const [budgetToDelete, setBudgetToDelete] = useState<number>(0);
   const [budgetToEdit, setBudgetToEdit] = useState<number>(0);
@@ -86,15 +88,19 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudge
   }
 
 
-
-
   useEffect(() => {
     calculateSpentByCategory(expenses);
   }, [budgets, expenses])
 
   const filteredBudgets = filterBudgetsByMonth(budgets);
 
-  const BudgetTable = ({ data, showAll = false }: { data: BudgetResponseObject[], showAll?: boolean }) => (
+  const BudgetTable = ({ data, showAll = false, onEditTooltip, onDeleteTooltip }:
+    {
+      data: BudgetResponseObject[],
+      showAll?: boolean
+      onEditTooltip: (id: string | null) => void,
+      onDeleteTooltip: (id: string | null) => void
+    }) => (
     <table className="w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
@@ -144,12 +150,12 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudge
                       setIsEditModalOpen(true)
                       setBudgetToEdit(budget.id)
                     }}
-                    onMouseEnter={() => setEditTooltip(String(budget.id))}
-                    onMouseLeave={() => setEditTooltip(null)}
+                    onMouseEnter={() => onEditTooltip(String(budget.id))}
+                    onMouseLeave={() => onEditTooltip(null)}
                   >
                     <Pencil width={20} height={20} />
                   </button>
-                  {editTooltip === String(budget.id) && (
+                  {(showAll ? modalEditTooltip : editTooltip) === String(budget.id) && (
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
                       Edit Budget
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
@@ -163,12 +169,12 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudge
                       setDeleteModalOpen(true)
                       setBudgetToDelete(budget.id)
                     }}
-                    onMouseEnter={() => setDeleteTooltip(String(budget.id))}
-                    onMouseLeave={() => setDeleteTooltip(null)}
+                    onMouseEnter={() => onDeleteTooltip(String(budget.id))}
+                    onMouseLeave={() => onDeleteTooltip(null)}
                   >
                     <Trash2 width={20} height={20} />
                   </button>
-                  {deleteTooltip === String(budget.id) && (
+                  {(showAll ? modalDeleteTooltip : deleteTooltip) === String(budget.id) && (
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
                       Delete Budget
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
@@ -208,7 +214,7 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudge
           </div>
         </div>
         <div className="overflow-x-auto">
-          <BudgetTable data={filteredBudgets || []} />
+          <BudgetTable data={filteredBudgets || []} onEditTooltip={setEditTooltip} onDeleteTooltip={setDeleteTooltip} />
         </div>
       </div>
 
@@ -226,7 +232,12 @@ const ActiveBudgets = ({ budgets, selectedMonth, expenses, mutation, updateBudge
                 </button>
               </div>
               <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
-                <BudgetTable data={filteredBudgets || []} showAll={true} />
+                <BudgetTable
+                  data={filteredBudgets || []}
+                  showAll={true}
+                  onEditTooltip={setModalEditTooltip}
+                  onDeleteTooltip={setDeleteTooltip}
+                />
               </div>
             </div>
           </div>

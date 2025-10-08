@@ -62,6 +62,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   // Month selector state management
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false); // Controls visibility of month selector modal
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date()); // Tracks which month is currently selected for viewing stats
+  const [currentSelectedMonth, setCurrentSelectedMonth] = useState<Date>(selectedMonth);
 
   const [expenseTransactions, setExpenseTransactions] = useState<ExpenseResponseObject[]>([]);
 
@@ -167,6 +168,11 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
     setDailyAverage((total / daysElapsed).toFixed(2));
     setMostFrequentCategory(mostFrequentCategory);
     setLargestExpense(largestExpense.toFixed(2));
+  }
+
+  const updateDate = () => {
+    setSelectedMonth(currentSelectedMonth);
+    setToggleMonthSelector(false);
   }
 
   const handleAddExpense = async (expenseObject: ExpenseObject) => {
@@ -383,14 +389,13 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
                 {/* Month grid - 3 columns x 4 rows for all 12 months */}
                 <div className="grid grid-cols-3 gap-3">
                   {months.map((monthName, i) => {
-                    const isSelected = selectedMonth.getMonth() === i;
+                    const isSelected = currentSelectedMonth.getMonth() === i;
 
                     return (
                       <button
                         key={i}
                         onClick={() => {
-                          setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
-                          setToggleMonthSelector(false);
+                          setCurrentSelectedMonth(new Date(currentSelectedMonth.getFullYear(), i, 1));
                         }}
                         className={`p-3 rounded-lg border-2 transition-colors ${isSelected
                           ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -408,8 +413,8 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
                   {/* Previous Year Button */}
                   <button
                     onClick={() => {
-                      const newYear = selectedMonth.getFullYear() - 1; // Decrease year by 1
-                      setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1)); // Update selectedMonth with new year
+                      const newYear = currentSelectedMonth.getFullYear() - 1; // Decrease year by 1
+                      setCurrentSelectedMonth(new Date(newYear, currentSelectedMonth.getMonth(), 1)); // Update currentSelectedMonth with new year
                     }}
                     className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                   >
@@ -418,8 +423,8 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
                   {/* Next Year Button */}
                   <button
                     onClick={() => {
-                      const newYear = selectedMonth.getFullYear() + 1; // Increase year by 1
-                      setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1)); // Update selectedMonth with new year
+                      const newYear = currentSelectedMonth.getFullYear() + 1; // Increase year by 1
+                      setCurrentSelectedMonth(new Date(newYear, currentSelectedMonth.getMonth(), 1)); // Update currentSelectedMonth with new year
                     }}
                     className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                   >
@@ -431,6 +436,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
                 <button
                   onClick={() => {
                     setSelectedMonth(new Date()); // Set to current month and year
+                    setCurrentSelectedMonth(new Date());
                     setToggleMonthSelector(false); // Close modal
                   }}
                   className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -438,11 +444,19 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
                   Today
                 </button>
 
+                {/* Done button - updates selectedMonth with currentSelectedMonth */}
+                <button
+                  onClick={updateDate}
+                  className="w-full p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Done
+                </button>
+
                 {/* Current selection display */}
                 <div className="text-center">
                   <p className="text-lg font-semibold">
                     {/* Show full month name and year (e.g., "January 2024") */}
-                    {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    {currentSelectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                   </p>
                 </div>
               </div>

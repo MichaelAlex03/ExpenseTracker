@@ -58,9 +58,9 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   // Month selector state management
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false); // Controls visibility of month selector modal
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date()); // Tracks which month is currently selected for viewing stats
+  const [currentSelectedMonth, setCurrentSelectedMonth] = useState<Date>(selectedMonth);
 
   const [incomeTransactions, setIncomeTransactions] = useState<IncomeResponseObject[]>([]);
-
 
   const fetchIncomeTransactionData = async () => {
     try {
@@ -186,6 +186,11 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
       ]);
     }
   });
+
+  const updateDate = () => {
+    setSelectedMonth(currentSelectedMonth);
+    setToggleMonthSelector(false);
+  };
 
   //Make sure to keep incomeTransactions insync with local cache
   useEffect(() => {
@@ -314,24 +319,22 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
                 {/* Month grid - 3 columns x 4 rows for all 12 months */}
                 <div className="grid grid-cols-3 gap-3">
                   {Array.from({ length: 12 }, (_, i) => {
-                    const date = new Date(selectedMonth.getFullYear(), i, 1); // Create date for each month
-                    const monthName = date.toLocaleDateString('en-US', { month: 'short' }); // Get abbreviated month name (Jan, Feb, etc.)
-                    const isSelected = selectedMonth.getMonth() === i; // Check if this month is currently selected
+                    const isSelected = currentSelectedMonth.getMonth() === i;
+                    const monthName = new Date(2024, i, 1).toLocaleDateString('en-US', { month: 'short' });
 
                     return (
                       <button
                         key={i}
                         onClick={() => {
-                          // When month is clicked: update selectedMonth and close modal
-                          setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
-                          setToggleMonthSelector(false);
+                          setCurrentSelectedMonth(new Date(currentSelectedMonth.getFullYear(), i, 1));
                         }}
-                        className={`p-3 rounded-lg border-2 transition-colors ${isSelected
-                            ? 'border-blue-500 bg-blue-50 text-blue-700' // Selected month styling (blue)
-                            : 'border-gray-200 hover:border-gray-300' // Unselected month styling (gray)
-                          }`}
+                        className={`p-3 rounded-lg border-2 transition-colors ${
+                          isSelected
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
                       >
-                        {monthName} {/* Display month name (Jan, Feb, etc.) */}
+                        {monthName}
                       </button>
                     );
                   })}
@@ -342,8 +345,8 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
                   {/* Previous Year Button */}
                   <button
                     onClick={() => {
-                      const newYear = selectedMonth.getFullYear() - 1; // Decrease year by 1
-                      setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1)); // Update selectedMonth with new year
+                      const newYear = currentSelectedMonth.getFullYear() - 1;
+                      setCurrentSelectedMonth(new Date(newYear, currentSelectedMonth.getMonth(), 1));
                     }}
                     className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                   >
@@ -352,8 +355,8 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
                   {/* Next Year Button */}
                   <button
                     onClick={() => {
-                      const newYear = selectedMonth.getFullYear() + 1; // Increase year by 1
-                      setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1)); // Update selectedMonth with new year
+                      const newYear = currentSelectedMonth.getFullYear() + 1;
+                      setCurrentSelectedMonth(new Date(newYear, currentSelectedMonth.getMonth(), 1));
                     }}
                     className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                   >
@@ -364,19 +367,27 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
                 {/* Today button - resets to current month/year */}
                 <button
                   onClick={() => {
-                    setSelectedMonth(new Date()); // Set to current month and year
-                    setToggleMonthSelector(false); // Close modal
+                    setSelectedMonth(new Date());
+                    setCurrentSelectedMonth(new Date());
+                    setToggleMonthSelector(false);
                   }}
                   className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Today
                 </button>
 
+                {/* Done button - updates selectedMonth and closes modal */}
+                <button
+                  onClick={updateDate}
+                  className="w-full p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Done
+                </button>
+
                 {/* Current selection display */}
                 <div className="text-center">
                   <p className="text-lg font-semibold">
-                    {/* Show full month name and year (e.g., "January 2024") */}
-                    {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    {currentSelectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                   </p>
                 </div>
               </div>

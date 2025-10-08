@@ -84,6 +84,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const [toggleAddTransaction, setToggleAddTransaction] = useState<boolean>(false);
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false);
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [currentSelectedMonth, setCurrentSelectedMonth] = useState<Date>(selectedMonth);
 
   const fetchBudgets = async () => {
     try {
@@ -233,6 +234,11 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
     setSavingsRate(savingsRate.toFixed(2));
   };
 
+  const updateDate = () => {
+    setSelectedMonth(currentSelectedMonth)
+    setToggleMonthSelector(false)
+  }
+
   useEffect(() => {
     calculateStatsForMonth();
   }, [selectedMonth, incomeData, expenseData]);
@@ -347,14 +353,13 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
               
               <div className="grid grid-cols-3 gap-3">
                 {months.map((monthName, i) => {
-                  const isSelected = selectedMonth.getMonth() === i;
+                  const isSelected = currentSelectedMonth.getMonth() === i;
                   
                   return (
                     <button
                       key={i}
                       onClick={() => {
-                        setSelectedMonth(new Date(selectedMonth.getFullYear(), i, 1));
-                        setToggleMonthSelector(false);
+                        setCurrentSelectedMonth(new Date(currentSelectedMonth.getFullYear(), i, 1));
                       }}
                       className={`p-3 rounded-lg border-2 transition-colors ${
                         isSelected 
@@ -371,8 +376,8 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
               <div className="flex flex-row gap-2">
                 <button
                   onClick={() => {
-                    const newYear = selectedMonth.getFullYear() - 1;
-                    setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1));
+                    const newYear = currentSelectedMonth.getFullYear() - 1;
+                    setCurrentSelectedMonth(new Date(newYear, currentSelectedMonth.getMonth(), 1));
                   }}
                   className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
@@ -380,8 +385,8 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
                 </button>
                 <button
                   onClick={() => {
-                    const newYear = selectedMonth.getFullYear() + 1;
-                    setSelectedMonth(new Date(newYear, selectedMonth.getMonth(), 1));
+                    const newYear = currentSelectedMonth.getFullYear() + 1;
+                    setCurrentSelectedMonth(new Date(newYear, currentSelectedMonth.getMonth(), 1));
                   }}
                   className="flex-1 p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
@@ -399,9 +404,16 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
                 Today
               </button>
               
+              <button
+                onClick={updateDate}
+                className="w-full p-2 bg-gray-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Done
+              </button>
+              
               <div className="text-center">
                 <p className="text-lg font-semibold">
-                  {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  {currentSelectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </p>
               </div>
             </div>

@@ -47,7 +47,7 @@ const BudgetProgress = ({ budgets, expenses, selectedMonth }: BudgetProgressProp
   const calculateSpentByCategory = (listOfExpenses: ExpenseResponseObject[]) => {
     const categoryMap = new Map<string, number>();
 
-    listOfExpenses.filter(expense => {
+    listOfExpenses?.filter(expense => {
       const expenseDate = new Date(expense.dateOfExpense)
       return expenseDate.getMonth() === selectedMonth.getMonth() &&
         expenseDate.getFullYear() === selectedMonth.getFullYear()
@@ -64,8 +64,8 @@ const BudgetProgress = ({ budgets, expenses, selectedMonth }: BudgetProgressProp
   }
 
   const renderProgressBar = (budget: BudgetResponseObject) => {
-    const spent = spentPerCategory.get(budget.budgetCategory) || 0;
-    const limit = parseFloat(budget.budgetLimit);
+    const spent = parseFloat((spentPerCategory.get(budget.budgetCategory) || 0).toFixed(2));
+    const limit = parseFloat(parseFloat(budget.budgetLimit).toFixed(2));
     const percentage = Math.min((spent / limit) * 100, 100);
 
     const formattedCategory = (category: string) => {
@@ -105,8 +105,10 @@ const BudgetProgress = ({ budgets, expenses, selectedMonth }: BudgetProgressProp
         <h1 className="text-2xl text-[#09090B] font-semibold">
           Budget Progress
           <div className="flex flex-col mt-4">
-            {filteredBudgets.slice(0, 5).map(budget => (
-              renderProgressBar(budget)
+            {filteredBudgets?.slice(0, 5).map((budget, i) => (
+              <div key={i}>
+                {renderProgressBar(budget)}
+              </div>
             ))}
           </div>
         </h1>

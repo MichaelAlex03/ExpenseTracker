@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { X, Pencil, Trash2 } from 'lucide-react';
 import type { IncomeResponseObject } from '../../../types/types';
 import type { UseMutationResult } from '@tanstack/react-query';
@@ -22,6 +22,8 @@ const IncomeHistory = ({ incomes, selectedMonth, mutation, updateIncomeMutation 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [modalEditTooltip, setModalEditTooltip] = useState<string | null>(null);
+  const [modalDeleteTooltip, setModalDeleteTooltip] = useState<string | null>(null);
   const [editTooltip, setEditTooltip] = useState<string | null>(null);
   const [deleteTooltip, setDeleteTooltip] = useState<string | null>(null);
   const [incomeTransToDelete, setIncomeTransToDelete] = useState<number>(0);
@@ -44,17 +46,14 @@ const IncomeHistory = ({ incomes, selectedMonth, mutation, updateIncomeMutation 
     });
   };
 
-  const handleDeleteIncome = async () => {
-
-  }
-
-  const handleUpdateIncome = async () => {
-
-  }
-
   const filteredIncomes = filterIncomesByMonth(incomes);
 
-  const IncomeTable = ({ data, showAll = false }: { data: IncomeResponseObject[], showAll?: boolean }) => (
+  const IncomeTable = ({ data, showAll = false, onEditTooltip, onDeleteTooltip }: { 
+    data: IncomeResponseObject[], 
+    showAll?: boolean,
+    onEditTooltip: (id: string | null) => void,
+    onDeleteTooltip: (id: string | null) => void 
+  }) => (
     <table className="w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
@@ -110,12 +109,12 @@ const IncomeHistory = ({ incomes, selectedMonth, mutation, updateIncomeMutation 
                       setIsEditModalOpen(true);
                       setIncomeToEdit(income.id);
                     }}
-                    onMouseEnter={() => setEditTooltip(String(income.id))}
-                    onMouseLeave={() => setEditTooltip(null)}
+                    onMouseEnter={() => onEditTooltip(String(income.id))}
+                    onMouseLeave={() => onEditTooltip(null)}
                   >
                     <Pencil width={20} height={20} />
                   </button>
-                  {editTooltip === String(income.id) && (
+                  {(showAll ? modalEditTooltip : editTooltip) === String(income.id) && (
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
                       Edit Income
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
@@ -129,12 +128,12 @@ const IncomeHistory = ({ incomes, selectedMonth, mutation, updateIncomeMutation 
                       setDeleteModalOpen(true)
                       setIncomeTransToDelete(income.id)
                     }}
-                    onMouseEnter={() => setDeleteTooltip(String(income.id))}
-                    onMouseLeave={() => setDeleteTooltip(null)}
+                    onMouseEnter={() => onDeleteTooltip(String(income.id))}
+                    onMouseLeave={() => onDeleteTooltip(null)}
                   >
                     <Trash2 width={20} height={20} />
                   </button>
-                  {deleteTooltip === String(income.id) && (
+                  {(showAll ? modalDeleteTooltip : deleteTooltip) === String(income.id) && (
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
                       Delete Income
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
@@ -174,7 +173,11 @@ const IncomeHistory = ({ incomes, selectedMonth, mutation, updateIncomeMutation 
           </div>
         </div>
         <div className="overflow-x-auto">
-          <IncomeTable data={filteredIncomes || []} />
+          <IncomeTable 
+            data={filteredIncomes || []} 
+            onEditTooltip={setEditTooltip} 
+            onDeleteTooltip={setDeleteTooltip} 
+          />
         </div>
       </div>
 
@@ -192,7 +195,12 @@ const IncomeHistory = ({ incomes, selectedMonth, mutation, updateIncomeMutation 
               </button>
             </div>
             <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
-              <IncomeTable data={filteredIncomes || []} showAll />
+              <IncomeTable 
+                data={filteredIncomes || []} 
+                showAll 
+                onEditTooltip={setModalEditTooltip} 
+                onDeleteTooltip={setModalDeleteTooltip} 
+              />
             </div>
           </div>
         </div>

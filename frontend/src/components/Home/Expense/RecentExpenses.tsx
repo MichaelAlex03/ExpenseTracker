@@ -22,6 +22,8 @@ const RecentExpenses = ({ expenses, selectedMonth, mutation, updateExpenseMutati
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [modalEditTooltip, setModalEditTooltip] = useState<string | null>(null);
+  const [modalDeleteTooltip, setModalDeleteTooltip] = useState<string | null>(null);
   const [deleteTooltip, setDeleteTooltip] = useState<string | null>(null);
   const [editTooltip, setEditTooltip] = useState<string | null>(null);
   const [expenseToDelete, setExpenseToDelete] = useState<number>(0);
@@ -46,7 +48,12 @@ const RecentExpenses = ({ expenses, selectedMonth, mutation, updateExpenseMutati
 
   const filteredExpenses = filterExpensesByMonth(expenses);
 
-  const ExpenseTable = ({ data, showAll = false }: { data: ExpenseResponseObject[], showAll?: boolean }) => (
+  const ExpenseTable = ({ data, showAll = false, onEditTooltip, onDeleteTooltip }: { 
+    data: ExpenseResponseObject[], 
+    showAll?: boolean,
+    onEditTooltip: (id: string | null) => void,
+    onDeleteTooltip: (id: string | null) => void
+  }) => (
     <table className="w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
@@ -102,12 +109,12 @@ const RecentExpenses = ({ expenses, selectedMonth, mutation, updateExpenseMutati
                       setIsEditModalOpen(true);
                       setExpenseToEdit(expense.id);
                     }}
-                    onMouseEnter={() => setEditTooltip(String(expense.id))}
-                    onMouseLeave={() => setEditTooltip(null)}
+                    onMouseEnter={() => onEditTooltip(String(expense.id))}
+                    onMouseLeave={() => onEditTooltip(null)}
                   >
                     <Pencil width={20} height={20} />
                   </button>
-                  {editTooltip === String(expense.id) && (
+                  {(showAll ? modalEditTooltip : editTooltip) === String(expense.id) && (
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
                       Edit Expense
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
@@ -121,12 +128,12 @@ const RecentExpenses = ({ expenses, selectedMonth, mutation, updateExpenseMutati
                       setDeleteModalOpen(true)
                       setExpenseToDelete(expense.id)
                     }}
-                    onMouseEnter={() => setDeleteTooltip(String(expense.id))}
-                    onMouseLeave={() => setDeleteTooltip(null)}
+                    onMouseEnter={() => onDeleteTooltip(String(expense.id))}
+                    onMouseLeave={() => onDeleteTooltip(null)}
                   >
                     <Trash2 width={20} height={20} />
                   </button>
-                  {deleteTooltip === String(expense.id) && (
+                  {(showAll ? modalDeleteTooltip : deleteTooltip) === String(expense.id) && (
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
                       Delete Expense
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900" />
@@ -166,7 +173,11 @@ const RecentExpenses = ({ expenses, selectedMonth, mutation, updateExpenseMutati
           </div>
         </div>
         <div className="overflow-x-auto">
-          <ExpenseTable data={filteredExpenses || []} />
+          <ExpenseTable 
+            data={filteredExpenses || []} 
+            onEditTooltip={setEditTooltip}
+            onDeleteTooltip={setDeleteTooltip}
+          />
         </div>
       </div>
 
@@ -184,7 +195,12 @@ const RecentExpenses = ({ expenses, selectedMonth, mutation, updateExpenseMutati
               </button>
             </div>
             <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
-              <ExpenseTable data={filteredExpenses || []} showAll />
+              <ExpenseTable 
+                data={filteredExpenses || []} 
+                showAll 
+                onEditTooltip={setModalEditTooltip}
+                onDeleteTooltip={setModalDeleteTooltip}
+              />
             </div>
           </div>
         </div>
