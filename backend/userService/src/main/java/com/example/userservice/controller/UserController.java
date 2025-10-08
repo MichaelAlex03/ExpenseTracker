@@ -24,7 +24,6 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<UserFetchResponse> getUser(@RequestParam String email){
-        System.out.println("HERE");
         Optional<User> user = userService.getUserInfo(email);
         if (user.isPresent()){
             User userInfo = user.get();
@@ -48,7 +47,6 @@ public class UserController {
 
     @PatchMapping
     public ResponseEntity<UserUpdateResponse> updateUser(@RequestBody UpdateUserDto input){
-        System.out.println("UPDATE");
         User updatedUser = userService.updateUser(input);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -70,6 +68,6 @@ public class UserController {
         userService.deleteUser(email);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("User updated");
+                .body("User deleted");
     }
 }

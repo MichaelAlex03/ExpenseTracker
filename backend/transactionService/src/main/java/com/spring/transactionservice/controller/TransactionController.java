@@ -2,6 +2,8 @@ package com.spring.transactionservice.controller;
 
 import com.spring.transactionservice.dto.AddExpenseDto;
 import com.spring.transactionservice.dto.AddIncomeDto;
+import com.spring.transactionservice.dto.UpdateExpenseDto;
+import com.spring.transactionservice.dto.UpdateIncomeDto;
 import com.spring.transactionservice.model.Expense;
 import com.spring.transactionservice.model.Income;
 import com.spring.transactionservice.responses.AddExpenseTransactionResponse;
@@ -75,6 +77,35 @@ public class TransactionController {
     @GetMapping("/income")
     public List<Income> getAllIncomeTransactions(@RequestParam Integer userId){
         return incomeService.getAllIncomeTransactions(userId);
+    }
+
+    @GetMapping("/singleIncome")
+    public Income getIncomeTransaction(@RequestParam Integer incomeId){
+        return incomeService.getIncome(incomeId);
+    }
+
+
+    @GetMapping("/singleExpense")
+    public Expense getExpenseTransaction(@RequestParam Integer expenseId){
+        return expenseService.getExpense(expenseId);
+    }
+
+    @PatchMapping("/income")
+    public Income updateIncome(@RequestBody UpdateIncomeDto input){
+        try{
+            return incomeService.updateIncome(input);
+        }catch (RuntimeException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PatchMapping("/expense")
+    public Expense updateExpense(@RequestBody UpdateExpenseDto input){
+        try{
+            return expenseService.updateExpenseTransaction(input);
+        }catch (RuntimeException e){
+            throw new RuntimeException(e);
+        }
     }
 
     @DeleteMapping("/income")

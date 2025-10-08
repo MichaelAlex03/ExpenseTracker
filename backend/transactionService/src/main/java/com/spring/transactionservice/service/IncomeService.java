@@ -1,6 +1,7 @@
 package com.spring.transactionservice.service;
 
 import com.spring.transactionservice.dto.AddIncomeDto;
+import com.spring.transactionservice.dto.UpdateIncomeDto;
 import com.spring.transactionservice.model.Income;
 import com.spring.transactionservice.repository.IncomeRepository;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,32 @@ public class IncomeService {
             incomeRepository.delete(income);
         } else {
             throw new RuntimeException("Transaction not found");
+        }
+    }
+
+    public Income getIncome(Integer incomeId){
+        Optional<Income> income = incomeRepository.findById(incomeId);
+        if(income.isPresent()){
+            return income.get();
+        } else {
+            throw new RuntimeException("Income transaction not found");
+        }
+    }
+
+    public Income updateIncome(UpdateIncomeDto input){
+        Optional<Income> incomeToFind = incomeRepository.findById(input.getId());
+        if(incomeToFind.isPresent()){
+            Income newIncome = incomeToFind.get();
+            newIncome.setDateOfIncome(input.getDateOfIncome());
+            newIncome.setIncomeAmount(input.getIncomeAmount());
+            newIncome.setIncomeCategory(input.getIncomeCategory());
+            newIncome.setIncomeFrequency(input.getIncomeFrequency());
+            newIncome.setAdditionalNotes(input.getAdditionalNotes());
+            newIncome.setUserId(input.getUserId());
+            newIncome.setIncomeDescription(input.getIncomeDescription());
+            return incomeRepository.save(newIncome);
+        } else {
+            throw new RuntimeException("Income transaction not found");
         }
     }
 

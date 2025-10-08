@@ -2,6 +2,7 @@ package com.spring.transactionservice.service;
 
 
 import com.spring.transactionservice.dto.AddExpenseDto;
+import com.spring.transactionservice.dto.UpdateExpenseDto;
 import com.spring.transactionservice.model.Expense;
 import com.spring.transactionservice.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,31 @@ public class ExpenseService {
             expenseRepository.delete(expense);
         } else {
             throw new RuntimeException("Transaction not found");
+        }
+    }
+
+    public Expense getExpense(Integer expenseId){
+        Optional<Expense> expense = expenseRepository.findById(expenseId);
+        if(expense.isPresent()){
+            return expense.get();
+        } else {
+            throw new RuntimeException("Expense not found");
+        }
+    }
+
+    public Expense updateExpenseTransaction(UpdateExpenseDto input){
+        Optional<Expense> expenseToUpdate = expenseRepository.findById(input.getId());
+        if(expenseToUpdate.isPresent()){
+            Expense expense = expenseToUpdate.get();
+            expense.setDateOfExpense(input.getDateOfExpense());
+            expense.setExpenseDescription(input.getExpenseDescription());
+            expense.setExpenseAmount(input.getExpenseAmount());
+            expense.setExpenseCategory(input.getExpenseCategory());
+            expense.setExpensePaymentMethod(input.getExpensePaymentMethod());
+            expense.setAdditionalNotes(input.getAdditionalNotes());
+            return expenseRepository.save(expense);
+        } else {
+            throw new RuntimeException("Expense not found");
         }
     }
 
