@@ -43,6 +43,7 @@ interface ExpenseTransaction extends BaseTransaction {
   description: string;
   category: string;
   paymentMethod: string;
+  // [key: string]: string | Date
 }
 
 //Income object returned from POST api call
@@ -74,8 +75,8 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const { auth } = useAuth();
 
   // Define months array at the top level of the component
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const [totalBalance, setTotalBalance] = useState<string>("0.00");
   const [totalIncome, setTotalIncome] = useState<string>("0.00");
@@ -85,6 +86,8 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const [toggleMonthSelector, setToggleMonthSelector] = useState<boolean>(false);
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [currentSelectedMonth, setCurrentSelectedMonth] = useState<Date>(selectedMonth);
+  const [openExpenseErrorModal, setOpenExpenseErrorModal] = useState<boolean>(false);
+  const [openIncomeErrorModal, setOpenIncomeErrorModal] = useState<boolean>(false);
 
   const fetchBudgets = async () => {
     try {
@@ -138,6 +141,13 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   });
 
   const handleAddExpenseTransaction = async (expenseObject: ExpenseTransaction) => {
+    
+    const hasEmptyFields = Object.values(expenseObject).some(value => !value);
+    if (hasEmptyFields) {
+      setOpenExpenseErrorModal(true);
+      throw new Error('Required fields missing');
+    }
+
     const body = {
       dateOfExpense: expenseObject.dateOfTransaction,
       expenseDescription: expenseObject.description,
@@ -156,10 +166,17 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
       return response.data;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   };
 
   const handleAddIncomeTransactions = async (incomeObject: IncomeTransaction) => {
+    const hasEmptyFields = Object.values(incomeObject).some(value => !value);
+    if (hasEmptyFields) {
+      setOpenIncomeErrorModal(true);
+      throw new Error('Required fields missing');
+    }
+
     const body = {
       dateOfIncome: incomeObject.dateOfTransaction,
       incomeAmount: incomeObject.amount,
@@ -184,6 +201,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   const addExpenseTransactionsMutation = useMutation({
     mutationFn: handleAddExpenseTransaction,
     onSuccess: (newExpenseTransaction) => {
+      console.log("hereeee")
       queryClient.setQueryData(["expenses", auth.userId], (oldData: ExpenseResponseObject[]) =>
         [...(oldData || []), newExpenseTransaction])
     }
@@ -243,6 +261,8 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
     calculateStatsForMonth();
   }, [selectedMonth, incomeData, expenseData]);
 
+  console.log(expenseData)
+
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-fit rounded-xl">
       <div className="w-full flex flex-row items-center gap-4 p-6">
@@ -275,7 +295,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
               {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </p>
           </button>
-          
+
           <button
             className="flex flex-row items-center gap-4 bg-black rounded-xl p-2 cursor-pointer h-10"
             onClick={() => setToggleAddTransaction(true)}
@@ -299,14 +319,14 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
 
       <div className="grid gap-4 grid-cols-5 w-full p-6">
         <div className="col-span-3">
-          <MonthlyOverview 
+          <MonthlyOverview
             incomeData={incomeData || []}
             expenseData={expenseData || []}
             selectedMonth={selectedMonth}
           />
         </div>
         <div className="col-span-2">
-          <RecentTransactions 
+          <RecentTransactions
             incomeData={incomeData || []}
             expenseData={expenseData || []}
             selectedMonth={selectedMonth}
@@ -315,7 +335,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
       </div>
 
       <div className="grid gap-4 grid-cols-2 w-full p-6">
-        <TopCategories 
+        <TopCategories
           incomeData={incomeData || []}
           expenseData={expenseData || []}
           selectedMonth={selectedMonth}
@@ -323,7 +343,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
         <BudgetProgress
           budgets={budgetsData}
           expenses={expenseData}
-          selectedMonth={selectedMonth} 
+          selectedMonth={selectedMonth}
         />
       </div>
 
@@ -336,7 +356,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
           />
         </div>
       )}
-      
+
       {toggleMonthSelector && (
         <div className="fixed inset-0 w-full h-full bg-black/40 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl p-6 w-[400px]">
@@ -350,29 +370,28 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
                   ✕
                 </button>
               </div>
-              
+
               <div className="grid grid-cols-3 gap-3">
                 {months.map((monthName, i) => {
                   const isSelected = currentSelectedMonth.getMonth() === i;
-                  
+
                   return (
                     <button
                       key={i}
                       onClick={() => {
                         setCurrentSelectedMonth(new Date(currentSelectedMonth.getFullYear(), i, 1));
                       }}
-                      className={`p-3 rounded-lg border-2 transition-colors ${
-                        isSelected 
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className={`p-3 rounded-lg border-2 transition-colors ${isSelected
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 hover:border-gray-300'
+                        }`}
                     >
                       {monthName}
                     </button>
                   );
                 })}
               </div>
-              
+
               <div className="flex flex-row gap-2">
                 <button
                   onClick={() => {
@@ -393,7 +412,7 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
                   Next Year →
                 </button>
               </div>
-              
+
               <button
                 onClick={() => {
                   setSelectedMonth(new Date());
@@ -403,14 +422,14 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
               >
                 Today
               </button>
-              
+
               <button
                 onClick={updateDate}
                 className="w-full p-2 bg-gray-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Done
               </button>
-              
+
               <div className="text-center">
                 <p className="text-lg font-semibold">
                   {currentSelectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
@@ -420,6 +439,29 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
           </div>
         </div>
       )}
+      {
+        (openExpenseErrorModal || openIncomeErrorModal) && (
+          <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50'>
+            <div className='bg-white flex-col items-center justify-center rounded-xl p-6 w-2/5'>
+              <div className='flex flex-col items-start gap-4'>
+                <h1 className='font-bold text-xl'>Error</h1>
+                <p className='text-base text-gray-500'>One or more required fields missing</p>
+              </div>
+              <div className='w-full gap-6 flex items-center justify-end'>
+                <button
+                  className='border-1 border-gray-500/40 px-4 py-2 rounded-lg hover:bg-gray-400/20 transition-colors duration-150 cursor-pointer'
+                  onClick={() => {
+                    setOpenExpenseErrorModal(false)
+                    setOpenIncomeErrorModal(false)
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
     </div>
   );
 };

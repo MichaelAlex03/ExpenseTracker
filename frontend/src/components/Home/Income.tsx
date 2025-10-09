@@ -61,6 +61,7 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   const [currentSelectedMonth, setCurrentSelectedMonth] = useState<Date>(selectedMonth);
 
   const [incomeTransactions, setIncomeTransactions] = useState<IncomeResponseObject[]>([]);
+  const [openIncomeErrorModal, setOpenIncomeErrorModal] = useState<boolean>(false);
 
   const fetchIncomeTransactionData = async () => {
     try {
@@ -116,6 +117,12 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
   console.log(incomeTransactions)
 
   const handleAddIncome = async (incomeObject: IncomeObject) => {
+
+    const hasEmptyFields = Object.values(incomeObject).some(value => !value);
+    if (hasEmptyFields) {
+      setOpenIncomeErrorModal(true);
+      throw new Error('Required fields missing');
+    }
 
     // This is the format of the AddIncomeDto in the spring backend
     let body = {
@@ -395,6 +402,24 @@ const Income = ({ toggleSideBar, setToggleSideBar }: IncomeProps) => {
           </div>
         )
       }
+      {openIncomeErrorModal && (
+        <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50'>
+          <div className='bg-white flex-col items-center justify-center rounded-xl p-6 w-2/5'>
+            <div className='flex flex-col items-start gap-4'>
+              <h1 className='font-bold text-xl'>Error</h1>
+              <p className='text-base text-gray-500'>One or more required fields missing</p>
+            </div>
+            <div className='w-full gap-6 flex items-center justify-end'>
+              <button
+                className='border-1 border-gray-500/40 px-4 py-2 rounded-lg hover:bg-gray-400/20 transition-colors duration-150 cursor-pointer'
+                onClick={() => setOpenIncomeErrorModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

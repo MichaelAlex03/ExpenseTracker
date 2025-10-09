@@ -65,6 +65,7 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   const [currentSelectedMonth, setCurrentSelectedMonth] = useState<Date>(selectedMonth);
 
   const [expenseTransactions, setExpenseTransactions] = useState<ExpenseResponseObject[]>([]);
+  const [openExpenseErrorModal, setOpenExpenseErrorModal] = useState<boolean>(false);
 
   console.log(toggleAddExpense)
 
@@ -143,10 +144,6 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
       
     }
 
-    console.log(largestExpense);
-    console.log(maxFrequency);
-    console.log(mostFrequentCategory)
-
    
     const today = new Date();
     let daysElapsed = 0
@@ -176,6 +173,11 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
   }
 
   const handleAddExpense = async (expenseObject: ExpenseObject) => {
+    const hasEmptyFields = Object.values(expenseObject).some(value => !value);
+    if (hasEmptyFields) {
+      setOpenExpenseErrorModal(true);
+      throw new Error('Required fields missing');
+    }
 
     // This is the format of the AddExpenseDto in the spring backend
     let body = {
@@ -464,6 +466,24 @@ const Expenses = ({ toggleSideBar, setToggleSideBar }: ExpenseProps) => {
           </div>
         )
       }
+      {openExpenseErrorModal && (
+        <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50'>
+          <div className='bg-white flex-col items-center justify-center rounded-xl p-6 w-2/5'>
+            <div className='flex flex-col items-start gap-4'>
+              <h1 className='font-bold text-xl'>Error</h1>
+              <p className='text-base text-gray-500'>One or more required fields missing</p>
+            </div>
+            <div className='w-full gap-6 flex items-center justify-end'>
+              <button
+                className='border-1 border-gray-500/40 px-4 py-2 rounded-lg hover:bg-gray-400/20 transition-colors duration-150 cursor-pointer'
+                onClick={() => setOpenExpenseErrorModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

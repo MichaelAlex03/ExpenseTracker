@@ -73,9 +73,15 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
   const [toggleAddBudget, setToggleAddBudget] = useState<boolean>(false);
 
   const [expenseTransactions, setExpenseTransactions] = useState<ExpenseResponseObject[]>([]);
-
+  const [openBudgetErrorModal, setOpenBudgetErrorModal] = useState<boolean>(false);
 
   const handleAddBudget = async (budgetObject: BudgetObject) => {
+    const hasEmptyFields = Object.values(budgetObject).some(value => !value);
+    if (hasEmptyFields) {
+      setOpenBudgetErrorModal(true);
+      throw new Error('Required fields missing');
+    }
+
     try {
       const response = await axios.post(`http://localhost:3002/api/budget`, budgetObject)
       setToggleAddBudget(false);
@@ -378,6 +384,24 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
                   {currentSelectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {openBudgetErrorModal && (
+        <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50'>
+          <div className='bg-white flex-col items-center justify-center rounded-xl p-6 w-2/5'>
+            <div className='flex flex-col items-start gap-4'>
+              <h1 className='font-bold text-xl'>Error</h1>
+              <p className='text-base text-gray-500'>One or more required fields missing</p>
+            </div>
+            <div className='w-full gap-6 flex items-center justify-end'>
+              <button
+                className='border-1 border-gray-500/40 px-4 py-2 rounded-lg hover:bg-gray-400/20 transition-colors duration-150 cursor-pointer'
+                onClick={() => setOpenBudgetErrorModal(false)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
