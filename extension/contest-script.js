@@ -50,7 +50,7 @@ function extractMerchant() {
     return window.location.hostname.replace('www.', '');
 }
 
-function extractAmunt() {
+function extractAmount() {
     // Common selectors for total amount
     const selectors = [
         '[class*="total"]',
@@ -61,14 +61,62 @@ function extractAmunt() {
         '.grand-total'
     ];
 
-    for (const selector of selectors){
+    for (const selector of selectors) {
         const elements = document.querySelectorAll(selector);
         for (const el of elements) {
             const text = el.innerText;
             const match = text.match(/\$?\s*(\d{1,}[,\d]*\.?\d{0,2})/);
-            if (match){
+            if (match) {
                 return parseFloat(match[1].replace(',', ''));
             }
         }
     }
+
+    return null
 }
+
+function extractOrderNumber() {
+    const bodyText = document.body.innerText;
+    const match = bodyText.match(/order\s*#?\s*:?\s*(\w+)/i);
+    return match ? match[1] : null
+}
+
+function extractItems() {
+    const itemElements = document.querySelectorAll('[class*="item"], [class*="product"]');
+    const items = []
+
+    for (const el of itemElements) {
+        const text = el.innerText.trim();
+        if (text && text.length < 100) {
+            items.push(text);
+        }
+    }
+
+    return items.slice(0, 5);
+}
+
+function checkForPurchase() {
+    if (isPurchaseConfirmation()) {
+        const transactionData = extractTransactionData();
+
+        chrome.runtime.sendMessage({
+            type: 'PURCHASE_DETECTED',
+            data: transactionData
+        })
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkForPurchase)
+} else {
+    checkForPurchase()
+}
+
+let lastUrl = location.href;
+new MutationObserver(() => {
+    const url = location.href;
+    if (url !== lastUrl) {
+        lastUrl = url;
+        setTimeout(checkForPurchase, 1000)
+    }
+}).observe(document, { subtree: true, childList: true })
