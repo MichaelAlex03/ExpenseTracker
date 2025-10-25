@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen">
+      <h2>Expense Tracker</h2>
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <div id="loginError" class="error"></div>
+      </form>
+    </div>
+
+    <!-- Main Screen -->
+    <div id="mainScreen" class="screen hidden">
+      <!-- No Pending Transaction -->
+      <div id="noTransaction">
+        <h3>No purchases detected</h3>
+        <p>Complete a purchase online and we'll automatically detect it!</p>
+        <button id="manualAddBtn">Add Expense Manually</button>
+      </div>
+
+      <!-- Pending Transaction -->
+      <div id="transactionForm" class="hidden">
+        <h3>Add Expense</h3>
+        <form id="expenseForm">
+          <label>
+            Merchant
+            <input type="text" id="merchant" required>
+          </label>
+
+          <label>
+            Amount
+            <input type="number" id="amount" step="0.01" required>
+          </label>
+
+          <label>
+            Date
+            <input type="date" id="date" required>
+          </label>
+
+          <label>
+            Category
+            <select id="category" required>
+              <option value="">Select category</option>
+              <option value="groceries">Groceries</option>
+              <option value="shopping">Shopping</option>
+              <option value="dining">Dining</option>
+              <option value="entertainment">Entertainment</option>
+              <option value="travel">Travel</option>
+              <option value="utilities">Utilities</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+
+          <label>
+            Notes (optional)
+            <textarea id="notes" rows="3"></textarea>
+          </label>
+
+          <div class="button-group">
+            <button type="submit" class="primary">Save Expense</button>
+            <button type="button" id="cancelBtn" class="secondary">Cancel</button>
+          </div>
+          <div id="formError" class="error"></div>
+        </form>
+      </div>
+
+      <!-- Success Message -->
+      <div id="successMessage" class="hidden">
+        <div class="success">
+          ✓ Expense saved successfully!
+        </div>
+        <button id="viewDashboardBtn">View Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

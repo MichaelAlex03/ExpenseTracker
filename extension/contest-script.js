@@ -34,7 +34,12 @@ function isPurchaseConfirmation() {
 //Extract transaction details from page
 function extractTransactionData() {
     const data = {
-
+        merchant: extractMerchant(),
+        amount: extractAmount(),
+        date: new Date().toISOString(),
+        orderNumber: extractOrderNumber(),
+        items: extractItems(),
+        url: window.location.href
     }
 }
 
