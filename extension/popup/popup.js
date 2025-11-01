@@ -11,6 +11,39 @@ const successMessage = document.getElementById('successMessage');
 const manualAddBtn = document.getElementById('manualAddBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const viewDashboardBtn = document.getElementById('viewDashboardBtn');
+const googleLoginBtn = document.getElementById('googleLoginBtn');
+const githubLoginBtn = document.getElementById('githubLoginBtn');
+
+// OAuth Handlers
+googleLoginBtn.addEventListener('click', () => {
+  loginError.textContent = '';
+  chrome.runtime.sendMessage(
+    { type: 'OAUTH_LOGIN', provider: 'google' },
+    (response) => {
+      if (response && response.success) {
+        showMainScreen();
+        checkForPendingTransaction();
+      } else {
+        loginError.textContent = response?.error || 'Google login failed';
+      }
+    }
+  );
+});
+
+githubLoginBtn.addEventListener('click', () => {
+  loginError.textContent = '';
+  chrome.runtime.sendMessage(
+    { type: 'OAUTH_LOGIN', provider: 'github' },
+    (response) => {
+      if (response && response.success) {
+        showMainScreen();
+        checkForPendingTransaction();
+      } else {
+        loginError.textContent = response?.error || 'GitHub login failed';
+      }
+    }
+  );
+});
 
 // Initialize popup
 async function init() {
@@ -79,12 +112,19 @@ function showSuccessMessage() {
   noTransaction.classList.add('hidden');
   transactionForm.classList.add('hidden');
   successMessage.classList.remove('hidden');
-  
+
   // Clear pending transaction
   chrome.storage.local.remove('pendingTransaction');
-  
+
   // Clear badge
   chrome.action.setBadgeText({ text: '' });
+
+  // Clear badge on floating button in active tab
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      chrome.tabs.sendMessage(tabs[0].id, { type: 'CLEAR_BADGE' });
+    }
+  });
 }
 
 // Login Form Handler
