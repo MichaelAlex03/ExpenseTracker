@@ -226,7 +226,6 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
     calculateStatsForMonth()
   }, [selectedMonth, expenseData, budgetsData])
 
-  console.log(budgetsData)
 
   return (
     <div className="flex flex-col items-center justify-start w-full bg-white h-screen rounded-xl">
