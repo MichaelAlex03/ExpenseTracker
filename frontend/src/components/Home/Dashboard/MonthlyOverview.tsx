@@ -68,14 +68,19 @@ const MonthlyOverview = ({ incomeData, expenseData, selectedMonth }: MonthlyOver
 
   const chartData = getDailyData();
 
+  // CustomTooltip receives the following props from Recharts Tooltip:
+  // - active: boolean indicating if the tooltip should be visible
+  // - payload: array of data objects for the hovered point (contains values for each day)
+  // - label: the x-axis value (day number) for the hovered point
   const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+    if (active && payload.length) {
+      console.log(payload)
       return (
         <div className="bg-white p-2 border border-gray-200 rounded-md">
           <p className="text-sm">{months[selectedMonth.getMonth()]} {label}{getOrdinalSuffix(label)}</p>
           {payload.map((pld: any) => (
             <p key={pld.name} style={{ color: pld.color }}>
-              {pld.name}: ${pld.value.toFixed(2)}
+              {pld.name}: ${pld.value.toFixed(2)} 
             </p>
           ))}
         </div>

@@ -23,7 +23,7 @@ const TopCategories = ({ incomeData, expenseData, selectedMonth }: TopCategories
     let totalAmount = 0;
 
     if (showType === 'income') {
-      // Calculate income categories
+      
       incomeData
         .filter(income => {
           const date = new Date(income.dateOfIncome);
@@ -39,7 +39,7 @@ const TopCategories = ({ incomeData, expenseData, selectedMonth }: TopCategories
           totalAmount += amount;
         });
     } else {
-      // Calculate expense categories
+      
       expenseData
         .filter(expense => {
           const date = new Date(expense.dateOfExpense);
@@ -56,7 +56,7 @@ const TopCategories = ({ incomeData, expenseData, selectedMonth }: TopCategories
         });
     }
 
-    // Convert to array and calculate percentages
+    
     const categoriesArray: CategoryTotal[] = Array.from(categoryTotals.entries())
       .map(([category, total]) => ({
         category,
@@ -69,7 +69,9 @@ const TopCategories = ({ incomeData, expenseData, selectedMonth }: TopCategories
     return categoriesArray;
   };
 
+  
   const categories = calculateCategoryTotals();
+  console.log(categories)
 
   return (
     <div className="flex flex-col border-1 border-gray-300 shadow-lg w-full rounded-xl p-6 min-h-52">

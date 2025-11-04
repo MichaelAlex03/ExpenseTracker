@@ -76,7 +76,8 @@ const Budgets = ({ toggleSideBar, setToggleSideBar }: BudgetsProps) => {
   const [openBudgetErrorModal, setOpenBudgetErrorModal] = useState<boolean>(false);
 
   const handleAddBudget = async (budgetObject: BudgetObject) => {
-    const hasEmptyFields = Object.values(budgetObject).some(value => !value);
+    const requiredFields = {...budgetObject, budgetNotes: " "}
+    const hasEmptyFields = Object.values(requiredFields).some(value => !value);
     if (hasEmptyFields) {
       setOpenBudgetErrorModal(true);
       throw new Error('Required fields missing');

@@ -71,7 +71,7 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
     budgetCategory: "",
     budgetLimit: "",
     budgetNotes: "",
-    recurring: "",
+    recurring: "Yes",
     userId: auth.userId,
     budgetDate: new Date()
   })
@@ -80,6 +80,8 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
     const { value, name } = e.target;
     setBudgetObject({ ...budgetObject, [name]: value });
   }
+
+  console.log(budgetObject)
 
   return (
     <div className='w-full h-full flex items-center justify-center'>

@@ -40,4 +40,8 @@ const useFormRegex = (formData: RegexProps) => {
     if (!confirmPasswordCheck) {
         return "Confirm Password is missing or invalid"
     }
+
+    return ""
 }
+
+export default useFormRegex

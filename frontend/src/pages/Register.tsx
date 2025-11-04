@@ -8,8 +8,9 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEventHandler } from "react";
 import { formRegex } from "../../hooks/useFormRegex";
+import useFormRegex from "../../hooks/useFormRegex";
 import "../index.css";
 import { useNavigate } from "react-router-dom";
 import PasswordRequirments from "@/components/PasswordRequirments";
@@ -35,10 +36,13 @@ const Register = () => {
 
   const [password, setPassword] = useState<string>("");
   const [passwordFocus, setPasswordFocus] = useState<boolean>(false);
+  const [validPassword, setValidPassword] = useState<boolean>(false);
 
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [confirmPassFocus, setConfirmPassFocus] = useState<boolean>(false);
   const [validMatch, setValidMatch] = useState<boolean>(false);
+
+  const [errMsg, setErrMsg] = useState<string>("");
 
   //Input Validation
   useEffect(() => {
@@ -57,7 +61,35 @@ const Register = () => {
     setValidMatch(password === confirmPassword);
   }, [confirmPassword, password]);
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Check to make sure fields are populated
+    if (!firstName || !lastName || !password || !confirmPassword) {
+      setErrMsg("One or more fields required are missing");
+      return;
+    }
+
+    //Check to make sure fields are valid
+    let formCheckBody = {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPass: confirmPassword
+    }
+    let error = useFormRegex(formCheckBody)
+    if (error) {
+      setErrMsg(error)
+      return
+    }
+
+    try {
+      
+    } catch (error) {
+      console.log(error)
+    }
+  };
 
   const handleGoogleLogin = () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/google";
@@ -70,7 +102,7 @@ const Register = () => {
   return (
     <div className="w-full h-screen flex flex-row">
       <div className="w-[55%] bg-white flex flex-col items-center justify-center px-40">
-        <div className="flex flex-row items-center gap-2 w-full xl:w-3/4">
+        <div className="flex flex-row items-center gap-2 w-full 2xl:w-3/4">
           <div className="bg-black h-10 w-10 flex justify-center items-center rounded-xl">
             <LayoutDashboard color="white" className="h-6 w-6" />
           </div>
@@ -90,6 +122,9 @@ const Register = () => {
               <p className="text-sm">
                 Start tracking your expenses and managing your finances
               </p>
+              {errMsg && (
+                <p className="text-red-500 text-sm mt-5 font-bold">{errMsg}</p>
+              )}
             </div>
 
             <div className="flex flex-row items-center w-4/5 gap-2">
@@ -271,7 +306,7 @@ const Register = () => {
             </p>
           </div>
 
-         <div className="w-3/4 flex flex-row mt-6 items-center justify-center gap-8">
+          <div className="w-3/4 flex flex-row mt-6 items-center justify-center gap-8">
             <button
               type="button"
               className="flex flex-row items-center gap-2 border-1 border-color px-6 py-2 rounded-lg cursor-pointer"

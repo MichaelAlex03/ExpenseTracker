@@ -141,8 +141,10 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   });
 
   const handleAddExpenseTransaction = async (expenseObject: ExpenseTransaction) => {
-    
-    const hasEmptyFields = Object.values(expenseObject).some(value => !value);
+
+    let requiredFields = { ...expenseObject, additionalNotes: " " }
+
+    const hasEmptyFields = Object.values(requiredFields).some(value => !value);
     if (hasEmptyFields) {
       setOpenExpenseErrorModal(true);
       throw new Error('Required fields missing');
@@ -171,7 +173,9 @@ const Dashboard = ({ toggleSideBar, setToggleSideBar }: DashboardProps) => {
   };
 
   const handleAddIncomeTransactions = async (incomeObject: IncomeTransaction) => {
-    const hasEmptyFields = Object.values(incomeObject).some(value => !value);
+    let requiredFields = { ...incomeObject, additionalNotes: " " }
+
+    const hasEmptyFields = Object.values(requiredFields).some(value => !value);
     if (hasEmptyFields) {
       setOpenIncomeErrorModal(true);
       throw new Error('Required fields missing');

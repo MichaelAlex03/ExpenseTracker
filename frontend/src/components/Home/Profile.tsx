@@ -91,7 +91,10 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     }));
   };
 
-  // User entity in Spring had additional fields not needed for client
+  /* User entity in Spring had additional fields not needed for client.
+     Need type signature because typescript does not know that "key" is a 
+     valid key in our source map 
+  */
   const updateSharedFields = (
     target: FormDataTypes,
     source: Record<string, any>
@@ -155,6 +158,9 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     }
   };
 
+  /* Check to see if current image locally is different from image we have stored. If so make call to s3 to get 
+   presigned URL and a key. Key is used to delete the image from S3 when we upload a new image so we dont have lots
+  of images just in our s3 */
   const handleUpdateProfile = async () => {
     try {
 
@@ -180,7 +186,6 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
           });
 
           const { key, publicUrl, uploadUrl } = s3Response.data;
-          console.log("upload", uploadUrl)
           imageKey = key;
           profileImage = publicUrl;
 
@@ -191,8 +196,6 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
               "Content-Type": fileType
             }
           });
-
-          console.log("TEST", uploadResponse);
 
           if (uploadResponse.status !== 200){
             throw new Error('failed to upload to s3')
@@ -279,8 +282,6 @@ const Profile = ({ toggleSideBar, setToggleSideBar }: ProfileProps) => {
     );
   }, [serverFormData, localFormData]);
 
-  console.log("Local", localFormData);
-  console.log("Server", serverFormData);
 
   return (
     <div className="w-full flex flex-col items-center justify-start h-auto bg-white rounded-xl">

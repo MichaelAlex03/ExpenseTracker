@@ -198,8 +198,8 @@ const RecentExpenses = ({ expenses, selectedMonth, mutation, updateExpenseMutati
               <ExpenseTable 
                 data={filteredExpenses || []} 
                 showAll 
-                onEditTooltip={setModalEditTooltip}
-                onDeleteTooltip={setModalDeleteTooltip}
+                onEditTooltip={setEditTooltip}
+                onDeleteTooltip={setDeleteTooltip}
               />
             </div>
           </div>
