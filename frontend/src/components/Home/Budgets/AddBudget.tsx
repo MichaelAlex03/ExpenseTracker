@@ -81,7 +81,7 @@ const AddBudget = ({ setToggleAddBudget, mutation }: AddBudgetProps) => {
     setBudgetObject({ ...budgetObject, [name]: value });
   }
 
-  console.log(budgetObject)
+
 
   return (
     <div className='w-full h-full flex items-center justify-center'>

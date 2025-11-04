@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../index.css";
+import axios from "axios";
 
 
 const Login = () => {
@@ -18,8 +19,27 @@ const Login = () => {
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [errMsg, setErrMsg] = useState<string>("");
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+    if (!email || !password){
+      setErrMsg("email/password is missing")
+    }
+
+    try {
+      let body = {
+        email,
+        password
+      }
+
+      const response = await axios.post("http://localhost:8080/auth/login", body);
+      if (response.status === 200){
+        navigate("/home")
+      }
+    } catch (error) {
+      console.error("error")
+    }
+  };
 
   const handleGoogleLogin = () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/google";

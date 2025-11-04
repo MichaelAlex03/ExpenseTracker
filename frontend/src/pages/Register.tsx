@@ -15,6 +15,7 @@ import "../index.css";
 import { useNavigate } from "react-router-dom";
 import PasswordRequirments from "@/components/PasswordRequirments";
 import { cn } from "../../lib/utils";
+import axios from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -36,7 +37,6 @@ const Register = () => {
 
   const [password, setPassword] = useState<string>("");
   const [passwordFocus, setPasswordFocus] = useState<boolean>(false);
-  const [validPassword, setValidPassword] = useState<boolean>(false);
 
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [confirmPassFocus, setConfirmPassFocus] = useState<boolean>(false);
@@ -85,7 +85,17 @@ const Register = () => {
     }
 
     try {
-      
+      let body = {
+        firstName,
+        lastName,
+        email,
+        password
+      }
+
+      const response = await axios.post("http://localhost:8080/auth/signup", body);
+      if (response.status === 201) {
+        navigate("/")
+      }
     } catch (error) {
       console.log(error)
     }
@@ -245,7 +255,7 @@ const Register = () => {
                   <EyeOff className="absolute top-[37px] right-3 h-4 w-4" />
                 </button>
               )}
-              {passwordFocus && <PasswordRequirments password={password} />}
+              {passwordFocus && <PasswordRequirments password={password}/>}
             </div>
 
             <div className="flex flex-col mt-4 w-4/5 gap-2 relative">

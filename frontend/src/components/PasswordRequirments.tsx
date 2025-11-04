@@ -3,7 +3,7 @@ import { cn } from '../../lib/utils'
 import { AlertCircle, Check, X } from 'lucide-react'
 
 interface PasswordRequirementsProps {
-    password: string
+    password: string,
 }
 
 const passwordRules = {
@@ -22,6 +22,7 @@ const PasswordRequirments = ({ password }: PasswordRequirementsProps) => {
     const [hasUpperCase, setHasUpperCase] = useState<boolean>(false);
     const [hasDigit, setHasDigit] = useState<boolean>(false);
 
+
     // Update password requirements every time password changes
     useEffect(() => {
         setValidLength(passwordRules.length.test(password));
@@ -30,6 +31,7 @@ const PasswordRequirments = ({ password }: PasswordRequirementsProps) => {
         setHasUpperCase(passwordRules.uppercase.test(password));
         setHasDigit(passwordRules.number.test(password))
     }, [password])
+
 
     return (
         <div className="absolute z-50 w-full p-2 mt-1 bg-white border-0 rounded-lg shadow-xl top-17">

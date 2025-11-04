@@ -1,6 +1,6 @@
 import Layout from "./components/Layout";
 import "./index.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthProvider } from "../context/AuthContext";
@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <Routes>
@@ -31,7 +31,7 @@ function App() {
           </Routes>
         </AuthProvider>
       </QueryClientProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
